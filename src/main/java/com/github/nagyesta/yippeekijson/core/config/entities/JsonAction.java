@@ -1,0 +1,69 @@
+package com.github.nagyesta.yippeekijson.core.config.entities;
+
+import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Represents the configuration of a single action.
+ */
+public class JsonAction {
+
+    private final String name;
+    private final List<JsonRule> rules;
+
+    JsonAction(String name, List<JsonRule> rules) {
+        this.name = name;
+        this.rules = rules;
+    }
+
+    public static JsonActionBuilder builder() {
+        return new JsonActionBuilder();
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public List<JsonRule> getRules() {
+        return this.rules;
+    }
+
+    public static class JsonActionBuilder {
+        private String name;
+        private List<JsonRule> rules;
+
+        JsonActionBuilder() {
+            reset();
+        }
+
+        private void reset() {
+            rules = new ArrayList<>();
+        }
+
+        public JsonAction.JsonActionBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public JsonAction.JsonActionBuilder addRule(JsonRule rule) {
+            this.rules.add(rule);
+            Collections.sort(this.rules);
+            return this;
+        }
+
+        public JsonAction build() {
+            JsonAction action = new JsonAction(name, rules);
+            reset();
+            return action;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", JsonAction.class.getSimpleName() + "[", "]")
+                .add("rules=\n\t" + rules.stream().map(Objects::toString).collect(Collectors.joining("\t")))
+                .toString();
+    }
+}

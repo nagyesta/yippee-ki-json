@@ -1,0 +1,62 @@
+actions:
+  - name: "filter"
+    rules:
+      - name: "delete"
+        path: "$.accounts[*][?(@.id==1)]"
+      - name: "delete"
+        path: "$.accounts[*][?(@.id==3)]"
+      - name: "delete"
+        path: "$.accounts[*][?(@.id==2)].email"
+  - name: "split-name"
+    rules:
+      - name: "copy"
+        path: "$.accounts[0].name"
+        params:
+          key:
+            name: "staticString"
+            value: "firstName"
+          to:
+            value: "$.accounts[0]"
+      - name: "copy"
+        path: "$.accounts[1].name"
+        params:
+          key:
+            name: "staticString"
+            value: "firstName"
+          to:
+            value: "$.accounts[1]"
+      - name: "replace"
+        path: "$.accounts..name"
+        params:
+          stringFunction:
+            name: "regex"
+            pattern: '''(?<firstName>[A-Za-z\-]+), (?<lastName>[A-Za-z\-]+)'''
+            replacement: "${lastName}"
+          predicate:
+            name: "anyString"
+      - name: "replace"
+        path: "$.accounts..firstName"
+        params:
+          stringFunction:
+            name: "regex"
+            pattern: '''(?<firstName>[A-Za-z\-]+), (?<lastName>[A-Za-z\-]+)'''
+            replacement: "${firstName}"
+      - name: "rename"
+        path: "$.accounts[*]"
+        params:
+          oldKey:
+            name: "staticString"
+            value: "name"
+          newKey:
+            name: "staticString"
+            value: "lastName"
+      - name: "add"
+        path: "$.accounts[*]"
+        params:
+          key:
+            name: "staticString"
+            value: "processed"
+          value:
+            name: "staticString"
+            value: "true"
+

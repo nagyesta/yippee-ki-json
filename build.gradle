@@ -1,0 +1,86 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'jacoco'
+    id 'java'
+    id "io.toolebox.git-versioner" version "1.5.0"
+}
+
+group = 'com.github.nagyesta'
+sourceCompatibility = '11'
+
+project.ext {
+    gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String)  : ''
+}
+
+versioner {
+    startFrom {
+        major = 0
+        minor = 9
+        patch = 0
+    }
+    pattern {
+        pattern = "%M.%m.%p(.%c)"
+    }
+    git {
+        authentication {
+            https {
+                token = project.ext.gitToken
+            }
+        }
+    }
+    tag {
+        prefix = 'v'
+        useCommitMessage = true
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.jayway.jsonpath:json-path'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+dependencyManagement {
+    implementation {
+        dependencies {
+            dependency 'com.jayway.jsonpath:json-path:+'
+        }
+    }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("$buildDir/reports/jacoco/report.xml")
+        csv.enabled false
+        html.enabled true
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+test.finalizedBy jacocoTestReport
+
+jacoco {
+    toolVersion = "0.8.2"
+}
+check.dependsOn jacocoTestCoverageVerification
+jar.dependsOn check
