@@ -54,7 +54,7 @@ class JsonRuleRegistryImplTest {
                 .build();
     }
 
-    private static RawJsonRule rawJsonRule(String name, Integer order) {
+    private static RawJsonRule rawJsonRule(final String name, final Integer order) {
         final RawJsonRule source = new RawJsonRule();
         source.setName(name);
         source.setOrder(order);
@@ -64,8 +64,8 @@ class JsonRuleRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("nullListProvider")
-    void testConstructorShouldFailIfNullProvided(FunctionRegistry functionRegistry,
-                                                 List<Class<? extends JsonRule>> rules) {
+    void testConstructorShouldFailIfNullProvided(final FunctionRegistry functionRegistry,
+                                                 final List<Class<? extends JsonRule>> rules) {
         //given
 
         //when + then exception
@@ -74,7 +74,8 @@ class JsonRuleRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidRuleClassProvider")
-    void testConstructorShouldFailIfWrongClassProvided(List<Class<? extends JsonRule>> rules, Class<? extends Exception> exception) {
+    void testConstructorShouldFailIfWrongClassProvided(final List<Class<? extends JsonRule>> rules,
+                                                       final Class<? extends Exception> exception) {
         //given
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
 
@@ -86,7 +87,7 @@ class JsonRuleRegistryImplTest {
     void testNewInstanceFromShouldReturnAnInstanceWhenFound() {
         //given
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
+        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
         underTest.registerRuleClass(JsonDeleteRule.class);
 
         final Integer order = 1;
@@ -100,16 +101,12 @@ class JsonRuleRegistryImplTest {
         Assertions.assertEquals(order, actual.getOrder());
     }
 
-    @Test
-    void registerRuleClass() {
-    }
-
     @ParameterizedTest
     @MethodSource("invalidRuleProvider")
-    void testNewInstanceFromShouldFailForInvalidInput(RawJsonRule source, Class<? extends Exception> exception) {
+    void testNewInstanceFromShouldFailForInvalidInput(final RawJsonRule source, final Class<? extends Exception> exception) {
         //given
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
+        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
         underTest.registerRuleClass(JsonDeleteRule.class);
         underTest.registerRuleClass(FailingRule.class);
 
@@ -121,33 +118,36 @@ class JsonRuleRegistryImplTest {
 
         @SuppressWarnings("unused")
         @NamedRule(WRONG)
-        protected WrongRule(int order, JsonPath jsonPath, boolean fail) {
+        protected WrongRule(final int order, final JsonPath jsonPath, final boolean fail) {
             super(order, jsonPath);
         }
 
         @Override
-        public void accept(DocumentContext documentContext) {
+        public void accept(final DocumentContext documentContext) {
             //
         }
     }
 
     private static class FailingRule extends WrongRule {
-        protected FailingRule(int order, JsonPath jsonPath) {
+        protected FailingRule(final int order, final JsonPath jsonPath) {
             super(order, jsonPath, true);
-            if (order > 0) throw new RuntimeException(FAILING);
+            if (order > 0) {
+                throw new RuntimeException(FAILING);
+            }
         }
+
         @NamedRule(FAILING)
-        private FailingRule(FunctionRegistry functionRegistry, RawJsonRule rule) {
+        private FailingRule(final FunctionRegistry functionRegistry, final RawJsonRule rule) {
             this(rule.getOrder(), JsonPath.compile(rule.getPath()));
         }
     }
 
     private static class NotAnnotatedRule extends WrongRule {
-        protected NotAnnotatedRule(int order, JsonPath jsonPath) {
+        protected NotAnnotatedRule(final int order, final JsonPath jsonPath) {
             super(order, jsonPath, true);
-            if (order > 0) throw new RuntimeException(FAILING);
+            if (order > 0) {
+                throw new RuntimeException(FAILING);
+            }
         }
     }
-
-
 }

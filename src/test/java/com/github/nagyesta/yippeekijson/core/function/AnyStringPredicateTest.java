@@ -10,12 +10,12 @@ class AnyStringPredicateTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"a", "abc", "a longer message"})
-    void testTestShouldMatchAnyString(String input) {
+    void testTestShouldMatchAnyString(final String input) {
         //given
-        AnyStringPredicate underTest = new AnyStringPredicate();
+        final AnyStringPredicate underTest = new AnyStringPredicate();
 
         //when
-        boolean actual = underTest.test(input);
+        final boolean actual = underTest.test(input);
 
         //then
         Assertions.assertTrue(actual);

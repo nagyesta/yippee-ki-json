@@ -13,12 +13,12 @@ class RawJsonActionTest {
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = "action")
-    void testEqualsShouldUseOnlyName(String name) {
+    void testEqualsShouldUseOnlyName(final String name) {
         //given
-        RawJsonAction first = new RawJsonAction();
+        final RawJsonAction first = new RawJsonAction();
         first.setName(name);
         first.setRules(List.of(new RawJsonRule()));
-        RawJsonAction second = new RawJsonAction();
+        final RawJsonAction second = new RawJsonAction();
         second.setName(name);
 
         //when

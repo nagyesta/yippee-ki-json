@@ -23,7 +23,7 @@ public final class RegexReplaceFunction implements Function<String, String> {
     private final String replacement;
 
     @NamedFunction("regex")
-    public RegexReplaceFunction(@MethodParam("pattern") String pattern, @MethodParam("replacement") String replacement) {
+    public RegexReplaceFunction(@MethodParam("pattern") final String pattern, @MethodParam("replacement") final String replacement) {
         Assert.notNull(pattern, "pattern cannot be null.");
         Assert.notNull(replacement, "replacement cannot be null.");
         this.pattern = Pattern.compile(pattern);
@@ -31,8 +31,8 @@ public final class RegexReplaceFunction implements Function<String, String> {
     }
 
     @Override
-    public String apply(String s) {
-        Matcher matcher = pattern.matcher(s);
+    public String apply(final String s) {
+        final Matcher matcher = pattern.matcher(s);
         if (!matcher.matches()) {
             log.warn(String.format("Pattern: \"%s\" does not match input: \"%s\". Ignoring.", pattern, s));
             return s;
@@ -41,9 +41,9 @@ public final class RegexReplaceFunction implements Function<String, String> {
         String result = replacement;
         for (Matcher r = NAMED_GROUP_PATTERN.matcher(replacement); r.find(); r = NAMED_GROUP_PATTERN.matcher(result)) {
             try {
-                String groupName = r.group(GROUP_NAME_KEY);
+                final String groupName = r.group(GROUP_NAME_KEY);
                 result = r.replaceFirst(matcher.group(groupName));
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 log.error(String.format("Pattern: \"%s\" replacement of input: \"%s\" failed due to: %s", pattern, s, e.getMessage()));
                 return s;
             }

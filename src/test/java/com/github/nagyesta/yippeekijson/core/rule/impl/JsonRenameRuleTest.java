@@ -45,11 +45,11 @@ class JsonRenameRuleTest {
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldRenameNodes(String input, String path, Supplier<String> oldKey, Supplier<String> newKey,
-                                     String expected) {
+    void testAcceptShouldRenameNodes(final String input, final String path, final Supplier<String> oldKey, final Supplier<String> newKey,
+                                     final String expected) {
         //given
-        DocumentContext document = new ParseContextImpl().parse(input);
-        JsonRenameRule rule = new JsonRenameRule(0, JsonPath.compile(path), oldKey, newKey);
+        final DocumentContext document = new ParseContextImpl().parse(input);
+        final JsonRenameRule rule = new JsonRenameRule(0, JsonPath.compile(path), oldKey, newKey);
 
         //when
         rule.accept(document);
@@ -60,7 +60,7 @@ class JsonRenameRuleTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(JsonPath path, Supplier<String> oldSupplier, Supplier<String> newSupplier) {
+    void testConstructorShouldNotAllowNulls(final JsonPath path, final Supplier<String> oldSupplier, final Supplier<String> newSupplier) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonRenameRule(0, path, oldSupplier, newSupplier));
     }
 }

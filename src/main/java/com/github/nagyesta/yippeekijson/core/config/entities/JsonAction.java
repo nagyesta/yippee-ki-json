@@ -13,7 +13,7 @@ public class JsonAction {
     private final String name;
     private final List<JsonRule> rules;
 
-    JsonAction(String name, List<JsonRule> rules) {
+    JsonAction(final String name, final List<JsonRule> rules) {
         this.name = name;
         this.rules = rules;
     }
@@ -22,14 +22,32 @@ public class JsonAction {
         return new JsonActionBuilder();
     }
 
+    /**
+     * Provides the name of the action.
+     *
+     * @return the name of the action
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Returns an unmodifiable list of the rules defined under this action.
+     *
+     * @return the list of rules.
+     */
     public List<JsonRule> getRules() {
-        return this.rules;
+        return Collections.unmodifiableList(this.rules);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", JsonAction.class.getSimpleName() + "[", "]")
+                .add("rules=\n\t" + rules.stream().map(Objects::toString).collect(Collectors.joining("\t")))
+                .toString();
+    }
+
+    @SuppressWarnings({"UnusedReturnValue", "checkstyle:HiddenField", "checkstyle:DesignForExtension"})
     public static class JsonActionBuilder {
         private String name;
         private List<JsonRule> rules;
@@ -42,28 +60,21 @@ public class JsonAction {
             rules = new ArrayList<>();
         }
 
-        public JsonAction.JsonActionBuilder name(String name) {
+        public JsonAction.JsonActionBuilder name(final String name) {
             this.name = name;
             return this;
         }
 
-        public JsonAction.JsonActionBuilder addRule(JsonRule rule) {
+        public JsonAction.JsonActionBuilder addRule(final JsonRule rule) {
             this.rules.add(rule);
             Collections.sort(this.rules);
             return this;
         }
 
         public JsonAction build() {
-            JsonAction action = new JsonAction(name, rules);
+            final JsonAction action = new JsonAction(name, rules);
             reset();
             return action;
         }
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(", ", JsonAction.class.getSimpleName() + "[", "]")
-                .add("rules=\n\t" + rules.stream().map(Objects::toString).collect(Collectors.joining("\t")))
-                .toString();
     }
 }

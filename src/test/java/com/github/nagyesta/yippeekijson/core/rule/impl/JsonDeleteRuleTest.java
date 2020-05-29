@@ -31,10 +31,10 @@ class JsonDeleteRuleTest {
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldDeleteNodes(String input, String path, String expected) {
+    void testAcceptShouldDeleteNodes(final String input, final String path, final String expected) {
         //given
-        DocumentContext document = new ParseContextImpl().parse(input);
-        JsonDeleteRule rule = new JsonDeleteRule(0, JsonPath.compile(path));
+        final DocumentContext document = new ParseContextImpl().parse(input);
+        final JsonDeleteRule rule = new JsonDeleteRule(0, JsonPath.compile(path));
 
         //when
         rule.accept(document);

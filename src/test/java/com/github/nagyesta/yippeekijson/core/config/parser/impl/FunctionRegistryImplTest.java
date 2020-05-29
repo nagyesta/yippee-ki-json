@@ -63,9 +63,9 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("nullListProvider")
-    void testConstructorShouldFailIfNullProvided(List<Class<? extends Supplier<?>>> suppliers,
-                                                 List<Class<? extends Function<?, ?>>> functions,
-                                                 List<Class<? extends Predicate<?>>> predicates) {
+    void testConstructorShouldFailIfNullProvided(final List<Class<? extends Supplier<?>>> suppliers,
+                                                 final List<Class<? extends Function<?, ?>>> functions,
+                                                 final List<Class<? extends Predicate<?>>> predicates) {
         //given
 
         //when + then exception
@@ -75,7 +75,7 @@ class FunctionRegistryImplTest {
     @Test
     void testLookupSupplierShouldReturnAnInstanceWhenFound() {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(List.of(StaticStringSupplier.class),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(List.of(StaticStringSupplier.class),
                 Collections.emptyList(), Collections.emptyList());
 
         //when
@@ -88,9 +88,10 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(Map<String, String> map, Class<? extends Exception> exception) {
+    void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(final Map<String, String> map,
+                                                                    final Class<? extends Exception> exception) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerSupplierClass(FailingSupplier.class);
 
@@ -101,7 +102,7 @@ class FunctionRegistryImplTest {
     @Test
     void testLookupFunctionShouldReturnAnInstanceWhenFound() {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 List.of(RegexReplaceFunction.class), Collections.emptyList());
 
         //when
@@ -115,9 +116,10 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(Map<String, String> map, Class<? extends Exception> exception) {
+    void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(final Map<String, String> map,
+                                                                    final Class<? extends Exception> exception) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerFunctionClass(FailingFunction.class);
 
@@ -128,7 +130,7 @@ class FunctionRegistryImplTest {
     @Test
     void testLookupPredicateShouldReturnAnInstanceWhenFound() {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), List.of(AnyStringPredicate.class));
 
         //when
@@ -142,9 +144,10 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(Map<String, String> map, Class<? extends Exception> exception) {
+    void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(final Map<String, String> map,
+                                                                      final Class<? extends Exception> exception) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerPredicateClass(FailingPredicate.class);
 
@@ -155,9 +158,9 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongSupplier.class, FailingSupplier.class})
-    void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(Class<? extends Supplier<?>> clazz) {
+    void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(final Class<? extends Supplier<?>> clazz) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerSupplierClass(FailingSupplier.class);
 
@@ -168,9 +171,9 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongFunction.class, FailingFunction.class})
-    void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(Class<? extends Function<?, ?>> clazz) {
+    void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Function<?, ?>> clazz) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerFunctionClass(FailingFunction.class);
 
@@ -181,9 +184,9 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongPredicate.class, FailingPredicate.class})
-    void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(Class<? extends Predicate<?>> clazz) {
+    void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Predicate<?>> clazz) {
         //given
-        FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerPredicateClass(FailingPredicate.class);
 
@@ -198,9 +201,9 @@ class FunctionRegistryImplTest {
         }
     }
 
-    private static class FailingSupplier extends WrongSupplier {
+    private static final class FailingSupplier extends WrongSupplier {
         @NamedSupplier(FAILING)
-        private FailingSupplier(@MethodParam(NONE) String something) {
+        private FailingSupplier(@MethodParam(NONE) final String something) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }
@@ -209,14 +212,14 @@ class FunctionRegistryImplTest {
 
     private static class WrongFunction implements Function<String, String> {
         @Override
-        public String apply(String s) {
+        public String apply(final String s) {
             return null;
         }
     }
 
-    private static class FailingFunction extends WrongFunction {
+    private static final class FailingFunction extends WrongFunction {
         @NamedFunction(FAILING)
-        private FailingFunction(@MethodParam(NONE) String something) {
+        private FailingFunction(@MethodParam(NONE) final String something) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }
@@ -225,14 +228,14 @@ class FunctionRegistryImplTest {
 
     private static class WrongPredicate implements Predicate<String> {
         @Override
-        public boolean test(String s) {
+        public boolean test(final String s) {
             return false;
         }
     }
 
-    private static class FailingPredicate extends WrongPredicate {
+    private static final class FailingPredicate extends WrongPredicate {
         @NamedPredicate(FAILING)
-        private FailingPredicate(@MethodParam(NONE) String something) {
+        private FailingPredicate(@MethodParam(NONE) final String something) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }

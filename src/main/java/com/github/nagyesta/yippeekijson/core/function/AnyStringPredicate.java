@@ -15,7 +15,7 @@ public final class AnyStringPredicate implements Predicate<String> {
     }
 
     @Override
-    public boolean test(String s) {
+    public boolean test(final String s) {
         return true;
     }
 

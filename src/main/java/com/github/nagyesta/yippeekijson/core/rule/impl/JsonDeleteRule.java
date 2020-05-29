@@ -16,17 +16,17 @@ public final class JsonDeleteRule extends AbstractJsonRule {
 
     private static final String RULE_NAME = "delete";
 
-    public JsonDeleteRule(int order, JsonPath jsonPath) {
+    public JsonDeleteRule(final int order, final JsonPath jsonPath) {
         super(order, jsonPath);
     }
 
     @NamedRule(RULE_NAME)
-    public JsonDeleteRule(@SuppressWarnings("unused") FunctionRegistry functionRegistry, RawJsonRule jsonRule) {
+    public JsonDeleteRule(@SuppressWarnings("unused") final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
     }
 
     @Override
-    public void accept(DocumentContext documentContext) {
+    public void accept(final DocumentContext documentContext) {
         log.info(String.format("Deleting object at jsonPath: \"%s\".", getJsonPath().getPath()));
         documentContext.delete(getJsonPath());
     }

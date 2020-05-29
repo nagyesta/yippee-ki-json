@@ -1,0 +1,17 @@
+{
+   "accounts" : [
+      {
+         "id" : 2,
+         "firstName" : "Peter",
+         "lastName" : "Parker",
+         "processed" : "true"
+      },
+      {
+         "id" : 4,
+         "email" : "jsmith@example.com",
+         "firstName" : "John",
+         "lastName" : "Smith",
+         "processed" : "true"
+      }
+   ]
+}

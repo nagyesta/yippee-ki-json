@@ -1,0 +1,30 @@
+{
+   "accounts" : [
+      {
+         "id" : 1,
+         "email" : "johndoe@example.com",
+         "firstName" : "John",
+         "lastName" : "Doe",
+         "processed" : "true"
+      },
+      {
+         "id" : 2,
+         "email" : "spiderman@example.com",
+         "firstName" : "Peter",
+         "lastName" : "Parker",
+         "processed" : "true"
+      },
+      {
+         "id" : 3,
+         "email" : "jnedoe@example.com",
+         "lastName" : "Doe",
+         "processed" : "true"
+      },
+      {
+         "id" : 4,
+         "email" : "jsmith@example.com",
+         "lastName" : "Smith",
+         "processed" : "true"
+      }
+   ]
+}

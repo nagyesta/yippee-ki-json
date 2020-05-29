@@ -8,7 +8,7 @@ public abstract class AbstractJsonRule implements JsonRule {
     private final int order;
     private final JsonPath jsonPath;
 
-    protected AbstractJsonRule(int order, JsonPath jsonPath) {
+    protected AbstractJsonRule(final int order, final JsonPath jsonPath) {
         Assert.notNull(jsonPath, "jsonPath cannot be null.");
         this.order = order;
         this.jsonPath = jsonPath;

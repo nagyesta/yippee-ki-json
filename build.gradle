@@ -1,16 +1,22 @@
 plugins {
     id 'org.springframework.boot' version '2.3.0.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'checkstyle'
     id 'jacoco'
     id 'java'
+    id 'maven-publish'
+    //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.5.0"
 }
 
 group = 'com.github.nagyesta'
+//noinspection GroovyUnusedAssignment
 sourceCompatibility = '11'
 
 project.ext {
-    gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String)  : ''
+    //noinspection GroovyAssignabilityCheck
+    gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String) : ''
+    gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
 }
 
 versioner {
@@ -48,6 +54,11 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'com.jayway.jsonpath:json-path'
+    implementation 'javax.validation:validation-api'
+    implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'org.glassfish:javax.el'
+    implementation 'javax.el:javax.el-api'
+    implementation 'commons-io:commons-io'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -60,7 +71,11 @@ dependencies {
 dependencyManagement {
     implementation {
         dependencies {
-            dependency 'com.jayway.jsonpath:json-path:+'
+            dependency 'javax.el:javax.el-api:3.0.0'
+            dependency 'org.glassfish:javax.el:3.0.0'
+            dependency 'com.jayway.jsonpath:json-path:2.4.0'
+            dependency 'commons-io:commons-io:2.6'
+            dependency 'javax.validation:validation-api:2.0.1.Final'
         }
     }
 }
@@ -84,3 +99,56 @@ jacoco {
 }
 check.dependsOn jacocoTestCoverageVerification
 jar.dependsOn check
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.stylesheet resources.text.fromFile(rootProject.file('config/checkstyle/checkstyle-stylesheet.xsl'))
+    }
+}
+
+processResources {
+    filesMatching('application.properties') {
+        expand(project.properties)
+    }
+}
+
+springBoot {
+    buildInfo()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/nagyesta/yippee-ki-json")
+            credentials {
+                username = project.ext.gitUser
+                password = project.ext.gitToken
+            }
+        }
+    }
+    publications {
+        bootJava(MavenPublication) {
+            artifact bootJar
+            pom {
+                name = 'Yippee-Ki-JSON'
+                description = 'A minimal JSON manipulation app built on Spring Boot and JSON Path.'
+                url = 'https://github.com/nagyesta/yippee-ki-json'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'nagyesta'
+                        name = 'Istvan Zoltan Nagy'
+                    }
+                }
+            }
+        }
+    }
+}

@@ -22,7 +22,7 @@ public final class JsonAddRule extends AbstractJsonRule {
     private final Supplier<String> keySupplier;
     private final Supplier<?> valueSupplier;
 
-    public JsonAddRule(int order, JsonPath jsonPath, Supplier<String> keySupplier, Supplier<?> valueSupplier) {
+    public JsonAddRule(final int order, final JsonPath jsonPath, final Supplier<String> keySupplier, final Supplier<?> valueSupplier) {
         super(order, jsonPath);
         Assert.notNull(keySupplier, "keySupplier cannot be null.");
         Assert.notNull(valueSupplier, "valueSupplier cannot be null.");
@@ -32,16 +32,16 @@ public final class JsonAddRule extends AbstractJsonRule {
     }
 
     @NamedRule(RULE_NAME)
-    public JsonAddRule(FunctionRegistry functionRegistry, RawJsonRule jsonRule) {
+    public JsonAddRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("key")),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("value")));
     }
 
     @Override
-    public void accept(DocumentContext documentContext) {
-        String key = keySupplier.get();
-        Object value = valueSupplier.get();
+    public void accept(final DocumentContext documentContext) {
+        final String key = keySupplier.get();
+        final Object value = valueSupplier.get();
         log.info(String.format("Adding object at jsonPath: \"%s\". Key: \"%s\"", getJsonPath().getPath(), key));
         documentContext.put(getJsonPath(), key, value);
     }

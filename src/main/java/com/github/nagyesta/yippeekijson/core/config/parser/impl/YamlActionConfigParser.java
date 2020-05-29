@@ -6,12 +6,16 @@ import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonAction;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonActions;
+import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
@@ -25,27 +29,57 @@ public class YamlActionConfigParser implements ActionConfigParser {
     private final JsonRuleRegistry ruleRegistry;
 
     @Autowired
-    public YamlActionConfigParser(JsonRuleRegistry ruleRegistry) {
+    public YamlActionConfigParser(final JsonRuleRegistry ruleRegistry) {
         Assert.notNull(ruleRegistry, "ruleRegistry cannot be null.");
         this.ruleRegistry = ruleRegistry;
     }
 
     @Override
-    public JsonActions parse(InputStream stream) throws RuntimeException {
+    public JsonActions parse(final InputStream stream) throws ConfigParseException {
         Assert.notNull(stream, "stream cannot be null.");
-        final RawJsonActions rawJsonActions = parseAsRawJsonActions(stream);
+        try {
+            final RawJsonActions rawJsonActions = parseAsRawJsonActions(stream);
 
-        final int parsedActions = Optional.ofNullable(rawJsonActions).map(RawJsonActions::getActions).map(List::size).orElse(0);
-        log.info("Parsed " + parsedActions + " actions.");
+            final int parsedActions = Optional.ofNullable(rawJsonActions).map(RawJsonActions::getActions).map(List::size).orElse(0);
+            log.info("Parsed " + parsedActions + " actions.");
 
-        return convertActions(rawJsonActions);
+            return convertActions(rawJsonActions);
+        } catch (final Exception e) {
+            log.error(e.getMessage(), e);
+            throw new ConfigParseException("failed to parse configuration.", e);
+        }
     }
 
-    RawJsonActions parseAsRawJsonActions(InputStream stream) {
+    @Override
+    public JsonActions parse(final File config) throws ConfigParseException {
+        Assert.notNull(config, "config file cannot be null.");
+
+        log.info("Parsing configuration: " + config.getAbsolutePath());
+        try (FileInputStream inputStream = new FileInputStream(config)) {
+            return parse(inputStream);
+        } catch (final IOException e) {
+            log.error(e.getMessage(), e);
+            throw new ConfigParseException("IOException happened while parsing configuration file.", e);
+        }
+    }
+
+    /**
+     * Parses a stream into {@link RawJsonActions} for further processing.
+     *
+     * @param stream The input
+     * @return The parsed object
+     */
+    protected RawJsonActions parseAsRawJsonActions(final InputStream stream) {
         return new Yaml().loadAs(stream, RawJsonActions.class);
     }
 
-    JsonActions convertActions(RawJsonActions rawJsonActions) {
+    /**
+     * Converts an instance of {@link RawJsonActions} into a parsed object.
+     *
+     * @param rawJsonActions The RAW format
+     * @return the converted actions.
+     */
+    protected JsonActions convertActions(final RawJsonActions rawJsonActions) {
         final JsonActions.JsonActionsBuilder builder = JsonActions.builder();
         if (rawJsonActions != null) {
             rawJsonActions.getActions().stream()
@@ -62,13 +96,19 @@ public class YamlActionConfigParser implements ActionConfigParser {
         return actions;
     }
 
-    JsonAction convertSingleAction(RawJsonAction rawJsonAction) {
+    /**
+     * Converts a single {@link RawJsonAction} into an action.
+     *
+     * @param rawJsonAction The RAW format
+     * @return the converted action.
+     */
+    protected JsonAction convertSingleAction(final RawJsonAction rawJsonAction) {
         if (rawJsonAction == null) {
             return null;
         }
         reindexRules(rawJsonAction);
 
-        log.info("Converting " + rawJsonAction.getRules().size() + " rulse for action named: " + rawJsonAction.getName());
+        log.info("Converting " + rawJsonAction.getRules().size() + " rules for action named: " + rawJsonAction.getName());
         final JsonAction.JsonActionBuilder actionBuilder = JsonAction.builder()
                 .name(rawJsonAction.getName());
 
@@ -79,8 +119,13 @@ public class YamlActionConfigParser implements ActionConfigParser {
         return actionBuilder.build();
     }
 
-    void reindexRules(RawJsonAction a) {
-        AtomicInteger index = new AtomicInteger(0);
-        a.getRules().forEach(rule -> rule.setOrder(index.getAndIncrement()));
+    /**
+     * Reindexes rules if the given action.
+     *
+     * @param action the action holding the rules
+     */
+    protected void reindexRules(final RawJsonAction action) {
+        final AtomicInteger index = new AtomicInteger(0);
+        action.getRules().forEach(rule -> rule.setOrder(index.getAndIncrement()));
     }
 }

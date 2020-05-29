@@ -23,8 +23,8 @@ public final class JsonReplaceRule extends AbstractJsonRule {
     private final Predicate<String> predicate;
     private final Function<String, String> stringFunction;
 
-    public JsonReplaceRule(int order, JsonPath jsonPath, Predicate<String> predicate,
-                           Function<String, String> stringFunction) {
+    public JsonReplaceRule(final int order, final JsonPath jsonPath, final Predicate<String> predicate,
+                           final Function<String, String> stringFunction) {
         super(order, jsonPath);
         Assert.notNull(predicate, "predicate cannot be null.");
         Assert.notNull(stringFunction, "stringFunction cannot be null.");
@@ -33,7 +33,8 @@ public final class JsonReplaceRule extends AbstractJsonRule {
     }
 
     @NamedRule(RULE_NAME)
-    public JsonReplaceRule(FunctionRegistry functionRegistry, RawJsonRule jsonRule) {
+    @SuppressWarnings("checkstyle:AvoidInlineConditionals")
+    public JsonReplaceRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 jsonRule.getParams().containsKey("predicate")
                         ? functionRegistry.lookupPredicate(jsonRule.getParams().get("predicate"))
@@ -42,7 +43,7 @@ public final class JsonReplaceRule extends AbstractJsonRule {
     }
 
     @Override
-    public void accept(DocumentContext documentContext) {
+    public void accept(final DocumentContext documentContext) {
         documentContext.map(getJsonPath(), (currentValue, configuration) -> {
             if (currentValue instanceof String) {
                 if (predicate.test((String) currentValue)) {

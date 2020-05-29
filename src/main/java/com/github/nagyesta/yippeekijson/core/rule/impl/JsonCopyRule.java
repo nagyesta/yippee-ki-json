@@ -22,7 +22,7 @@ public final class JsonCopyRule extends AbstractJsonRule {
     private final JsonPath destination;
     private final Supplier<String> keySupplier;
 
-    public JsonCopyRule(int order, JsonPath jsonPath, JsonPath destination, Supplier<String> keySupplier) {
+    public JsonCopyRule(final int order, final JsonPath jsonPath, final JsonPath destination, final Supplier<String> keySupplier) {
         super(order, jsonPath);
         Assert.notNull(destination, "destination cannot be null.");
         Assert.notNull(keySupplier, "keySupplier cannot be null.");
@@ -32,20 +32,20 @@ public final class JsonCopyRule extends AbstractJsonRule {
     }
 
     @NamedRule(RULE_NAME)
-    public JsonCopyRule(FunctionRegistry functionRegistry, RawJsonRule jsonRule) {
+    public JsonCopyRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 JsonPath.compile(jsonRule.getParams().get("to").get("value")),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("key")));
     }
 
     @Override
-    public void accept(DocumentContext documentContext) {
+    public void accept(final DocumentContext documentContext) {
         if (!getJsonPath().isDefinite()) {
             log.error(String.format("Copy source jsonPath: \"%s\" is not definite. Ignoring.", getJsonPath().getPath()));
             return;
         }
-        String key = keySupplier.get();
-        Object value = documentContext.read(getJsonPath());
+        final String key = keySupplier.get();
+        final Object value = documentContext.read(getJsonPath());
         log.info(String.format("Copy object from: \"%s\" to: \"%s\". Key: \"%s\"", getJsonPath().getPath(), destination.getPath(), key));
         documentContext.put(destination, key, value);
     }

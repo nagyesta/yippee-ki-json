@@ -17,11 +17,12 @@ class AbstractJsonRuleTest {
 
     private static final Function<Integer, JsonRule> ORDER_TO_RULE_FUNCTION = o -> new AbstractJsonRule(o, JsonPath.compile("$")) {
         @Override
-        public void accept(DocumentContext documentContext) {
+        public void accept(final DocumentContext documentContext) {
             //noop
         }
     };
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private static Stream<Arguments> ordersProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(Stream.of(3, 2, 1, 4, 5).map(ORDER_TO_RULE_FUNCTION).collect(Collectors.toList())))
@@ -33,7 +34,7 @@ class AbstractJsonRuleTest {
 
     @ParameterizedTest
     @MethodSource("ordersProvider")
-    void testOrderingShouldSortRulesByOrderAscending(List<JsonRule> rules) {
+    void testOrderingShouldSortRulesByOrderAscending(final List<JsonRule> rules) {
         //given
 
         //when
@@ -41,7 +42,7 @@ class AbstractJsonRuleTest {
 
         //then
         int lastOrder = Integer.MIN_VALUE;
-        for (JsonRule r : rules) {
+        for (final JsonRule r : rules) {
             Assertions.assertTrue(lastOrder < r.getOrder());
             lastOrder = r.getOrder();
         }

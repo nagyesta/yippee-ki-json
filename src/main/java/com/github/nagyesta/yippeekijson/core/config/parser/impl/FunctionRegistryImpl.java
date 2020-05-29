@@ -23,9 +23,9 @@ public class FunctionRegistryImpl implements FunctionRegistry {
     private final Map<String, Constructor<? extends Predicate<?>>> namedPredicates = new HashMap<>();
     private final Map<String, Constructor<? extends Function<?, ?>>> namedFunctions = new HashMap<>();
 
-    public FunctionRegistryImpl(List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
-                                List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
-                                List<Class<? extends Predicate<?>>> autoRegisterPredicates) {
+    public FunctionRegistryImpl(final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
+                                final List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
+                                final List<Class<? extends Predicate<?>>> autoRegisterPredicates) {
         Assert.notNull(autoRegisterSuppliers, "autoRegisterSuppliers cannot be null.");
         Assert.notNull(autoRegisterFunctions, "autoRegisterFunctions cannot be null.");
         Assert.notNull(autoRegisterPredicates, "autoRegisterPredicates cannot be null.");
@@ -36,7 +36,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Supplier<T> lookupSupplier(Map<String, String> map) {
+    public <T> Supplier<T> lookupSupplier(final Map<String, String> map) {
         log.debug("Starting lookup for Supplier. " + map);
         final String name = checkNameExists(map, namedSuppliers, "No Supplier found with name: ");
         return (Supplier<T>) instantiate(map, namedSuppliers.get(name));
@@ -44,7 +44,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T, E> Function<T, E> lookupFunction(Map<String, String> map) {
+    public <T, E> Function<T, E> lookupFunction(final Map<String, String> map) {
         log.debug("Starting lookup for Function. " + map);
         final String name = checkNameExists(map, namedFunctions, "No Function found with name: ");
         return (Function<T, E>) instantiate(map, namedFunctions.get(name));
@@ -52,7 +52,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Predicate<T> lookupPredicate(Map<String, String> map) {
+    public <T> Predicate<T> lookupPredicate(final Map<String, String> map) {
         log.debug("Starting lookup for Predicate. " + map);
         final String name = checkNameExists(map, namedPredicates, "No Predicate found with name: ");
         return (Predicate<T>) instantiate(map, namedPredicates.get(name));
@@ -60,7 +60,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerSupplierClass(Class<? extends Supplier<?>> supplier) {
+    public void registerSupplierClass(final Class<? extends Supplier<?>> supplier) {
         Assert.notNull(supplier, "Supplier cannot be null.");
         log.info("Registering Supplier class: " + supplier.getName());
         findAnnotatedConstructor(supplier, NamedSupplier.class)
@@ -72,7 +72,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerFunctionClass(Class<? extends Function<?, ?>> function) {
+    public void registerFunctionClass(final Class<? extends Function<?, ?>> function) {
         Assert.notNull(function, "Function cannot be null.");
         log.info("Registering Supplier class: " + function.getName());
         findAnnotatedConstructor(function, NamedFunction.class)
@@ -84,7 +84,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerPredicateClass(Class<? extends Predicate<?>> predicate) {
+    public void registerPredicateClass(final Class<? extends Predicate<?>> predicate) {
         Assert.notNull(predicate, "Predicate cannot be null.");
         log.info("Registering Predicate class: " + predicate.getName());
         findAnnotatedConstructor(predicate, NamedPredicate.class)
@@ -94,7 +94,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
                 });
     }
 
-    private <T> String checkNameExists(Map<String, String> map, Map<String, ?> constructorMap, String s) {
+    private <T> String checkNameExists(final Map<String, String> map, final Map<String, ?> constructorMap, final String s) {
         Assert.notNull(map, "map cannot be null.");
         Assert.isTrue(map.containsKey("name"), "No name found in map.");
         final String name = map.get("name");
@@ -102,7 +102,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
         return name;
     }
 
-    private <T> T instantiate(Map<String, String> map, Constructor<? extends T> constructor) {
+    private <T> T instantiate(final Map<String, String> map, final Constructor<? extends T> constructor) {
         try {
             if (constructor.getParameters().length == 0) {
                 return constructor.newInstance();
@@ -116,14 +116,14 @@ public class FunctionRegistryImpl implements FunctionRegistry {
                     })
                     .toArray();
             return constructor.newInstance(objects);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
     private <F, T extends Annotation> void addAnnotatedConstructor(
-            Map<String, Constructor<? extends F>> map, Constructor<? extends F> constructor, Class<T> annotation,
-            Function<T, String> nameExtractorFunction) {
+            final Map<String, Constructor<? extends F>> map, final Constructor<? extends F> constructor, final Class<T> annotation,
+            final Function<T, String> nameExtractorFunction) {
         Assert.notNull(constructor.getAnnotation(annotation), "Constructor in not annotated.");
         final String name = nameExtractorFunction.apply(constructor.getAnnotation(annotation));
 
@@ -136,7 +136,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
     }
 
     private <F, T extends Annotation> Optional<Constructor<?>> findAnnotatedConstructor(
-            Class<? extends F> sourceClass, Class<T> annotation) {
+            final Class<? extends F> sourceClass, final Class<T> annotation) {
         return Arrays.stream(sourceClass.getDeclaredConstructors())
                 .filter(c -> c.isAnnotationPresent(annotation))
                 .findFirst();

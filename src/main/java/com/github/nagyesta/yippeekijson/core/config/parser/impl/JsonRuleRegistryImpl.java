@@ -19,7 +19,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
     private final Map<String, Constructor<? extends JsonRule>> namedRules = new HashMap<>();
     private final FunctionRegistry functionRegistry;
 
-    public JsonRuleRegistryImpl(FunctionRegistry functionRegistry, List<Class<? extends JsonRule>> autoRegisterRules) {
+    public JsonRuleRegistryImpl(final FunctionRegistry functionRegistry, final List<Class<? extends JsonRule>> autoRegisterRules) {
         Assert.notNull(functionRegistry, "functionRegistry cannot be null.");
         Assert.notNull(autoRegisterRules, "autoRegisterRules cannot be null.");
 
@@ -29,7 +29,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerRuleClass(Class<? extends JsonRule> rule) {
+    public void registerRuleClass(final Class<? extends JsonRule> rule) {
         Assert.notNull(rule, "rule cannot be null.");
         log.info("Registering rule class: " + rule.getName());
         findAnnotatedConstructor(rule).ifPresentOrElse(c -> addAnnotatedConstructor((Constructor<? extends JsonRule>) c),
@@ -38,7 +38,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
                 });
     }
 
-    private void addAnnotatedConstructor(Constructor<? extends JsonRule> constructor) {
+    private void addAnnotatedConstructor(final Constructor<? extends JsonRule> constructor) {
         Assert.notNull(constructor.getAnnotation(NamedRule.class), "Constructor in not annotated.");
         final String name = constructor.getAnnotation(NamedRule.class).value();
         Assert.isTrue(!namedRules.containsKey(name), "Duplicate named rule found: " + name);
@@ -52,7 +52,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
         namedRules.put(name, constructor);
     }
 
-    private Optional<Constructor<?>> findAnnotatedConstructor(Class<? extends JsonRule> rule) {
+    private Optional<Constructor<?>> findAnnotatedConstructor(final Class<? extends JsonRule> rule) {
         Assert.notNull(rule, "rule cannot be null.");
         return Arrays.stream(rule.getDeclaredConstructors())
                 .filter(c -> c.isAnnotationPresent(NamedRule.class))
@@ -60,7 +60,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
     }
 
     @Override
-    public JsonRule newInstanceFrom(RawJsonRule source) throws IllegalStateException {
+    public JsonRule newInstanceFrom(final RawJsonRule source) throws IllegalStateException {
         Assert.notNull(source, "source cannot be null");
         Assert.notNull(source.getName(), "source.name cannot be null");
         Assert.notNull(source.getOrder(), "source.order cannot be null");
@@ -73,7 +73,7 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
         try {
             log.debug("Returning instance of class: " + constructor.getDeclaringClass().getName());
             return constructor.newInstance(functionRegistry, source);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }

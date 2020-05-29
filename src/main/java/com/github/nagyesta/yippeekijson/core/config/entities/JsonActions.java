@@ -15,7 +15,7 @@ public final class JsonActions {
 
     private final Map<String, JsonAction> actions;
 
-    JsonActions(Map<String, JsonAction> actions) {
+    JsonActions(final Map<String, JsonAction> actions) {
         this.actions = actions;
     }
 
@@ -30,10 +30,12 @@ public final class JsonActions {
     @Override
     public String toString() {
         return new StringJoiner(", ", JsonActions.class.getSimpleName() + "[", "]")
-                .add("actions={\n" + actions.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining(",\n")) + "\n}")
+                .add("actions={\n" + actions.entrySet().stream()
+                        .map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining(",\n")) + "\n}")
                 .toString();
     }
 
+    @SuppressWarnings({"UnusedReturnValue", "checkstyle:HiddenField", "checkstyle:DesignForExtension"})
     public static class JsonActionsBuilder {
         private Map<String, JsonAction> actions;
 
@@ -41,14 +43,14 @@ public final class JsonActions {
             reset();
         }
 
-        public JsonActionsBuilder addAction(String name, JsonAction action) {
+        public JsonActionsBuilder addAction(final String name, final JsonAction action) {
             Assert.isTrue(!this.actions.containsKey(name), "Duplicate action found: " + name);
             this.actions.put(name, action);
             return this;
         }
 
         public JsonActions build() {
-            JsonActions newInstance = new JsonActions(actions);
+            final JsonActions newInstance = new JsonActions(actions);
             reset();
             return newInstance;
         }

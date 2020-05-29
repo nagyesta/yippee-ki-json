@@ -6,6 +6,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonAction;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonActions;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
+import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import com.jayway.jsonpath.DocumentContext;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.*;
 
 class YamlActionConfigParserTest {
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private static Stream<Arguments> rawActionProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(rawAction(3), 3))
@@ -36,6 +38,7 @@ class YamlActionConfigParserTest {
                 .build();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     private static Stream<Arguments> rawActionsProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(rawActions(3), 3))
@@ -45,7 +48,7 @@ class YamlActionConfigParserTest {
                 .build();
     }
 
-    private static RawJsonActions rawActions(int total) {
+    private static RawJsonActions rawActions(final int total) {
         final List<RawJsonAction> actions = IntStream.rangeClosed(1, total)
                 .mapToObj(YamlActionConfigParserTest::rawAction)
                 .collect(Collectors.toList());
@@ -54,18 +57,18 @@ class YamlActionConfigParserTest {
         return result;
     }
 
-    private static RawJsonAction rawAction(int i) {
+    private static RawJsonAction rawAction(final int i) {
         final RawJsonAction action = new RawJsonAction();
         action.setName(actionName(i));
         action.setRules(rawRuleList(i));
         return action;
     }
 
-    private static String actionName(int i) {
+    private static String actionName(final int i) {
         return "action-name-" + i;
     }
 
-    private static List<RawJsonRule> rawRuleList(int i) {
+    private static List<RawJsonRule> rawRuleList(final int i) {
         return IntStream.rangeClosed(1, i)
                 .mapToObj(index -> {
                     final RawJsonRule rule = new RawJsonRule();
@@ -76,11 +79,11 @@ class YamlActionConfigParserTest {
                 .collect(Collectors.toList());
     }
 
-    private static String ruleName(int index) {
+    private static String ruleName(final int index) {
         return "rule-" + index;
     }
 
-    private static String pathName(int index) {
+    private static String pathName(final int index) {
         return "$.path[" + index + "]";
     }
 
@@ -93,30 +96,30 @@ class YamlActionConfigParserTest {
     }
 
     @Test
-    void testParseShouldNotParseToRawThenConvertWhenNullStreamProvided() {
+    void testParseShouldNotParseToRawThenConvertWhenNullStreamProvided() throws ConfigParseException {
         //given
-        JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
+        final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
 
         //when
-        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parse(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parse((InputStream) null));
 
         //then
         final InOrder inOrder = inOrder(underTest, jsonRuleRegistry);
-        inOrder.verify(underTest).parse(isNull());
+        inOrder.verify(underTest).parse((InputStream) isNull());
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    void testParseShouldParseToRawThenConvertWhenValidStreamProvided() {
+    void testParseShouldParseToRawThenConvertWhenValidStreamProvided() throws ConfigParseException {
         //given
-        JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
-        InputStream stream = mock(InputStream.class);
-        JsonActions expected = JsonActions.builder().build();
-        RawJsonActions rawJsonActions = new RawJsonActions();
+        final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
+        final InputStream stream = mock(InputStream.class);
+        final JsonActions expected = JsonActions.builder().build();
+        final RawJsonActions rawJsonActions = new RawJsonActions();
 
-        YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
         doReturn(expected).when(underTest).convertActions(eq(rawJsonActions));
         doReturn(rawJsonActions).when(underTest).parseAsRawJsonActions(eq(stream));
 
@@ -134,14 +137,15 @@ class YamlActionConfigParserTest {
 
     @ParameterizedTest
     @MethodSource("rawActionsProvider")
-    void testConvertActionsShouldCallConvertSingleEachTimeWhenCalledWithValidInput(RawJsonActions actions, int expectedActions) {
+    void testConvertActionsShouldCallConvertSingleEachTimeWhenCalledWithValidInput(
+            final RawJsonActions actions, final int expectedActions) {
         //given
-        JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
+        final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
         // single rule conversion can be mocked here
         doAnswer(arg -> {
-            RawJsonAction raw = arg.getArgument(0, RawJsonAction.class);
+            final RawJsonAction raw = arg.getArgument(0, RawJsonAction.class);
             return JsonAction.builder()
                     .name(raw.getName())
                     .build();
@@ -170,11 +174,11 @@ class YamlActionConfigParserTest {
 
     @ParameterizedTest
     @MethodSource("rawActionProvider")
-    void testConvertSingleActionShouldCallRegistryForEachRule(RawJsonAction action, int expectedRules) {
+    void testConvertSingleActionShouldCallRegistryForEachRule(final RawJsonAction action, final int expectedRules) {
         //given
-        JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
+        final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
         // single rule conversion can be mocked here
         when(jsonRuleRegistry.newInstanceFrom(any(RawJsonRule.class))).thenAnswer(arg -> {
             final RawJsonRule raw = arg.getArgument(0, RawJsonRule.class);
@@ -182,7 +186,7 @@ class YamlActionConfigParserTest {
             doReturn(raw.getPath()).when(path).getPath();
             return spy(new AbstractJsonRule(raw.getOrder(), path) {
                 @Override
-                public void accept(DocumentContext documentContext) {
+                public void accept(final DocumentContext documentContext) {
                 }
             });
         });
@@ -217,10 +221,10 @@ class YamlActionConfigParserTest {
     @Test
     void testReindexRulesShouldInsertIndices() {
         //given
-        JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
-        YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
 
-        RawJsonAction rawJsonAction = rawAction(10);
+        final RawJsonAction rawJsonAction = rawAction(10);
         Assertions.assertTrue(rawJsonAction.getRules().stream().allMatch(r -> r.getOrder() == null));
 
         //when
@@ -228,6 +232,5 @@ class YamlActionConfigParserTest {
 
         //then
         Assertions.assertTrue(rawJsonAction.getRules().stream().noneMatch(r -> r.getOrder() == null));
-
     }
 }

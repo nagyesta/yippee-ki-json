@@ -1,0 +1,123 @@
+
+Invalid input configuration received. Please find more information in the manual below.
+
+NAME
+    Yippee-Ki-JSON
+
+SYNOPSIS
+    java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action [--yippee.input=file]
+        [--yippee.allow-overwrite={true|false}] --yippee.output=file
+    java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action [--yippee.input=file]
+        [--yippee.allow-overwrite={true|false}] --yippee.output-directory=directory
+    java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action [--yippee.input=directory]
+            [--yippee.includes[0]=pattern] [--yippee.includes[1]=pattern] ... [--yippee.includes[N]=pattern]
+            [--yippee.excludes[0]=pattern] [--yippee.excludes[1]=pattern] ... [--yippee.excludes[N]=pattern]
+            [--yippee.allow-overwrite={true|false}] --yippee.output-directory=directory
+
+DESCRIPTION
+    Yippee-Ki-JSON is a Lightweight JSON manipulation application using Spring Boot and JSON Path as core.
+    The application uses the following main concepts to carry out the core logic:
+
+      1. A configuration YML file
+      2. Input files
+      3. An action which is defined in the YML
+      4. Output files
+
+    The configuration YML describes certain named actions which can be done to an input file. Each action
+    has a list of rules which will be applied in order one after the other to the input file when the
+    action in question is selected to be performed. As the result of each rule, certain changes can be
+    made to the JSON nodes located by the JSON Path defined in the rule. In the end, the transformed JSON
+    will be pretty-printed to the output file.
+
+EXAMPLES
+    java -jar yippee-ki-json.jar --yippee.action=filter --yippee.output=./out.json
+        Loads the default configuration file from the working directory, filters the working directory for
+        input files using the default include pattern and provided that only one input file was found (as
+        output is a single file as well) applies the "filter" action defined in the YML configuration file
+        to write it to the output.
+
+    java -jar yippee-ki-json.jar --yippee.action=filter --yippee.output-directory=./out
+        Loads the default configuration file from the working directory, filters the working directory for
+        input files using the default include pattern and applies the "filter" action defined in the YML
+        configuration file to all of the input files. Writes the result into the "./out" folder using the
+        same file path as the input was relative to the input directory.
+
+    java -jar yippee-ki-json.jar --yippee.action=filter --yippee.output-directory=./out
+        --yippee.allow-overwrite=false
+        Same as example (2) but ensures that no files will be overwritten. If an output file exists we
+        will mark it as failed but won't change the content.
+
+    java -jar yippee-ki-json.jar --yippee.action=filter --yippee.output-directory=./out
+        --yippee.includes[0]=**/*.json --yippee.excludes[0]=exclude.json
+        Same as example (2) but will include all files using '.json' as extension searching recursively
+        in the input folder except for the single exclusion: 'exclude.json'.
+
+OPTIONS
+    General options
+        --yippee.config
+            The path where the action descriptor can be located.
+            Default: actions.yml
+
+        --yippee.action
+            The name of the action we want to execute.
+
+        --yippee.input
+            The name of the input file/directory.
+            Default: ./
+
+        --yippee.allow-overwrite
+            Specifies whether we allow overwriting existing outputs.
+            Default: true
+
+        --yippee.includes[0]
+        --yippee.includes[1]..
+            Input file include wildcard patterns.
+            Default: *.json
+
+        --yippee.excludes[0]
+        --yippee.excludes[1]..
+            Input file exclude wildcard patterns.
+
+        --yippee.output
+            Output file path.
+
+        --yippee.output-directory
+            Output directory path.
+
+    Spring Boot options
+        All generic Spring Boot options are supported. Please find a few useful ones below.
+
+        --debug
+            Turn on debugging in spring Boot
+
+        --logging.level.root={DEBUG|INFO|WARN|ERROR}
+            Set logging of the whole application codebase and libraries to DEBUG/INFO/WARN/ERROR
+            What do these levels mean?
+                DEBUG
+                    Expect seeing detailed information on the parsed configuration. For example the
+                    list of rules parsed from the config file.
+                INFO
+                    Expect brief messages about the parsing and execution. e.g. the number of rules
+                    parsed from the config file.
+                WARN
+                    Expect only warnings, soft failures.
+                ERROR
+                    Lists only errors which are stopping normal execution.
+
+        --logging.level.com.github.nagyesta.yippeekijson={DEBUG|INFO|WARN|ERROR}
+            Set logging of the Yippee-Ki-JSON codebase to DEBUG/INFO/WARN/ERROR.
+
+EXIT STATUS
+        0       Successful program execution (not necessarily successful output generation).
+
+        1       Usage or parameter syntax error.
+
+        2       IO error printing the manual.
+
+        3       Configuration YML is invalid.
+
+        4       Uncaught exceptions.
+
+REFERENCES
+    Source code
+        https://github.com/nagyesta/yippee-ki-json/

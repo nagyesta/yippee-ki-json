@@ -46,10 +46,10 @@ class JsonCopyRuleTest {
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldCopyObject(String input, String from, String to, String key, String expected) {
+    void testAcceptShouldCopyObject(final String input, final String from, final String to, final String key, final String expected) {
         //given
-        DocumentContext document = new ParseContextImpl().parse(input);
-        JsonCopyRule rule = new JsonCopyRule(0, JsonPath.compile(from), JsonPath.compile(to), () -> key);
+        final DocumentContext document = new ParseContextImpl().parse(input);
+        final JsonCopyRule rule = new JsonCopyRule(0, JsonPath.compile(from), JsonPath.compile(to), () -> key);
 
         //when
         rule.accept(document);
@@ -60,7 +60,7 @@ class JsonCopyRuleTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(JsonPath path, JsonPath toPath, Supplier<String> keySupplier) {
+    void testConstructorShouldNotAllowNulls(final JsonPath path, final JsonPath toPath, final Supplier<String> keySupplier) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonCopyRule(0, path, toPath, keySupplier));
     }
 }

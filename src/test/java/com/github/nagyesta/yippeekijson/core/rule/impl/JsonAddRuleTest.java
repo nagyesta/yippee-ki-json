@@ -46,10 +46,11 @@ class JsonAddRuleTest {
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldAddNewSnippet(String input, String path, String key, Supplier<Object> insert, String expected) {
+    void testAcceptShouldAddNewSnippet(final String input, final String path, final String key,
+                                       final Supplier<Object> insert, final String expected) {
         //given
-        DocumentContext document = new ParseContextImpl().parse(input);
-        JsonAddRule rule = new JsonAddRule(0, JsonPath.compile(path), () -> key, insert);
+        final DocumentContext document = new ParseContextImpl().parse(input);
+        final JsonAddRule rule = new JsonAddRule(0, JsonPath.compile(path), () -> key, insert);
 
         //when
         rule.accept(document);
@@ -60,7 +61,8 @@ class JsonAddRuleTest {
 
     @ParameterizedTest
     @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(JsonPath path, Supplier<String> keySupplier, Supplier<Object> valueSupplier) {
+    void testConstructorShouldNotAllowNulls(final JsonPath path, final Supplier<String> keySupplier,
+                                            final Supplier<Object> valueSupplier) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonAddRule(0, path, keySupplier, valueSupplier));
     }
 }

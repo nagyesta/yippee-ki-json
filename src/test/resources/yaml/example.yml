@@ -30,7 +30,7 @@ actions:
         params:
           stringFunction:
             name: "regex"
-            pattern: '''(?<firstName>[A-Za-z\-]+), (?<lastName>[A-Za-z\-]+)'''
+            pattern: (?<firstName>[A-Za-z\-]+) (?<lastName>[A-Za-z\-]+)
             replacement: "${lastName}"
           predicate:
             name: "anyString"
@@ -39,7 +39,7 @@ actions:
         params:
           stringFunction:
             name: "regex"
-            pattern: '''(?<firstName>[A-Za-z\-]+), (?<lastName>[A-Za-z\-]+)'''
+            pattern: (?<firstName>[A-Za-z\-]+) (?<lastName>[A-Za-z\-]+)
             replacement: "${firstName}"
       - name: "rename"
         path: "$.accounts[*]"

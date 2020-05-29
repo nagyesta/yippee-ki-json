@@ -22,7 +22,8 @@ public final class JsonRenameRule extends AbstractJsonRule {
     private final Supplier<String> oldKeySupplier;
     private final Supplier<String> newKeySupplier;
 
-    public JsonRenameRule(int order, JsonPath jsonPath, Supplier<String> oldKeySupplier, Supplier<String> newKeySupplier) {
+    public JsonRenameRule(final int order, final JsonPath jsonPath, final Supplier<String> oldKeySupplier,
+                          final Supplier<String> newKeySupplier) {
         super(order, jsonPath);
         Assert.notNull(oldKeySupplier, "oldKeySupplier cannot be null.");
         Assert.notNull(newKeySupplier, "newKeySupplier cannot be null.");
@@ -32,16 +33,16 @@ public final class JsonRenameRule extends AbstractJsonRule {
     }
 
     @NamedRule(RULE_NAME)
-    public JsonRenameRule(FunctionRegistry functionRegistry, RawJsonRule jsonRule) {
+    public JsonRenameRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("oldKey")),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("newKey")));
     }
 
     @Override
-    public void accept(DocumentContext documentContext) {
-        String oldKeyName = oldKeySupplier.get();
-        String newKeyName = newKeySupplier.get();
+    public void accept(final DocumentContext documentContext) {
+        final String oldKeyName = oldKeySupplier.get();
+        final String newKeyName = newKeySupplier.get();
         if (oldKeyName.equals(newKeyName)) {
             log.info(String.format("Skipping identical key rename at jsonPath: \"%s\". OldKey: \"%s\", NewKey: \"%s\".",
                     getJsonPath().getPath(), oldKeyName, newKeyName));
@@ -51,7 +52,7 @@ public final class JsonRenameRule extends AbstractJsonRule {
                 getJsonPath().getPath(), oldKeyName, newKeyName));
         try {
             documentContext.renameKey(getJsonPath(), oldKeyName, newKeyName);
-        } catch (PathNotFoundException e) {
+        } catch (final PathNotFoundException e) {
             log.error(String.format("Failed to rename key at jsonPath: \"%s\": %s", getJsonPath().getPath(), e.getMessage()));
         }
     }

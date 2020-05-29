@@ -20,17 +20,24 @@ public class RawJsonAction {
     private List<RawJsonRule> rules;
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RawJsonAction)) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RawJsonAction)) {
+            return false;
+        }
 
-        RawJsonAction that = (RawJsonAction) o;
+        final RawJsonAction that = (RawJsonAction) o;
 
         return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return name != null ? name.hashCode() : 0;
+        if (name != null) {
+            return name.hashCode();
+        }
+        return 0;
     }
 }

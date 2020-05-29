@@ -13,7 +13,7 @@ public interface JsonRule extends Consumer<DocumentContext>, Comparable<JsonRule
     JsonPath getJsonPath();
 
     @Override
-    default int compareTo(JsonRule o) {
+    default int compareTo(final JsonRule o) {
         return Comparators.comparable().compare(getOrder(), o.getOrder());
     }
 }

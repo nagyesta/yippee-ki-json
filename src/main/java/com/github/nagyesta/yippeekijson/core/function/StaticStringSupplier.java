@@ -15,7 +15,7 @@ public final class StaticStringSupplier implements Supplier<String> {
     private final String value;
 
     @NamedSupplier("staticString")
-    public StaticStringSupplier(@MethodParam("value") String value) {
+    public StaticStringSupplier(@MethodParam("value") final String value) {
         Assert.notNull(value, "value cannot be null.");
         this.value = value;
     }

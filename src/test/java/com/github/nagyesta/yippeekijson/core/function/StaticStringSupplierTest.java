@@ -11,12 +11,12 @@ class StaticStringSupplierTest {
     @ParameterizedTest
     @EmptySource
     @ValueSource(strings = {"a", "abc", "a longer message"})
-    void testGetShouldReturnTheStaticString(String input) {
+    void testGetShouldReturnTheStaticString(final String input) {
         //given
-        StaticStringSupplier underTest = new StaticStringSupplier(input);
+        final StaticStringSupplier underTest = new StaticStringSupplier(input);
 
         //when
-        String actual = underTest.get();
+        final String actual = underTest.get();
 
         //then
         Assertions.assertEquals(input, actual);
