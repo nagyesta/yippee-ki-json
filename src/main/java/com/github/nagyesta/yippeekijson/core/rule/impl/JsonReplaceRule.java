@@ -7,8 +7,8 @@ import com.github.nagyesta.yippeekijson.core.function.AnyStringPredicate;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,18 +23,16 @@ public final class JsonReplaceRule extends AbstractJsonRule {
     private final Predicate<String> predicate;
     private final Function<String, String> stringFunction;
 
-    public JsonReplaceRule(final int order, final JsonPath jsonPath, final Predicate<String> predicate,
-                           final Function<String, String> stringFunction) {
+    public JsonReplaceRule(final int order, final JsonPath jsonPath, @NonNull final Predicate<String> predicate,
+                           @NonNull final Function<String, String> stringFunction) {
         super(order, jsonPath);
-        Assert.notNull(predicate, "predicate cannot be null.");
-        Assert.notNull(stringFunction, "stringFunction cannot be null.");
         this.predicate = predicate;
         this.stringFunction = stringFunction;
     }
 
     @NamedRule(RULE_NAME)
     @SuppressWarnings("checkstyle:AvoidInlineConditionals")
-    public JsonReplaceRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
+    public JsonReplaceRule(@NonNull final FunctionRegistry functionRegistry, @NonNull final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 jsonRule.getParams().containsKey("predicate")
                         ? functionRegistry.lookupPredicate(jsonRule.getParams().get("predicate"))

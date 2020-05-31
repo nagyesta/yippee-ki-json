@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.control;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
+import lombok.NonNull;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,7 +20,7 @@ public interface JsonTransformer {
      * @return The pretty-printed String of the transformed JSON.
      * @throws JsonTransformException When the transform operation is not possible.
      */
-    String transform(InputStream json, JsonAction action) throws JsonTransformException;
+    String transform(@NonNull InputStream json, @NonNull JsonAction action) throws JsonTransformException;
 
     /**
      * Applies the rules from the action parameter to the JSON file.
@@ -29,5 +30,5 @@ public interface JsonTransformer {
      * @return The pretty-printed String of the transformed JSON.
      * @throws JsonTransformException When the transform operation is not possible.
      */
-    String transform(File json, JsonAction action) throws JsonTransformException;
+    String transform(@NonNull File json, @NonNull JsonAction action) throws JsonTransformException;
 }

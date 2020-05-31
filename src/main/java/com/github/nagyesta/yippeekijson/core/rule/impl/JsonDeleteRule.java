@@ -6,6 +6,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -21,7 +22,8 @@ public final class JsonDeleteRule extends AbstractJsonRule {
     }
 
     @NamedRule(RULE_NAME)
-    public JsonDeleteRule(@SuppressWarnings("unused") final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
+    public JsonDeleteRule(@SuppressWarnings("unused") @NonNull final FunctionRegistry functionRegistry,
+                          @NonNull final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
     }
 

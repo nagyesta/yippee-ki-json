@@ -5,6 +5,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
@@ -19,18 +20,15 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
     private final Map<String, Constructor<? extends JsonRule>> namedRules = new HashMap<>();
     private final FunctionRegistry functionRegistry;
 
-    public JsonRuleRegistryImpl(final FunctionRegistry functionRegistry, final List<Class<? extends JsonRule>> autoRegisterRules) {
-        Assert.notNull(functionRegistry, "functionRegistry cannot be null.");
-        Assert.notNull(autoRegisterRules, "autoRegisterRules cannot be null.");
-
+    public JsonRuleRegistryImpl(@NonNull final FunctionRegistry functionRegistry,
+                                @NonNull final List<Class<? extends JsonRule>> rules) {
         this.functionRegistry = functionRegistry;
-        autoRegisterRules.forEach(this::registerRuleClass);
+        rules.forEach(this::registerRuleClass);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerRuleClass(final Class<? extends JsonRule> rule) {
-        Assert.notNull(rule, "rule cannot be null.");
+    public void registerRuleClass(@NonNull final Class<? extends JsonRule> rule) {
         log.info("Registering rule class: " + rule.getName());
         findAnnotatedConstructor(rule).ifPresentOrElse(c -> addAnnotatedConstructor((Constructor<? extends JsonRule>) c),
                 () -> {
@@ -52,16 +50,16 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
         namedRules.put(name, constructor);
     }
 
-    private Optional<Constructor<?>> findAnnotatedConstructor(final Class<? extends JsonRule> rule) {
-        Assert.notNull(rule, "rule cannot be null.");
+    private Optional<Constructor<?>> findAnnotatedConstructor(
+            @NonNull final Class<? extends JsonRule> rule) {
         return Arrays.stream(rule.getDeclaredConstructors())
                 .filter(c -> c.isAnnotationPresent(NamedRule.class))
                 .findFirst();
     }
 
     @Override
-    public JsonRule newInstanceFrom(final RawJsonRule source) throws IllegalStateException {
-        Assert.notNull(source, "source cannot be null");
+    public JsonRule newInstanceFrom(
+            @NonNull final RawJsonRule source) throws IllegalStateException {
         Assert.notNull(source.getName(), "source.name cannot be null");
         Assert.notNull(source.getOrder(), "source.order cannot be null");
 

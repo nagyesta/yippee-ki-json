@@ -53,6 +53,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.jayway.jsonpath:json-path'
     implementation 'javax.validation:validation-api'
     implementation 'org.hibernate.validator:hibernate-validator'
@@ -130,21 +131,30 @@ publishing {
         }
     }
     publications {
+        //noinspection GroovyAssignabilityCheck
         bootJava(MavenPublication) {
+            //noinspection GroovyAssignabilityCheck
             artifact bootJar
             pom {
+                //noinspection GroovyAssignabilityCheck
                 name = 'Yippee-Ki-JSON'
+                //noinspection GroovyAssignabilityCheck
                 description = 'A minimal JSON manipulation app built on Spring Boot and JSON Path.'
+                //noinspection GroovyAssignabilityCheck
                 url = 'https://github.com/nagyesta/yippee-ki-json'
                 licenses {
                     license {
+                        //noinspection GroovyAssignabilityCheck
                         name = 'MIT License'
+                        //noinspection GroovyAssignabilityCheck
                         url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE'
                     }
                 }
                 developers {
                     developer {
+                        //noinspection GroovyAssignabilityCheck
                         id = 'nagyesta'
+                        //noinspection GroovyAssignabilityCheck
                         name = 'Istvan Zoltan Nagy'
                     }
                 }

@@ -5,9 +5,9 @@ import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonFormatter;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 import java.io.File;
@@ -21,10 +21,7 @@ import java.nio.charset.StandardCharsets;
 public class JsonTransformerImpl implements JsonTransformer {
 
     @Override
-    public String transform(final InputStream json, final JsonAction action) throws JsonTransformException {
-        Assert.notNull(json, "JSON stream cannot be null.");
-        Assert.notNull(action, "Action cannot be null.");
-
+    public String transform(@NonNull final InputStream json, @NonNull final JsonAction action) throws JsonTransformException {
         try {
             if (action.getRules().isEmpty()) {
                 log.info("No rules found for action: " + action.getName() + ". Copying JSON without change.");
@@ -44,9 +41,7 @@ public class JsonTransformerImpl implements JsonTransformer {
     }
 
     @Override
-    public String transform(final File json, final JsonAction action) throws JsonTransformException {
-        Assert.notNull(json, "JSON file cannot be null.");
-
+    public String transform(@NonNull final File json, final JsonAction action) throws JsonTransformException {
         log.info("Processing file: " + json.getAbsolutePath() + " using action: " + action.getName());
         try (FileInputStream inputStream = new FileInputStream(json)) {
             return transform(inputStream, action);

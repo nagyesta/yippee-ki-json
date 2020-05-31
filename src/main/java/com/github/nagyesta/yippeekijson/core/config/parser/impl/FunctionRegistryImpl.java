@@ -5,6 +5,7 @@ import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
 
@@ -23,12 +24,9 @@ public class FunctionRegistryImpl implements FunctionRegistry {
     private final Map<String, Constructor<? extends Predicate<?>>> namedPredicates = new HashMap<>();
     private final Map<String, Constructor<? extends Function<?, ?>>> namedFunctions = new HashMap<>();
 
-    public FunctionRegistryImpl(final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
-                                final List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
-                                final List<Class<? extends Predicate<?>>> autoRegisterPredicates) {
-        Assert.notNull(autoRegisterSuppliers, "autoRegisterSuppliers cannot be null.");
-        Assert.notNull(autoRegisterFunctions, "autoRegisterFunctions cannot be null.");
-        Assert.notNull(autoRegisterPredicates, "autoRegisterPredicates cannot be null.");
+    public FunctionRegistryImpl(@NonNull final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
+                                @NonNull final List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
+                                @NonNull final List<Class<? extends Predicate<?>>> autoRegisterPredicates) {
         autoRegisterSuppliers.forEach(this::registerSupplierClass);
         autoRegisterFunctions.forEach(this::registerFunctionClass);
         autoRegisterPredicates.forEach(this::registerPredicateClass);
@@ -36,7 +34,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Supplier<T> lookupSupplier(final Map<String, String> map) {
+    public <T> Supplier<T> lookupSupplier(@NonNull final Map<String, String> map) {
         log.debug("Starting lookup for Supplier. " + map);
         final String name = checkNameExists(map, namedSuppliers, "No Supplier found with name: ");
         return (Supplier<T>) instantiate(map, namedSuppliers.get(name));
@@ -44,7 +42,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T, E> Function<T, E> lookupFunction(final Map<String, String> map) {
+    public <T, E> Function<T, E> lookupFunction(@NonNull final Map<String, String> map) {
         log.debug("Starting lookup for Function. " + map);
         final String name = checkNameExists(map, namedFunctions, "No Function found with name: ");
         return (Function<T, E>) instantiate(map, namedFunctions.get(name));
@@ -52,7 +50,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Predicate<T> lookupPredicate(final Map<String, String> map) {
+    public <T> Predicate<T> lookupPredicate(@NonNull final Map<String, String> map) {
         log.debug("Starting lookup for Predicate. " + map);
         final String name = checkNameExists(map, namedPredicates, "No Predicate found with name: ");
         return (Predicate<T>) instantiate(map, namedPredicates.get(name));
@@ -60,8 +58,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerSupplierClass(final Class<? extends Supplier<?>> supplier) {
-        Assert.notNull(supplier, "Supplier cannot be null.");
+    public void registerSupplierClass(@NonNull final Class<? extends Supplier<?>> supplier) {
         log.info("Registering Supplier class: " + supplier.getName());
         findAnnotatedConstructor(supplier, NamedSupplier.class)
                 .ifPresentOrElse(c -> this.addAnnotatedConstructor(namedSuppliers, (Constructor<? extends Supplier<?>>) c,
@@ -72,8 +69,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerFunctionClass(final Class<? extends Function<?, ?>> function) {
-        Assert.notNull(function, "Function cannot be null.");
+    public void registerFunctionClass(@NonNull final Class<? extends Function<?, ?>> function) {
         log.info("Registering Supplier class: " + function.getName());
         findAnnotatedConstructor(function, NamedFunction.class)
                 .ifPresentOrElse(c -> this.addAnnotatedConstructor(namedFunctions, (Constructor<? extends Function<?, ?>>) c,
@@ -84,8 +80,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerPredicateClass(final Class<? extends Predicate<?>> predicate) {
-        Assert.notNull(predicate, "Predicate cannot be null.");
+    public void registerPredicateClass(@NonNull final Class<? extends Predicate<?>> predicate) {
         log.info("Registering Predicate class: " + predicate.getName());
         findAnnotatedConstructor(predicate, NamedPredicate.class)
                 .ifPresentOrElse(c -> this.addAnnotatedConstructor(namedPredicates, (Constructor<? extends Predicate<?>>) c,
@@ -94,8 +89,7 @@ public class FunctionRegistryImpl implements FunctionRegistry {
                 });
     }
 
-    private <T> String checkNameExists(final Map<String, String> map, final Map<String, ?> constructorMap, final String s) {
-        Assert.notNull(map, "map cannot be null.");
+    private <T> String checkNameExists(@NonNull final Map<String, String> map, final Map<String, ?> constructorMap, final String s) {
         Assert.isTrue(map.containsKey("name"), "No name found in map.");
         final String name = map.get("name");
         Assert.isTrue(constructorMap.containsKey(name), s + name);
