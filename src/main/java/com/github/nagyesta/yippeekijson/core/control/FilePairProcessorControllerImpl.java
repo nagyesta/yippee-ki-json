@@ -7,6 +7,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,10 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
 
     @Autowired
     @Valid
-    public FilePairProcessorControllerImpl(final JsonTransformer jsonTransformer, final FileSetTransformer fileSetTransformer,
-                                           final ActionConfigParser configParser, final Validator validator) {
-        Assert.notNull(jsonTransformer, "jsonTransformer cannot be null.");
-        Assert.notNull(fileSetTransformer, "fileSetTransformer cannot be null.");
-        Assert.notNull(configParser, "configParser cannot be null.");
-        Assert.notNull(validator, "validator cannot be null.");
-
+    public FilePairProcessorControllerImpl(@NonNull final JsonTransformer jsonTransformer,
+                                           @NonNull final FileSetTransformer fileSetTransformer,
+                                           @NonNull final ActionConfigParser configParser,
+                                           @NonNull final Validator validator) {
         this.jsonTransformer = jsonTransformer;
         this.fileSetTransformer = fileSetTransformer;
         this.configParser = configParser;
@@ -51,7 +49,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
     }
 
     @Override
-    public void process(final RunConfig runConfig) throws ConfigParseException, ConfigValidationException {
+    public void process(@NonNull final RunConfig runConfig) throws ConfigParseException, ConfigValidationException {
         validateConfig(runConfig);
 
         final JsonActions actions = configParser.parse(runConfig.getConfigAsFile());
@@ -69,8 +67,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
                     log.warn("Overwrite is not allowed: " + value);
                     return;
                 }
-                final String transformed = jsonTransformer.transform(key, jsonAction);
-                writeToFile(value, transformed);
+                writeToFile(value, jsonTransformer.transform(key, jsonAction));
                 success.put(key, value);
             } catch (final JsonTransformException | IOException e) {
                 failure.put(key, value);
@@ -78,6 +75,10 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
             }
         });
 
+        logResults(success, failure);
+    }
+
+    private void logResults(final Map<File, File> success, final Map<File, File> failure) {
         if (log.isInfoEnabled()) {
             final String successResults = summarize(success);
             final String failureResults = summarize(failure);
@@ -89,7 +90,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
     public void validateConfig(final RunConfig runConfig) throws ConfigValidationException {
         if (runConfig == null) {
             log.error("RunConfig is null.");
-            throw new ConfigValidationException();
+            throw new ConfigValidationException("RunConfig is null.");
         }
 
         final Set<ConstraintViolation<RunConfig>> violations = validator.validate(runConfig);
@@ -101,7 +102,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
                     log.error("Config validation failure: yippee: " + v.getMessage());
                 }
             });
-            throw new ConfigValidationException(violations);
+            throw new ConfigValidationException("Validation failure.", violations);
         }
     }
 

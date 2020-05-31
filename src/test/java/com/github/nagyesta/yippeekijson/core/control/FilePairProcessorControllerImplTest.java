@@ -16,10 +16,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
-import javax.validation.Validation;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test of {@link FilePairProcessorController}.
  */
+@SpringBootTest
 class FilePairProcessorControllerImplTest {
 
     private static final String ACTION = "action";
@@ -45,6 +47,9 @@ class FilePairProcessorControllerImplTest {
     private static final String EMPTY = "";
     private static final String ACTION_NAME = "action-name";
     private static final String TRANSFORMED = "transformed";
+
+    @Autowired
+    private Validator validatorBean;
 
     private static Stream<Arguments> invalidRunConfigProvider() {
         return Stream.<Arguments>builder()
@@ -265,10 +270,9 @@ class FilePairProcessorControllerImplTest {
         final JsonTransformer jsonTransformer = mock(JsonTransformer.class);
         final FileSetTransformer fileSetTransformer = mock(FileSetTransformer.class);
         final ActionConfigParser configParser = mock(ActionConfigParser.class);
-        final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
         final FilePairProcessorController underTest = new FilePairProcessorControllerImpl(
-                jsonTransformer, fileSetTransformer, configParser, validator);
+                jsonTransformer, fileSetTransformer, configParser, validatorBean);
 
         //when
         try {

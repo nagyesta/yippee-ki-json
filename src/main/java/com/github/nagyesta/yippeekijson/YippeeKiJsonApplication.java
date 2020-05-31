@@ -4,12 +4,12 @@ import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.control.FilePairProcessorController;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,9 +25,7 @@ public class YippeeKiJsonApplication {
     private final RunConfig runConfig;
     private final FilePairProcessorController controller;
 
-    protected YippeeKiJsonApplication(final RunConfig runConfig, final FilePairProcessorController controller) {
-        Assert.notNull(runConfig, "runConfig cannot be null.");
-        Assert.notNull(controller, "controller cannot be null.");
+    protected YippeeKiJsonApplication(@NonNull final RunConfig runConfig, @NonNull final FilePairProcessorController controller) {
         this.runConfig = runConfig;
         this.controller = controller;
     }

@@ -7,10 +7,10 @@ import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonAction;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonActions;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -29,14 +29,12 @@ public class YamlActionConfigParser implements ActionConfigParser {
     private final JsonRuleRegistry ruleRegistry;
 
     @Autowired
-    public YamlActionConfigParser(final JsonRuleRegistry ruleRegistry) {
-        Assert.notNull(ruleRegistry, "ruleRegistry cannot be null.");
+    public YamlActionConfigParser(@NonNull final JsonRuleRegistry ruleRegistry) {
         this.ruleRegistry = ruleRegistry;
     }
 
     @Override
-    public JsonActions parse(final InputStream stream) throws ConfigParseException {
-        Assert.notNull(stream, "stream cannot be null.");
+    public JsonActions parse(@NonNull final InputStream stream) throws ConfigParseException {
         try {
             final RawJsonActions rawJsonActions = parseAsRawJsonActions(stream);
 
@@ -51,9 +49,7 @@ public class YamlActionConfigParser implements ActionConfigParser {
     }
 
     @Override
-    public JsonActions parse(final File config) throws ConfigParseException {
-        Assert.notNull(config, "config file cannot be null.");
-
+    public JsonActions parse(@NonNull final File config) throws ConfigParseException {
         log.info("Parsing configuration: " + config.getAbsolutePath());
         try (FileInputStream inputStream = new FileInputStream(config)) {
             return parse(inputStream);

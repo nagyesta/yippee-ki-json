@@ -99,10 +99,16 @@ class YippeeConfigValidatorTest {
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
         when(builder.addPropertyNode(anyString())).thenReturn(mock(NodeBuilderCustomizableContext.class));
 
-        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyIncludes(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyInput(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyOutputs(eq(config), eq(context), anyBoolean());
+        FileValidator configValidator = new FileValidator(CONFIG, true, true, null, false);
+        FileValidator inputValidator = mock(FileValidator.class);
+        FileValidator outputFileValidator = mock(FileValidator.class);
+        FileValidator outputDirectoryValidator = mock(FileValidator.class);
+
+        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator(configValidator, inputValidator,
+                outputFileValidator, outputDirectoryValidator));
+        doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -115,10 +121,10 @@ class YippeeConfigValidatorTest {
             verify(builder, atLeastOnce()).addPropertyNode(CONFIG);
         }
         verify(underTest).isValid(same(config), same(context));
-        verify(underTest).verifyConfig(same(config), same(context), anyBoolean());
-        verify(underTest).verifyIncludes(same(config), same(context), anyBoolean());
-        verify(underTest).verifyInput(same(config), same(context), anyBoolean());
-        verify(underTest).verifyOutputs(same(config), same(context), anyBoolean());
+        verify(underTest).verifyConfig(same(config), same(context));
+        verify(underTest).verifyIncludes(same(config), same(context));
+        verify(underTest).verifyInput(same(config), same(context));
+        verify(underTest).verifyOutputs(same(config), same(context));
         verifyNoMoreInteractions(context, builder);
     }
 
@@ -136,10 +142,16 @@ class YippeeConfigValidatorTest {
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
         when(builder.addPropertyNode(anyString())).thenReturn(mock(NodeBuilderCustomizableContext.class));
 
-        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyIncludes(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyConfig(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyOutputs(eq(config), eq(context), anyBoolean());
+        FileValidator configValidator = mock(FileValidator.class);
+        FileValidator inputValidator = new FileValidator(INPUT, true, true, null, null);
+        FileValidator outputFileValidator = mock(FileValidator.class);
+        FileValidator outputDirectoryValidator = mock(FileValidator.class);
+
+        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator(configValidator, inputValidator,
+                outputFileValidator, outputDirectoryValidator));
+        doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -152,10 +164,10 @@ class YippeeConfigValidatorTest {
             verify(builder, atLeastOnce()).addPropertyNode(INPUT);
         }
         verify(underTest).isValid(same(config), same(context));
-        verify(underTest).verifyConfig(same(config), same(context), anyBoolean());
-        verify(underTest).verifyIncludes(same(config), same(context), anyBoolean());
-        verify(underTest).verifyInput(same(config), same(context), anyBoolean());
-        verify(underTest).verifyOutputs(same(config), same(context), anyBoolean());
+        verify(underTest).verifyConfig(same(config), same(context));
+        verify(underTest).verifyIncludes(same(config), same(context));
+        verify(underTest).verifyInput(same(config), same(context));
+        verify(underTest).verifyOutputs(same(config), same(context));
         verifyNoMoreInteractions(context, builder);
     }
 
@@ -175,12 +187,18 @@ class YippeeConfigValidatorTest {
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
         when(builder.addPropertyNode(anyString())).thenReturn(mock(NodeBuilderCustomizableContext.class));
 
-        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator());
+        FileValidator configValidator = mock(FileValidator.class);
+        FileValidator inputValidator = mock(FileValidator.class);
+        FileValidator outputFileValidator = new FileValidator(OUTPUT, null, null, true, false);
+        FileValidator outputDirectoryValidator = new FileValidator(OUTPUT_DIR, null, null, true, true);
+
+        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator(configValidator, inputValidator,
+                outputFileValidator, outputDirectoryValidator));
         doReturn(inputMissing ? Optional.empty() : Optional.of(fileMock(true, true, true, singleInput)))
                 .when(underTest).getOptionalInput(eq(config));
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyIncludes(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyConfig(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyInput(eq(config), eq(context), anyBoolean());
+        doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -191,7 +209,7 @@ class YippeeConfigValidatorTest {
             verify(context, atLeastOnce()).disableDefaultConstraintViolation();
             verify(context, atLeastOnce()).buildConstraintViolationWithTemplate(anyString());
             if ((outputFile != null && outputDir != null) || (outputFile == null && outputDir == null)) {
-                verify(builder, never()).addPropertyNode(anyString());
+                verify(builder, atMostOnce()).addPropertyNode(anyString());
                 verify(builder, atLeastOnce()).addConstraintViolation();
             } else if (outputFile != null) {
                 verify(builder, atLeastOnce()).addPropertyNode(OUTPUT);
@@ -202,10 +220,10 @@ class YippeeConfigValidatorTest {
             }
         }
         verify(underTest).isValid(same(config), same(context));
-        verify(underTest).verifyConfig(same(config), same(context), anyBoolean());
-        verify(underTest).verifyIncludes(same(config), same(context), anyBoolean());
-        verify(underTest).verifyInput(same(config), same(context), anyBoolean());
-        verify(underTest).verifyOutputs(same(config), same(context), anyBoolean());
+        verify(underTest).verifyConfig(same(config), same(context));
+        verify(underTest).verifyIncludes(same(config), same(context));
+        verify(underTest).verifyInput(same(config), same(context));
+        verify(underTest).verifyOutputs(same(config), same(context));
         verifyNoMoreInteractions(context, builder);
     }
 
@@ -220,11 +238,16 @@ class YippeeConfigValidatorTest {
         final ConstraintViolationBuilder builder = mock(ConstraintViolationBuilder.class);
         when(context.buildConstraintViolationWithTemplate(anyString())).thenReturn(builder);
         when(builder.addPropertyNode(anyString())).thenReturn(mock(NodeBuilderCustomizableContext.class));
+        FileValidator configValidator = mock(FileValidator.class);
+        FileValidator inputValidator = mock(FileValidator.class);
+        FileValidator outputFileValidator = mock(FileValidator.class);
+        FileValidator outputDirectoryValidator = mock(FileValidator.class);
 
-        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyOutputs(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyConfig(eq(config), eq(context), anyBoolean());
-        doAnswer(arg -> arg.getArgument(2)).when(underTest).verifyInput(eq(config), eq(context), anyBoolean());
+        final YippeeConfigValidator underTest = spy(new YippeeConfigValidator(configValidator, inputValidator,
+                outputFileValidator, outputDirectoryValidator));
+        doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
+        doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -238,10 +261,10 @@ class YippeeConfigValidatorTest {
             verify(builder, never()).addConstraintViolation();
         }
         verify(underTest).isValid(same(config), same(context));
-        verify(underTest).verifyConfig(same(config), same(context), anyBoolean());
-        verify(underTest).verifyIncludes(same(config), same(context), anyBoolean());
-        verify(underTest).verifyInput(same(config), same(context), anyBoolean());
-        verify(underTest).verifyOutputs(same(config), same(context), anyBoolean());
+        verify(underTest).verifyConfig(same(config), same(context));
+        verify(underTest).verifyIncludes(same(config), same(context));
+        verify(underTest).verifyInput(same(config), same(context));
+        verify(underTest).verifyOutputs(same(config), same(context));
         verifyNoMoreInteractions(context, builder);
     }
 }

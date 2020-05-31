@@ -6,8 +6,8 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
 
@@ -22,17 +22,15 @@ public final class JsonCopyRule extends AbstractJsonRule {
     private final JsonPath destination;
     private final Supplier<String> keySupplier;
 
-    public JsonCopyRule(final int order, final JsonPath jsonPath, final JsonPath destination, final Supplier<String> keySupplier) {
+    public JsonCopyRule(final int order, @NonNull final JsonPath jsonPath, @NonNull final JsonPath destination,
+                        @NonNull final Supplier<String> keySupplier) {
         super(order, jsonPath);
-        Assert.notNull(destination, "destination cannot be null.");
-        Assert.notNull(keySupplier, "keySupplier cannot be null.");
-
         this.destination = destination;
         this.keySupplier = keySupplier;
     }
 
     @NamedRule(RULE_NAME)
-    public JsonCopyRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
+    public JsonCopyRule(@NonNull final FunctionRegistry functionRegistry, @NonNull final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 JsonPath.compile(jsonRule.getParams().get("to").get("value")),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("key")));

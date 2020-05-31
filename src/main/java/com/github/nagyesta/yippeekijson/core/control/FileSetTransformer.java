@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
+import lombok.NonNull;
 
 import java.io.File;
 import java.util.Map;
@@ -19,5 +20,5 @@ public interface FileSetTransformer {
      * @return A {@link Map} of {@link File}s where the input is the key and output
      * is the value.
      */
-    Map<File, File> transformToFilePairs(RunConfig runConfig);
+    Map<File, File> transformToFilePairs(@NonNull RunConfig runConfig);
 }

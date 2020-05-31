@@ -7,8 +7,8 @@ import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
 
@@ -22,18 +22,15 @@ public final class JsonRenameRule extends AbstractJsonRule {
     private final Supplier<String> oldKeySupplier;
     private final Supplier<String> newKeySupplier;
 
-    public JsonRenameRule(final int order, final JsonPath jsonPath, final Supplier<String> oldKeySupplier,
-                          final Supplier<String> newKeySupplier) {
+    public JsonRenameRule(final int order, @NonNull final JsonPath jsonPath, @NonNull final Supplier<String> oldKeySupplier,
+                          @NonNull final Supplier<String> newKeySupplier) {
         super(order, jsonPath);
-        Assert.notNull(oldKeySupplier, "oldKeySupplier cannot be null.");
-        Assert.notNull(newKeySupplier, "newKeySupplier cannot be null.");
-
         this.oldKeySupplier = oldKeySupplier;
         this.newKeySupplier = newKeySupplier;
     }
 
     @NamedRule(RULE_NAME)
-    public JsonRenameRule(final FunctionRegistry functionRegistry, final RawJsonRule jsonRule) {
+    public JsonRenameRule(@NonNull final FunctionRegistry functionRegistry, @NonNull final RawJsonRule jsonRule) {
         this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("oldKey")),
                 functionRegistry.lookupSupplier(jsonRule.getParams().get("newKey")));

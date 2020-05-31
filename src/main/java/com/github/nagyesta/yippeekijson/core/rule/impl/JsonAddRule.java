@@ -6,8 +6,8 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.function.Supplier;
 
@@ -22,11 +22,9 @@ public final class JsonAddRule extends AbstractJsonRule {
     private final Supplier<String> keySupplier;
     private final Supplier<?> valueSupplier;
 
-    public JsonAddRule(final int order, final JsonPath jsonPath, final Supplier<String> keySupplier, final Supplier<?> valueSupplier) {
+    public JsonAddRule(final int order, @NonNull final JsonPath jsonPath, @NonNull final Supplier<String> keySupplier,
+                       @NonNull final Supplier<?> valueSupplier) {
         super(order, jsonPath);
-        Assert.notNull(keySupplier, "keySupplier cannot be null.");
-        Assert.notNull(valueSupplier, "valueSupplier cannot be null.");
-
         this.keySupplier = keySupplier;
         this.valueSupplier = valueSupplier;
     }

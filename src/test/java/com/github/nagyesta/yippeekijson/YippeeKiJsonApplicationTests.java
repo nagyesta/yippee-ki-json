@@ -33,8 +33,8 @@ class YippeeKiJsonApplicationTests {
     private static Stream<Arguments> exceptionProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(Optional.empty(), false, 0))
-                .add(Arguments.of(Optional.of(new ConfigValidationException()), false, 1))
-                .add(Arguments.of(Optional.of(new ConfigValidationException()), true, 2))
+                .add(Arguments.of(Optional.of(new ConfigValidationException(MESSAGE)), false, 1))
+                .add(Arguments.of(Optional.of(new ConfigValidationException(MESSAGE)), true, 2))
                 .add(Arguments.of(Optional.of(new ConfigParseException(MESSAGE, CAUSE)), false, 3))
                 .add(Arguments.of(Optional.of(new RuntimeException(MESSAGE, CAUSE)), false, 4))
                 .build();

@@ -1,19 +1,19 @@
-```
-Y8b    d8P db                                 88    d8P db   88888  .d888b.   .d888b.  88b    88
- Y8b  d8P  YP                                 88   d8P  YP     "8b d8P   Y8b d8P" "Y8b 888b   88
-  Y8bd8P                                      88  d8P           88 Y8b.      88     88 8888b  88
-   Y88P    88 888b.  888b.   .db.   .db.      88d88K    88      88  "Y88b.   88     88 88Y88b 88
-    88     88 88 "8b 88 "8b dP  Yb dP  Yb     88888b    88      88     "Y8b. 88     88 88 Y88b88
-    88     88 88  88 88  88 888888 888888 888 88  Y8b   88 888  88       "88 88     88 88  Y8888
-    88     88 88 d8P 88 d8P Yb.    Yb.        88   Y8b  88      8P Y8b   d8P Y8b. .d8P 88   Y888
-    88     88 888P"  888P"   "Y88   "Y88      88    Y8b 88      88  "Y888P"   "Y888P"  88    Y88
-              88     88                                       .d8P                                   
-              88     88                                     .d8P"                                    
-              88     88                                    88P"                                      
-```
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE)
-![JavaCI](https://github.com/nagyesta/yippee-ki-json/workflows/JavaCI/badge.svg?branch=master)
-[![codecov](https://codecov.io/gh/nagyesta/yippee-ki-json/branch/master/graph/badge.svg?token=HHSXCEQIDA)](https://codecov.io/gh/nagyesta/yippee-ki-json)
+![Yippee-Ki-JSON](.github/assets/yippee-ki-json_small_logo.png)
+
+---
+
+[![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE)
+[![Java version](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)
+[![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
+[![jar](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=spring&label=latest%20jar&sort=semver)](https://github.com/nagyesta/yippee-ki-json/packages/248363/versions)
+[![JavaCI](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)
+
+[![codecov](https://img.shields.io/codecov/c/github/nagyesta/yippee-ki-json?logo=codecov&token=HHSXCEQIDA)](https://codecov.io/gh/nagyesta/yippee-ki-json)
+[![code-climate-maintainability](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)
+[![code-climate-tech-debt](https://img.shields.io/codeclimate/tech-debt/nagyesta/yippee-ki-json?logo=code%20climate)](https://img.shields.io/codeclimate/tech-debt/nagyesta/yippee-ki-json?logo=code%20climate)
+[![last_commit](https://img.shields.io/github/last-commit/nagyesta/yippee-ki-json?logo=git)](https://img.shields.io/github/last-commit/nagyesta/yippee-ki-json?logo=git)
+
+--- 
 
 Yippee-Ki-JSON is the perfect library for die-hard CLI users who need to script JSON document manipulations to eliminate
 slow and error prone operations.
@@ -53,9 +53,9 @@ _Yippee-Ki-JSON_ is a Lightweight JSON manipulation application using [Spring Bo
 4. Output files
 
 The configuration YML describes certain named actions which can be done to an input file. Each action has a list of rules which will be
-applied in order one after the other to the input file when the action in question is selected to be performed. As the result of each rule,
-certain changes can be made to the JSON nodes located by the JSON Path defined in the rule. In the end, the transformed JSON will be
-pretty-printed to the output file.
+applied in the order they were configured one after the other to the input file when the action in question is selected to be performed. 
+As the result of each rule, certain changes can be made to the JSON nodes located by the JSON Path defined in the rule. In the end, the 
+transformed JSON will be pretty-printed to the output file.
 
 #### Examples
 ```bash

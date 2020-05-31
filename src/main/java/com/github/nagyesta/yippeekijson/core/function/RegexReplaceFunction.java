@@ -2,8 +2,8 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.Assert;
 
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -23,9 +23,8 @@ public final class RegexReplaceFunction implements Function<String, String> {
     private final String replacement;
 
     @NamedFunction("regex")
-    public RegexReplaceFunction(@MethodParam("pattern") final String pattern, @MethodParam("replacement") final String replacement) {
-        Assert.notNull(pattern, "pattern cannot be null.");
-        Assert.notNull(replacement, "replacement cannot be null.");
+    public RegexReplaceFunction(@NonNull @MethodParam("pattern") final String pattern,
+                                @NonNull @MethodParam("replacement") final String replacement) {
         this.pattern = Pattern.compile(pattern);
         this.replacement = replacement;
     }

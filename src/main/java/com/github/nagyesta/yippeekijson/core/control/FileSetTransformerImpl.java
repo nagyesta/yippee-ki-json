@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
@@ -22,9 +23,7 @@ public class FileSetTransformerImpl implements FileSetTransformer {
     private static final String EMPTY = "";
 
     @Override
-    public Map<File, File> transformToFilePairs(final RunConfig runConfig) {
-        Assert.notNull(runConfig, "Run config cannot be null.");
-
+    public Map<File, File> transformToFilePairs(@NonNull final RunConfig runConfig) {
         final File inputAsFile = runConfig.getInputAsFile();
         final List<File> toTransform = compileInputList(runConfig, inputAsFile);
 
@@ -75,15 +74,21 @@ public class FileSetTransformerImpl implements FileSetTransformer {
     private List<File> compileInputList(final RunConfig runConfig, final File inputAsFile) {
         final List<File> toTransform;
         if (inputAsFile.isDirectory()) {
-            final File[] files = inputAsFile.listFiles(runConfig.getWildcardFileFilter());
-            if (files != null && files.length > 0) {
-                toTransform = Arrays.asList(files);
-            } else {
-                toTransform = Collections.emptyList();
-                log.warn("No file matched the include-exclude filters.");
-            }
+            toTransform = filterDirectory(runConfig, inputAsFile);
         } else {
             toTransform = Collections.singletonList(inputAsFile);
+        }
+        return toTransform;
+    }
+
+    private List<File> filterDirectory(final RunConfig runConfig, final File inputAsFile) {
+        List<File> toTransform;
+        final File[] files = inputAsFile.listFiles(runConfig.getWildcardFileFilter());
+        if (files != null && files.length > 0) {
+            toTransform = Arrays.asList(files);
+        } else {
+            toTransform = Collections.emptyList();
+            log.warn("No file matched the include-exclude filters.");
         }
         return toTransform;
     }

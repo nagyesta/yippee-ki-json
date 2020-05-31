@@ -97,6 +97,15 @@ public class RunConfig {
     }
 
     /**
+     * Performs a blank-check in output.
+     *
+     * @return true is output is set
+     */
+    public boolean isOutputFileFile() {
+        return StringUtils.hasText(output);
+    }
+
+    /**
      * Returns a {@link FileFilter} matching the includes but not matching directories or the excludes.
      *
      * @return filter
