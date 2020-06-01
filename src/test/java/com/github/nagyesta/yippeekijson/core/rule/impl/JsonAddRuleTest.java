@@ -32,18 +32,6 @@ class JsonAddRuleTest {
         );
     }
 
-    private static Stream<Arguments> invalidInputProvider() {
-        return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(JsonPath.compile(ROOT), null, null))
-                .add(Arguments.of(null, NULL_SUPPLIER, null))
-                .add(Arguments.of(null, null, MAP_SUPPLIER_C_BAR))
-                .add(Arguments.of(JsonPath.compile(ROOT), NULL_SUPPLIER, null))
-                .add(Arguments.of(JsonPath.compile(ROOT), null, MAP_SUPPLIER_C_BAR))
-                .add(Arguments.of(null, NULL_SUPPLIER, MAP_SUPPLIER_C_BAR))
-                .build();
-    }
-
     @ParameterizedTest
     @MethodSource("validInputProvider")
     void testAcceptShouldAddNewSnippet(final String input, final String path, final String key,
@@ -57,12 +45,5 @@ class JsonAddRuleTest {
 
         //then
         Assertions.assertEquals(expected, document.jsonString());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(final JsonPath path, final Supplier<String> keySupplier,
-                                            final Supplier<Object> valueSupplier) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonAddRule(0, path, keySupplier, valueSupplier));
     }
 }

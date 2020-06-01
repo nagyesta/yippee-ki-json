@@ -32,18 +32,6 @@ class JsonCopyRuleTest {
         );
     }
 
-    private static Stream<Arguments> invalidInputProvider() {
-        return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(JsonPath.compile(ROOT), null, null))
-                .add(Arguments.of(null, JsonPath.compile(ROOT), null))
-                .add(Arguments.of(null, null, NULL_SUPPLIER))
-                .add(Arguments.of(JsonPath.compile(ROOT), JsonPath.compile(ROOT), null))
-                .add(Arguments.of(JsonPath.compile(ROOT), null, NULL_SUPPLIER))
-                .add(Arguments.of(null, JsonPath.compile(ROOT), NULL_SUPPLIER))
-                .build();
-    }
-
     @ParameterizedTest
     @MethodSource("validInputProvider")
     void testAcceptShouldCopyObject(final String input, final String from, final String to, final String key, final String expected) {
@@ -56,11 +44,5 @@ class JsonCopyRuleTest {
 
         //then
         Assertions.assertEquals(expected, document.jsonString());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(final JsonPath path, final JsonPath toPath, final Supplier<String> keySupplier) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonCopyRule(0, path, toPath, keySupplier));
     }
 }

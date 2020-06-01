@@ -2,13 +2,17 @@ package com.github.nagyesta.yippeekijson.core.rule;
 
 import com.jayway.jsonpath.JsonPath;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Abstract superclass of {@link JsonRule} implementations.
+ */
 public abstract class AbstractJsonRule implements JsonRule {
 
     private final int order;
     private final JsonPath jsonPath;
 
-    protected AbstractJsonRule(final int order, @NonNull final JsonPath jsonPath) {
+    protected AbstractJsonRule(@NonNull final Integer order, @NonNull final JsonPath jsonPath) {
         this.order = order;
         this.jsonPath = jsonPath;
     }
@@ -19,7 +23,7 @@ public abstract class AbstractJsonRule implements JsonRule {
     }
 
     @Override
-    public JsonPath getJsonPath() {
+    public @NotNull JsonPath getJsonPath() {
         return jsonPath;
     }
 }

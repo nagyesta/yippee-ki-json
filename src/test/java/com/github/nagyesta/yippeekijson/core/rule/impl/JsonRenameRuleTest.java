@@ -31,22 +31,10 @@ class JsonRenameRuleTest {
         );
     }
 
-    private static Stream<Arguments> invalidInputProvider() {
-        return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(JsonPath.compile(ANY_NODE), null, null))
-                .add(Arguments.of(null, C, null))
-                .add(Arguments.of(null, null, C))
-                .add(Arguments.of(JsonPath.compile(ANY_NODE), C, null))
-                .add(Arguments.of(JsonPath.compile(ANY_NODE), null, C))
-                .add(Arguments.of(null, C, C))
-                .build();
-    }
-
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldRenameNodes(final String input, final String path, final Supplier<String> oldKey, final Supplier<String> newKey,
-                                     final String expected) {
+    void testAcceptShouldRenameNodes(final String input, final String path, final Supplier<String> oldKey,
+                                     final Supplier<String> newKey, final String expected) {
         //given
         final DocumentContext document = new ParseContextImpl().parse(input);
         final JsonRenameRule rule = new JsonRenameRule(0, JsonPath.compile(path), oldKey, newKey);
@@ -56,11 +44,5 @@ class JsonRenameRuleTest {
 
         //then
         Assertions.assertEquals(expected, document.jsonString());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(final JsonPath path, final Supplier<String> oldSupplier, final Supplier<String> newSupplier) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonRenameRule(0, path, oldSupplier, newSupplier));
     }
 }

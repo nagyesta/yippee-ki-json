@@ -2,8 +2,11 @@ package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RawJsonActions {
-
-   private List<RawJsonAction> actions;
+   @NonNull
+   @Valid
+   private List<RawJsonAction> actions = Collections.emptyList();
 }

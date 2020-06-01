@@ -7,8 +7,9 @@ import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.function.Supplier;
 
@@ -22,22 +23,26 @@ public final class JsonRenameRule extends AbstractJsonRule {
     private final Supplier<String> oldKeySupplier;
     private final Supplier<String> newKeySupplier;
 
-    public JsonRenameRule(final int order, @NonNull final JsonPath jsonPath, @NonNull final Supplier<String> oldKeySupplier,
-                          @NonNull final Supplier<String> newKeySupplier) {
+    @TestOnly
+    protected JsonRenameRule(@NotNull final Integer order,
+                             @NotNull final JsonPath jsonPath,
+                             @NotNull final Supplier<String> oldKeySupplier,
+                             @NotNull final Supplier<String> newKeySupplier) {
         super(order, jsonPath);
         this.oldKeySupplier = oldKeySupplier;
         this.newKeySupplier = newKeySupplier;
     }
 
     @NamedRule(RULE_NAME)
-    public JsonRenameRule(@NonNull final FunctionRegistry functionRegistry, @NonNull final RawJsonRule jsonRule) {
-        this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
-                functionRegistry.lookupSupplier(jsonRule.getParams().get("oldKey")),
-                functionRegistry.lookupSupplier(jsonRule.getParams().get("newKey")));
+    public JsonRenameRule(@NotNull final FunctionRegistry functionRegistry,
+                          @NotNull final RawJsonRule jsonRule) {
+        super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
+        this.oldKeySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("oldKey"));
+        this.newKeySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("newKey"));
     }
 
     @Override
-    public void accept(final DocumentContext documentContext) {
+    public void accept(@NotNull final DocumentContext documentContext) {
         final String oldKeyName = oldKeySupplier.get();
         final String newKeyName = newKeySupplier.get();
         if (oldKeyName.equals(newKeyName)) {

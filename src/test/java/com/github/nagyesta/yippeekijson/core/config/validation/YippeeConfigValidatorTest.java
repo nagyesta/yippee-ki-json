@@ -1,7 +1,9 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
+import com.github.nagyesta.yippeekijson.core.config.validation.YippeeConfigValidator.FailureReasonCode;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,8 +19,10 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
+@ValidYippeeConfig(messages = {
+        @MessageCode(reason = FailureReasonCode.FILE_CAN_BE_READ, message = "Message")
+})
 class YippeeConfigValidatorTest {
-
 
     private static final String CONFIG = "config";
     private static final String INPUT = "input";
@@ -85,6 +89,101 @@ class YippeeConfigValidatorTest {
                 .build();
     }
 
+    private static Object[][] nullConstructorParamProvider() {
+        return new Object[][]{
+                {null, null, null, null},
+                {mock(FileValidator.class), null, null, null},
+                {null, mock(FileValidator.class), null, null},
+                {null, null, mock(FileValidator.class), null},
+                {null, null, null, mock(FileValidator.class)},
+                {mock(FileValidator.class), mock(FileValidator.class), null, null},
+                {null, null, mock(FileValidator.class), mock(FileValidator.class)},
+                {mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class), null},
+                {mock(FileValidator.class), mock(FileValidator.class), null, mock(FileValidator.class)},
+                {mock(FileValidator.class), null, mock(FileValidator.class), mock(FileValidator.class)},
+                {null, mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class)}
+        };
+    }
+
+    private static Stream<Arguments> missingAnnotationConfigProvider() {
+        return Stream.<Arguments>builder()
+                .add(Arguments.of((Object) null))
+                .add(Arguments.of(YippeeConfigValidatorTest.class.getAnnotation(ValidYippeeConfig.class)))
+                .build();
+    }
+
+    private static Object[][] nullIsValidProvider() {
+        return new Object[][] {
+                {null, null},
+                {new RunConfig(), null},
+                {null, mock(ConstraintValidatorContext.class)}
+        };
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullConstructorParamProvider")
+    void testConstructorShouldThrowExceptionWhenCalledWithNulls(final FileValidator configValidator,
+                                                                final FileValidator inputValidator,
+                                                                final FileValidator outputValidator,
+                                                                final FileValidator outputDirValidator) {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                new YippeeConfigValidator(configValidator, inputValidator, outputValidator, outputDirValidator));
+    }
+
+    @ParameterizedTest
+    @MethodSource("missingAnnotationConfigProvider")
+    void testInitializeShouldThrowExceptionWhenCalledWithMissingMessages(final ValidYippeeConfig validYippeeConfig) {
+        //given
+        final YippeeConfigValidator underTest = new YippeeConfigValidator(mock(FileValidator.class),
+                mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class));
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.initialize(validYippeeConfig));
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullIsValidProvider")
+    void testIsValidShouldThrowExceptionWhenCalledWithNulls(final RunConfig config, final ConstraintValidatorContext context) {
+        //given
+        final YippeeConfigValidator underTest = new YippeeConfigValidator(mock(FileValidator.class),
+                mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.isValid(config, context));
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullIsValidProvider")
+    void testVerifyMethodsShouldThrowExceptionWhenCalledWithNulls(final RunConfig config, final ConstraintValidatorContext context) {
+        //given
+        final YippeeConfigValidator underTest = new YippeeConfigValidator(mock(FileValidator.class),
+                mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.verifyConfig(config, context));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.verifyIncludes(config, context));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.verifyInput(config, context));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.verifyOutputs(config, context));
+    }
+
+    @Test
+    void testCallingIsValidShouldThrowExceptionWhenInitializeNotCalledBefore() {
+        //given
+        final YippeeConfigValidator underTest = new YippeeConfigValidator(mock(FileValidator.class),
+                mock(FileValidator.class), mock(FileValidator.class), mock(FileValidator.class));
+
+        //when + then exception
+        Assertions.assertThrows(IllegalStateException.class, () ->
+                underTest.isValid(new RunConfig(), mock(ConstraintValidatorContext.class)));
+    }
+
     @ParameterizedTest
     @MethodSource("configFileProvider")
     void testVerifyConfig(final String configFile, final boolean exists, final boolean canRead,
@@ -109,6 +208,8 @@ class YippeeConfigValidatorTest {
         doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
         doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
         doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -152,6 +253,8 @@ class YippeeConfigValidatorTest {
         doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
         doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
         doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -199,6 +302,8 @@ class YippeeConfigValidatorTest {
         doReturn(true).when(underTest).verifyIncludes(eq(config), eq(context));
         doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
         doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
 
         //when
         final boolean actual = underTest.isValid(config, context);
@@ -248,6 +353,8 @@ class YippeeConfigValidatorTest {
         doReturn(true).when(underTest).verifyOutputs(eq(config), eq(context));
         doReturn(true).when(underTest).verifyConfig(eq(config), eq(context));
         doReturn(true).when(underTest).verifyInput(eq(config), eq(context));
+
+        underTest.initialize(RunConfig.class.getAnnotation(ValidYippeeConfig.class));
 
         //when
         final boolean actual = underTest.isValid(config, context);

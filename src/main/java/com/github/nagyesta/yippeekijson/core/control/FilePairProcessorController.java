@@ -4,6 +4,7 @@ import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Entry point to the file processing. Implementations contain the main logic of the operation.
@@ -25,5 +26,5 @@ public interface FilePairProcessorController {
      * @param runConfig The parameter containing the inputs for the file transformation.
      * @throws ConfigValidationException When the {@link RunConfig} is invalid.
      */
-    void validateConfig(RunConfig runConfig) throws ConfigValidationException;
+    void validateConfig(@Nullable RunConfig runConfig) throws ConfigValidationException;
 }

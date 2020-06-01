@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidYippeeConfig;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.io.filefilter.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -15,10 +16,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
-@ValidYippeeConfig(message = "Configuration is invalid.")
+@ValidYippeeConfig
 @Configuration
 @ConfigurationProperties(prefix = "yippee", ignoreUnknownFields = false)
 public class RunConfig {
@@ -41,7 +43,7 @@ public class RunConfig {
     public RunConfig() {
     }
 
-    RunConfig(final RunConfigBuilder builder) {
+    RunConfig(@NonNull final RunConfigBuilder builder) {
         this.config = builder.config;
         this.action = builder.action;
         this.input = builder.input;
@@ -116,11 +118,9 @@ public class RunConfig {
     }
 
     private File optionalFile(final String file) {
-        if (file != null) {
-            return new File(file);
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(file)
+                .map(File::new)
+                .orElse(null);
     }
 
     @SuppressWarnings({"UnusedReturnValue", "checkstyle:HiddenField", "checkstyle:DesignForExtension"})

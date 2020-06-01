@@ -6,8 +6,9 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.function.Supplier;
 
@@ -22,22 +23,26 @@ public final class JsonCopyRule extends AbstractJsonRule {
     private final JsonPath destination;
     private final Supplier<String> keySupplier;
 
-    public JsonCopyRule(final int order, @NonNull final JsonPath jsonPath, @NonNull final JsonPath destination,
-                        @NonNull final Supplier<String> keySupplier) {
+    @TestOnly
+    protected JsonCopyRule(@NotNull final Integer order,
+                           @NotNull final JsonPath jsonPath,
+                           @NotNull final JsonPath destination,
+                           @NotNull final Supplier<String> keySupplier) {
         super(order, jsonPath);
         this.destination = destination;
         this.keySupplier = keySupplier;
     }
 
     @NamedRule(RULE_NAME)
-    public JsonCopyRule(@NonNull final FunctionRegistry functionRegistry, @NonNull final RawJsonRule jsonRule) {
-        this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()),
-                JsonPath.compile(jsonRule.getParams().get("to").get("value")),
-                functionRegistry.lookupSupplier(jsonRule.getParams().get("key")));
+    public JsonCopyRule(@NotNull final FunctionRegistry functionRegistry,
+                        @NotNull final RawJsonRule jsonRule) {
+        super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
+        this.destination = JsonPath.compile(jsonRule.getParams().get("to").get("value"));
+        this.keySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("key"));
     }
 
     @Override
-    public void accept(final DocumentContext documentContext) {
+    public void accept(@NotNull final DocumentContext documentContext) {
         if (!getJsonPath().isDefinite()) {
             log.error(String.format("Copy source jsonPath: \"%s\" is not definite. Ignoring.", getJsonPath().getPath()));
             return;

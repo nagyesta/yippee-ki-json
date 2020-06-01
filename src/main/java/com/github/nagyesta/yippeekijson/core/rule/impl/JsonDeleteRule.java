@@ -6,8 +6,9 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.TestOnly;
 
 /**
  * Defines a simple rule deleting nodes matching the selected {@link JsonPath}.
@@ -17,18 +18,20 @@ public final class JsonDeleteRule extends AbstractJsonRule {
 
     private static final String RULE_NAME = "delete";
 
-    public JsonDeleteRule(final int order, final JsonPath jsonPath) {
+    @TestOnly
+    protected JsonDeleteRule(@NotNull final Integer order,
+                             @NotNull final JsonPath jsonPath) {
         super(order, jsonPath);
     }
 
     @NamedRule(RULE_NAME)
-    public JsonDeleteRule(@SuppressWarnings("unused") @NonNull final FunctionRegistry functionRegistry,
-                          @NonNull final RawJsonRule jsonRule) {
-        this(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
+    public JsonDeleteRule(@SuppressWarnings("unused") @NotNull final FunctionRegistry functionRegistry,
+                          @NotNull final RawJsonRule jsonRule) {
+        super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
     }
 
     @Override
-    public void accept(final DocumentContext documentContext) {
+    public void accept(@NotNull final DocumentContext documentContext) {
         log.info(String.format("Deleting object at jsonPath: \"%s\".", getJsonPath().getPath()));
         documentContext.delete(getJsonPath());
     }

@@ -45,7 +45,6 @@ class JsonTransformerImplIntegrationTest {
         Assertions.assertEquals(expected, actual);
     }
 
-
     @Test
     void testTransformStreamShouldHandleEmptyRuleSet() throws JsonTransformException, IOException {
         //given

@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
+import lombok.NonNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,9 +14,9 @@ public class JsonAction {
     private final String name;
     private final List<JsonRule> rules;
 
-    JsonAction(final String name, final List<JsonRule> rules) {
-        this.name = name;
-        this.rules = rules;
+    JsonAction(@NonNull final JsonActionBuilder builder) {
+        this.name = builder.name;
+        this.rules = List.copyOf(builder.rules);
     }
 
     public static JsonActionBuilder builder() {
@@ -60,19 +61,19 @@ public class JsonAction {
             rules = new ArrayList<>();
         }
 
-        public JsonAction.JsonActionBuilder name(final String name) {
+        public JsonAction.JsonActionBuilder name(@NonNull final String name) {
             this.name = name;
             return this;
         }
 
-        public JsonAction.JsonActionBuilder addRule(final JsonRule rule) {
+        public JsonAction.JsonActionBuilder addRule(@NonNull final JsonRule rule) {
             this.rules.add(rule);
             Collections.sort(this.rules);
             return this;
         }
 
         public JsonAction build() {
-            final JsonAction action = new JsonAction(name, rules);
+            final JsonAction action = new JsonAction(this);
             reset();
             return action;
         }

@@ -31,6 +31,9 @@ public final class RegexReplaceFunction implements Function<String, String> {
 
     @Override
     public String apply(final String s) {
+        if (s == null) {
+            return s;
+        }
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.matches()) {
             log.warn(String.format("Pattern: \"%s\" does not match input: \"%s\". Ignoring.", pattern, s));

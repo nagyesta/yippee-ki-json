@@ -7,6 +7,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Constructor;
@@ -36,30 +37,8 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
                 });
     }
 
-    private void addAnnotatedConstructor(final Constructor<? extends JsonRule> constructor) {
-        Assert.notNull(constructor.getAnnotation(NamedRule.class), "Constructor in not annotated.");
-        final String name = constructor.getAnnotation(NamedRule.class).value();
-        Assert.isTrue(!namedRules.containsKey(name), "Duplicate named rule found: " + name);
-
-        final Parameter[] parameters = constructor.getParameters();
-        Assert.notNull(parameters, "Annotated constructor must have parameters.");
-        Assert.isTrue(parameters.length == 2, "Annotated constructor must accept FunctionRegistry and RawJsonRule.");
-        Assert.isTrue(FunctionRegistry.class.equals(parameters[0].getType()), "The 1st parameter must be the FunctionRegistry.");
-        Assert.isTrue(RawJsonRule.class.equals(parameters[1].getType()), "The 2nd parameter must be the RawJsonRule.");
-
-        namedRules.put(name, constructor);
-    }
-
-    private Optional<Constructor<?>> findAnnotatedConstructor(
-            @NonNull final Class<? extends JsonRule> rule) {
-        return Arrays.stream(rule.getDeclaredConstructors())
-                .filter(c -> c.isAnnotationPresent(NamedRule.class))
-                .findFirst();
-    }
-
     @Override
-    public JsonRule newInstanceFrom(
-            @NonNull final RawJsonRule source) throws IllegalStateException {
+    public JsonRule newInstanceFrom(@NonNull final RawJsonRule source) throws IllegalStateException {
         Assert.notNull(source.getName(), "source.name cannot be null");
         Assert.notNull(source.getOrder(), "source.order cannot be null");
 
@@ -74,5 +53,25 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    private void addAnnotatedConstructor(final Constructor<? extends JsonRule> constructor) {
+        Assert.notNull(constructor.getAnnotation(NamedRule.class), "Constructor in not annotated.");
+        final String name = constructor.getAnnotation(NamedRule.class).value();
+        Assert.isTrue(!namedRules.containsKey(name), "Duplicate named rule found: " + name);
+
+        final Parameter[] parameters = constructor.getParameters();
+        Assert.notNull(parameters, "Annotated constructor must have parameters.");
+        Assert.isTrue(parameters.length == 2, "Annotated constructor must accept FunctionRegistry and RawJsonRule.");
+        Assert.isTrue(FunctionRegistry.class.equals(parameters[0].getType()), "The 1st parameter must be the FunctionRegistry.");
+        Assert.isTrue(RawJsonRule.class.equals(parameters[1].getType()), "The 2nd parameter must be the RawJsonRule.");
+
+        namedRules.put(name, constructor);
+    }
+
+    private Optional<Constructor<?>> findAnnotatedConstructor(@NotNull final Class<? extends JsonRule> rule) {
+        return Arrays.stream(rule.getDeclaredConstructors())
+                .filter(c -> c.isAnnotationPresent(NamedRule.class))
+                .findFirst();
     }
 }

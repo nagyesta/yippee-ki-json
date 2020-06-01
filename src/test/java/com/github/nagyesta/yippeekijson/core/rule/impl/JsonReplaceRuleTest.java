@@ -35,18 +35,6 @@ class JsonReplaceRuleTest {
         );
     }
 
-    private static Stream<Arguments> invalidInputProvider() {
-        return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(JsonPath.compile(NODE_NAMED_A_ANYWHERE), null, null))
-                .add(Arguments.of(null, NON_NULL, null))
-                .add(Arguments.of(null, null, UPPER_CASE))
-                .add(Arguments.of(JsonPath.compile(NODE_NAMED_A_ANYWHERE), NON_NULL, null))
-                .add(Arguments.of(JsonPath.compile(NODE_NAMED_A_ANYWHERE), null, UPPER_CASE))
-                .add(Arguments.of(null, NON_NULL, UPPER_CASE))
-                .build();
-    }
-
     @ParameterizedTest
     @MethodSource("validInputProvider")
     void testAcceptShouldReplaceMatchingStringsOnly(final String input, final String path, final Predicate<String> matches,
@@ -60,11 +48,5 @@ class JsonReplaceRuleTest {
 
         //then
         Assertions.assertEquals(expected, document.jsonString());
-    }
-
-    @ParameterizedTest
-    @MethodSource("invalidInputProvider")
-    void testConstructorShouldNotAllowNulls(final JsonPath path, final Predicate<String> matches, final Function<String, String> replace) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonReplaceRule(0, path, matches, replace));
     }
 }

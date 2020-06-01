@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.entities;
 
+import lombok.NonNull;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
@@ -15,8 +16,8 @@ public final class JsonActions {
 
     private final Map<String, JsonAction> actions;
 
-    JsonActions(final Map<String, JsonAction> actions) {
-        this.actions = actions;
+    JsonActions(@NonNull final JsonActionsBuilder builder) {
+        this.actions = Map.copyOf(builder.actions);
     }
 
     public static JsonActionsBuilder builder() {
@@ -43,14 +44,14 @@ public final class JsonActions {
             reset();
         }
 
-        public JsonActionsBuilder addAction(final String name, final JsonAction action) {
+        public JsonActionsBuilder addAction(@NonNull final String name, @NonNull final JsonAction action) {
             Assert.isTrue(!this.actions.containsKey(name), "Duplicate action found: " + name);
             this.actions.put(name, action);
             return this;
         }
 
         public JsonActions build() {
-            final JsonActions newInstance = new JsonActions(actions);
+            final JsonActions newInstance = new JsonActions(this);
             reset();
             return newInstance;
         }
