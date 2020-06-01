@@ -10,6 +10,7 @@ import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -78,16 +79,8 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
         logResults(success, failure);
     }
 
-    private void logResults(final Map<File, File> success, final Map<File, File> failure) {
-        if (log.isInfoEnabled()) {
-            final String successResults = summarize(success);
-            final String failureResults = summarize(failure);
-            log.info("Conversion completed.\nSuccess:\n" + successResults + "\nFailed:\n" + failureResults);
-        }
-    }
-
     @Override
-    public void validateConfig(final RunConfig runConfig) throws ConfigValidationException {
+    public void validateConfig(@Nullable final RunConfig runConfig) throws ConfigValidationException {
         if (runConfig == null) {
             log.error("RunConfig is null.");
             throw new ConfigValidationException("RunConfig is null.");
@@ -113,7 +106,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
      * @param transformed the value we need to write
      * @throws IOException When the file cannot be written.
      */
-    protected void writeToFile(final File value, final String transformed) throws IOException {
+    protected void writeToFile(@NonNull final File value, @NonNull final String transformed) throws IOException {
         FileUtils.write(value, transformed, StandardCharsets.UTF_8, false);
     }
 
@@ -123,9 +116,17 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
      * @param map The result map
      * @return The String formatted representation
      */
-    protected String summarize(final Map<File, File> map) {
+    protected String summarize(@NonNull final Map<File, File> map) {
         return map.entrySet().stream()
                 .map(e -> e.getKey() + "\n -> " + e.getValue())
                 .collect(Collectors.joining("\n"));
+    }
+
+    private void logResults(final Map<File, File> success, final Map<File, File> failure) {
+        if (log.isInfoEnabled()) {
+            final String successResults = summarize(success);
+            final String failureResults = summarize(failure);
+            log.info("Conversion completed.\nSuccess:\n" + successResults + "\nFailed:\n" + failureResults);
+        }
     }
 }

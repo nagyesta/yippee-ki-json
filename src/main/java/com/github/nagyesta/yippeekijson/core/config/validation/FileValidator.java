@@ -1,9 +1,11 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
 import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.validation.ConstraintValidatorContext;
 import java.io.File;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -22,8 +24,11 @@ public class FileValidator {
 
     private final Boolean isDirectory;
 
-    public FileValidator(@NonNull final String propertyPath, final Boolean exists, final Boolean canRead,
-                         final Boolean canWrite, final Boolean isDirectory) {
+    public FileValidator(@NonNull final String propertyPath,
+                         @Nullable final Boolean exists,
+                         @Nullable final Boolean canRead,
+                         @Nullable final Boolean canWrite,
+                         @Nullable final Boolean isDirectory) {
         this.propertyPath = propertyPath;
         this.exists = exists;
         this.canRead = canRead;
@@ -34,25 +39,28 @@ public class FileValidator {
     /**
      * Validates the provided file and reports violations based on the config of this instance.
      *
-     * @param obj     The file we are validating
-     * @param context The context wher ewe report violations
+     * @param obj      The file we are validating
+     * @param context  The context where we report violations
+     * @param messages The messages we want to use when we report violations
      * @return true if the file was valid, false otherwise.
      */
-    public boolean isValid(@NonNull final File obj, @NonNull final ConstraintValidatorContext context) {
+    public boolean isValid(@NonNull final File obj,
+                           @NonNull final ConstraintValidatorContext context,
+                           @NonNull final Map<YippeeConfigValidator.FailureReasonCode, String> messages) {
         //noinspection ConstantConditions
         return Optional.of(true)
                 .map(v -> v & testFile(this.exists, obj, context, File::exists,
-                        "The specified file does not exist.",
-                        "The specified file exists but it shouldn't."))
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_DOES_NOT_EXIST),
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_EXISTS)))
                 .map(v -> v & testFile(this.canRead, obj, context, File::canRead,
-                        "The specified file cannot be read.",
-                        "The specified file can be read but it shouldn't."))
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_CANNOT_BE_READ),
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_CAN_BE_READ)))
                 .map(v -> v & testFile(this.canWrite, obj, context, File::canWrite,
-                        "The specified file cannot be written.",
-                        "The specified file can be written but it shouldn't."))
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_CANNOT_BE_WRITTEN),
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_CAN_BE_WRITTEN)))
                 .map(v -> v & testFile(this.isDirectory, obj, context, File::isDirectory,
-                        "The specified file is not a directory.",
-                        "The specified file is a directory but it shouldn't."))
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_IS_NOT_A_DIRECTORY),
+                        messages.get(YippeeConfigValidator.FailureReasonCode.FILE_IS_A_DIRECTORY)))
                 .get();
     }
 

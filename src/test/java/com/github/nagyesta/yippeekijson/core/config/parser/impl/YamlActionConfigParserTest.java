@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 
+import javax.validation.Validator;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,12 +88,21 @@ class YamlActionConfigParserTest {
         return "$.path[" + index + "]";
     }
 
-    @Test
-    void testConstructorShouldThrowExceptionWhenNullProvided() {
+    private static Object[][] nullProvider() {
+        return new Object[][] {
+                {null, null},
+                {mock(JsonRuleRegistry.class), null},
+                {null, mock(Validator.class)}
+        };
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullProvider")
+    void testConstructorShouldThrowExceptionWhenNullProvided(final JsonRuleRegistry registry, final Validator validator) {
         //given
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new YamlActionConfigParser(null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new YamlActionConfigParser(registry, validator));
     }
 
     @Test
@@ -100,7 +110,7 @@ class YamlActionConfigParserTest {
         //given
         final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
 
         //when
         Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parse((InputStream) null));
@@ -119,7 +129,7 @@ class YamlActionConfigParserTest {
         final JsonActions expected = JsonActions.builder().build();
         final RawJsonActions rawJsonActions = new RawJsonActions();
 
-        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
         doReturn(expected).when(underTest).convertActions(eq(rawJsonActions));
         doReturn(rawJsonActions).when(underTest).parseAsRawJsonActions(eq(stream));
 
@@ -142,7 +152,7 @@ class YamlActionConfigParserTest {
         //given
         final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
         // single rule conversion can be mocked here
         doAnswer(arg -> {
             final RawJsonAction raw = arg.getArgument(0, RawJsonAction.class);
@@ -178,7 +188,7 @@ class YamlActionConfigParserTest {
         //given
         final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
 
-        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
         // single rule conversion can be mocked here
         when(jsonRuleRegistry.newInstanceFrom(any(RawJsonRule.class))).thenAnswer(arg -> {
             final RawJsonRule raw = arg.getArgument(0, RawJsonRule.class);
@@ -222,7 +232,7 @@ class YamlActionConfigParserTest {
     void testReindexRulesShouldInsertIndices() {
         //given
         final JsonRuleRegistry jsonRuleRegistry = mock(JsonRuleRegistry.class);
-        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry));
+        final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
 
         final RawJsonAction rawJsonAction = rawAction(10);
         Assertions.assertTrue(rawJsonAction.getRules().stream().allMatch(r -> r.getOrder() == null));

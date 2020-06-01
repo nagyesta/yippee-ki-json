@@ -1,5 +1,8 @@
 package com.github.nagyesta.yippeekijson.core.config.parser;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,7 +20,7 @@ public interface FunctionRegistry {
      * @param <T> The type of items we need to supply.
      * @return The configured {@link Supplier}
      */
-    <T> Supplier<T> lookupSupplier(Map<String, String> map);
+    @NotNull <T> Supplier<T> lookupSupplier(Map<String, String> map);
 
     /**
      * Finds a {@link Function} based on the provided input parameters.
@@ -27,7 +30,7 @@ public interface FunctionRegistry {
      * @param <E> The destination type we want to convert to.
      * @return The configured {@link Function}
      */
-    <T, E> Function<T, E> lookupFunction(Map<String, String> map);
+    @NotNull <T, E> Function<T, E> lookupFunction(Map<String, String> map);
 
     /**
      * Finds a {@link Predicate} based on the provided input parameters.
@@ -36,26 +39,26 @@ public interface FunctionRegistry {
      * @param <T> The type of items we need to test.
      * @return The configured {@link Predicate}
      */
-    <T> Predicate<T> lookupPredicate(Map<String, String> map);
+    @NotNull <T> Predicate<T> lookupPredicate(Map<String, String> map);
 
     /**
      * Registers a {@link Supplier} implementation annotated with @{@link com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier}.
      *
      * @param supplier The class being registered.
      */
-    void registerSupplierClass(Class<? extends Supplier<?>> supplier);
+    void registerSupplierClass(@NonNull Class<? extends Supplier<?>> supplier);
 
     /**
      * Registers a {@link Function} implementation annotated with @{@link com.github.nagyesta.yippeekijson.core.annotation.NamedFunction}.
      *
      * @param function The class being registered.
      */
-    void registerFunctionClass(Class<? extends Function<?, ?>> function);
+    void registerFunctionClass(@NonNull Class<? extends Function<?, ?>> function);
 
     /**
      * Registers a {@link Predicate} implementation annotated with @{@link com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate}.
      *
      * @param predicate The class being registered.
      */
-    void registerPredicateClass(Class<? extends Predicate<?>> predicate);
+    void registerPredicateClass(@NonNull Class<? extends Predicate<?>> predicate);
 }

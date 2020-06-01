@@ -9,10 +9,13 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonActions;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -28,9 +32,13 @@ public class YamlActionConfigParser implements ActionConfigParser {
 
     private final JsonRuleRegistry ruleRegistry;
 
+    private final Validator validator;
+
     @Autowired
-    public YamlActionConfigParser(@NonNull final JsonRuleRegistry ruleRegistry) {
+    public YamlActionConfigParser(@NonNull final JsonRuleRegistry ruleRegistry,
+                                  @NonNull final Validator validator) {
         this.ruleRegistry = ruleRegistry;
+        this.validator = validator;
     }
 
     @Override
@@ -64,9 +72,17 @@ public class YamlActionConfigParser implements ActionConfigParser {
      *
      * @param stream The input
      * @return The parsed object
+     * @throws ConfigParseException when the raw data is invalid
      */
-    protected RawJsonActions parseAsRawJsonActions(final InputStream stream) {
-        return new Yaml().loadAs(stream, RawJsonActions.class);
+    protected RawJsonActions parseAsRawJsonActions(@NonNull final InputStream stream) throws ConfigParseException {
+        final RawJsonActions rawJsonActions = new Yaml().loadAs(stream, RawJsonActions.class);
+        final Set<ConstraintViolation<RawJsonActions>> violations = validator.validate(rawJsonActions);
+        if (!violations.isEmpty()) {
+            violations.forEach(violation -> log.error("Yml validation error at: " + violation.getPropertyPath()
+                    + " message: " + violation.getMessage()));
+            throw new ConfigParseException("Yaml configuration is invalid.");
+        }
+        return rawJsonActions;
     }
 
     /**
@@ -75,7 +91,7 @@ public class YamlActionConfigParser implements ActionConfigParser {
      * @param rawJsonActions The RAW format
      * @return the converted actions.
      */
-    protected JsonActions convertActions(final RawJsonActions rawJsonActions) {
+    protected JsonActions convertActions(@Nullable final RawJsonActions rawJsonActions) {
         final JsonActions.JsonActionsBuilder builder = JsonActions.builder();
         if (rawJsonActions != null) {
             rawJsonActions.getActions().stream()

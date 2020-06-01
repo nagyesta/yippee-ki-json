@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.exception;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.validation.ConstraintViolation;
 import java.util.Collections;
@@ -20,7 +21,7 @@ public class ConfigValidationException extends Exception {
      *
      * @param message A brief description about the issue.
      */
-    public ConfigValidationException(final String message) {
+    public ConfigValidationException(@NotNull final String message) {
         this(message, Collections.emptySet());
     }
 
@@ -30,7 +31,7 @@ public class ConfigValidationException extends Exception {
      * @param message    A brief description about the issue.
      * @param violations the violations causing this exception
      */
-    public ConfigValidationException(final String message, final Set<ConstraintViolation<RunConfig>> violations) {
+    public ConfigValidationException(@NotNull final String message, @NotNull final Set<ConstraintViolation<RunConfig>> violations) {
         this.message = message;
         this.violations = violations;
     }

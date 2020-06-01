@@ -41,7 +41,7 @@ public class JsonTransformerImpl implements JsonTransformer {
     }
 
     @Override
-    public String transform(@NonNull final File json, final JsonAction action) throws JsonTransformException {
+    public String transform(@NonNull final File json, @NonNull final JsonAction action) throws JsonTransformException {
         log.info("Processing file: " + json.getAbsolutePath() + " using action: " + action.getName());
         try (FileInputStream inputStream = new FileInputStream(json)) {
             return transform(inputStream, action);

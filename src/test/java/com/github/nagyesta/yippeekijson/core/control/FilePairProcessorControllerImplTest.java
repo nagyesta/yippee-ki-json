@@ -102,6 +102,22 @@ class FilePairProcessorControllerImplTest {
                 .build();
     }
 
+    private static Object[][] nullProvider() {
+        return new Object[][]{
+                {null, null, null, null},
+                {mock(JsonTransformer.class), null, null, null},
+                {null, mock(FileSetTransformer.class), null, null},
+                {null, null, mock(ActionConfigParser.class), null},
+                {null, null, null, mock(Validator.class)},
+                {mock(JsonTransformer.class), mock(FileSetTransformer.class), null, null},
+                {null, null, mock(ActionConfigParser.class), mock(Validator.class)},
+                {mock(JsonTransformer.class), mock(FileSetTransformer.class), mock(ActionConfigParser.class), null},
+                {mock(JsonTransformer.class), mock(FileSetTransformer.class), null, mock(Validator.class)},
+                {mock(JsonTransformer.class), null, mock(ActionConfigParser.class), mock(Validator.class)},
+                {null, mock(FileSetTransformer.class), mock(ActionConfigParser.class), mock(Validator.class)},
+        };
+    }
+
     @Test
     void testProcessShouldSkipWriteWhenTransformFails() throws ConfigValidationException, ConfigParseException,
             JsonTransformException, IOException {
@@ -318,5 +334,18 @@ class FilePairProcessorControllerImplTest {
         final String actual = IOUtils.toString(file.toURI(), StandardCharsets.UTF_8);
         Assertions.assertEquals(content, actual);
         FileUtils.deleteQuietly(file);
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullProvider")
+    void testConstructorShouldThrowExceptionWhenNullProvided(final JsonTransformer jsonTransformer,
+                                                             final FileSetTransformer fileSetTransformer,
+                                                             final ActionConfigParser configParser,
+                                                             final Validator validator) {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new FilePairProcessorControllerImpl(jsonTransformer, fileSetTransformer, configParser, validator));
     }
 }

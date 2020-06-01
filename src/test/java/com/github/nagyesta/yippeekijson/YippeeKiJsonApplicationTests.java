@@ -40,6 +40,24 @@ class YippeeKiJsonApplicationTests {
                 .build();
     }
 
+    private static Object[][] nullProvider() {
+        return new Object[][]{
+                {null, null},
+                {new RunConfig(), null},
+                {null, mock(FilePairProcessorController.class)}
+        };
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullProvider")
+    void testConstructorShouldThrowExceptionWhenCalledWithNulls(final RunConfig runConfig,
+                                                                final FilePairProcessorController controller) {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new YippeeKiJsonApplication(runConfig, controller));
+    }
+
     @ParameterizedTest
     @MethodSource("exceptionProvider")
     void testRunShouldReturnTheRightExitCode(@SuppressWarnings("OptionalUsedAsFieldOrParameterType") final Optional<Exception> exception,

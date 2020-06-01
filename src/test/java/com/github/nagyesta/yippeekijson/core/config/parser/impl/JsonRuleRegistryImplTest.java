@@ -56,8 +56,12 @@ class JsonRuleRegistryImplTest {
 
     private static RawJsonRule rawJsonRule(final String name, final Integer order) {
         final RawJsonRule source = new RawJsonRule();
-        source.setName(name);
-        source.setOrder(order);
+        if (name != null) {
+            source.setName(name);
+        }
+        if (order != null) {
+            source.setOrder(order);
+        }
         source.setPath(JsonRuleRegistryImplTest.PATH);
         return source;
     }

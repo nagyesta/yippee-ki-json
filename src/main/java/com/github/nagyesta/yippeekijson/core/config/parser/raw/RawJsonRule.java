@@ -1,9 +1,14 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.yippeekijson.core.config.validation.JsonPath;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -13,8 +18,15 @@ import java.util.Map;
 @Getter
 @Setter
 public class RawJsonRule {
+    @NonNull
     private Integer order;
+    @NonNull
+    @NotBlank
     private String name;
+    @NonNull
+    @JsonPath
     private String path;
-    private Map<String, Map<String, String>> params;
+    @NonNull
+    @Valid
+    private Map<String, Map<String, String>> params = Collections.emptyMap();
 }

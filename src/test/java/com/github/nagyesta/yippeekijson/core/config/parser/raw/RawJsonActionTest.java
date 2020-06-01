@@ -2,17 +2,42 @@ package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 class RawJsonActionTest {
 
+    private static final String ACTION = "action";
+
+    private static Object[][] nullProvider() {
+        return new Object[][]{
+                {null, null},
+                {ACTION, null},
+                {null, Collections.emptyList()}
+        };
+    }
+
     @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = "action")
+    @MethodSource("nullProvider")
+    void testSettersShouldThrowExceptionsWhenCalledWithNulls(final String name, final List<RawJsonRule> rules) {
+        //given
+        final RawJsonAction underTest = new RawJsonAction();
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            underTest.setName(name);
+            underTest.setRules(rules);
+        });
+    }
+
+    @ParameterizedTest
+    @EmptySource
+    @ValueSource(strings = ACTION)
     void testEqualsShouldUseOnlyName(final String name) {
         //given
         final RawJsonAction first = new RawJsonAction();
