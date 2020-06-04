@@ -41,9 +41,6 @@ public class RawJsonAction {
 
     @Override
     public int hashCode() {
-        if (name != null) {
-            return name.hashCode();
-        }
-        return 0;
+        return Objects.hash(name);
     }
 }

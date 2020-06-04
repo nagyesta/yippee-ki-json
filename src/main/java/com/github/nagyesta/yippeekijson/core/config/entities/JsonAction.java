@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,12 +10,12 @@ import java.util.stream.Collectors;
 /**
  * Represents the configuration of a single action.
  */
-public class JsonAction {
+public final class JsonAction {
 
     private final String name;
     private final List<JsonRule> rules;
 
-    JsonAction(@NonNull final JsonActionBuilder builder) {
+    private JsonAction(@NotNull final JsonActionBuilder builder) {
         this.name = builder.name;
         this.rules = List.copyOf(builder.rules);
     }

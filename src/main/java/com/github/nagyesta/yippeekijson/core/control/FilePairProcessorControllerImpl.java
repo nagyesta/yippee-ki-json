@@ -10,6 +10,7 @@ import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,6 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
     private final Validator validator;
 
     @Autowired
-    @Valid
     public FilePairProcessorControllerImpl(@NonNull final JsonTransformer jsonTransformer,
                                            @NonNull final FileSetTransformer fileSetTransformer,
                                            @NonNull final ActionConfigParser configParser,
@@ -50,7 +49,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
     }
 
     @Override
-    public void process(@NonNull final RunConfig runConfig) throws ConfigParseException, ConfigValidationException {
+    public void process(@NotNull final RunConfig runConfig) throws ConfigParseException, ConfigValidationException {
         validateConfig(runConfig);
 
         final JsonActions actions = configParser.parse(runConfig.getConfigAsFile());
@@ -106,7 +105,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
      * @param transformed the value we need to write
      * @throws IOException When the file cannot be written.
      */
-    protected void writeToFile(@NonNull final File value, @NonNull final String transformed) throws IOException {
+    protected void writeToFile(@NotNull final File value, @NotNull final String transformed) throws IOException {
         FileUtils.write(value, transformed, StandardCharsets.UTF_8, false);
     }
 
@@ -116,7 +115,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
      * @param map The result map
      * @return The String formatted representation
      */
-    protected String summarize(@NonNull final Map<File, File> map) {
+    protected String summarize(@NotNull final Map<File, File> map) {
         return map.entrySet().stream()
                 .map(e -> e.getKey() + "\n -> " + e.getValue())
                 .collect(Collectors.joining("\n"));

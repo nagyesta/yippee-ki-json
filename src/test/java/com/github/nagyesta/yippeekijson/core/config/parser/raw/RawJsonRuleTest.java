@@ -31,7 +31,7 @@ class RawJsonRuleTest {
     @ParameterizedTest
     @MethodSource("nullProvider")
     void testSettersShouldThrowExceptionsWhenCalledWithNulls(
-            final Integer order, final String name, final String path, final Map<String, Map<String, String>> params) {
+            final Integer order, final String name, final String path, final Map<String, Map<String, Object>> params) {
         //given
         final RawJsonRule underTest = new RawJsonRule();
 

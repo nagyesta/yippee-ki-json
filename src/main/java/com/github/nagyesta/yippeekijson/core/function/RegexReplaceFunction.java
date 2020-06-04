@@ -11,20 +11,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * {@link java.util.function.Function} for replacing {@link String} values using a RegExp .
+ * {@link java.util.function.Function} for replacing {@link String} values using a RegExp.
  */
 @Slf4j
 public final class RegexReplaceFunction implements Function<String, String> {
 
     private static final Pattern NAMED_GROUP_PATTERN = Pattern.compile("(?:\\$\\{(?<groupName>[a-zA-Z0-9]+)})");
     private static final String GROUP_NAME_KEY = "groupName";
+    static final String NAME = "regex";
+    static final String PARAM_PATTERN = "pattern";
+    static final String PARAM_REPLACEMENT = "replacement";
 
     private final Pattern pattern;
     private final String replacement;
 
-    @NamedFunction("regex")
-    public RegexReplaceFunction(@NonNull @MethodParam("pattern") final String pattern,
-                                @NonNull @MethodParam("replacement") final String replacement) {
+    @NamedFunction(NAME)
+    public RegexReplaceFunction(@MethodParam(PARAM_PATTERN) @NonNull final String pattern,
+                                @MethodParam(PARAM_REPLACEMENT) @NonNull final String replacement) {
         this.pattern = Pattern.compile(pattern);
         this.replacement = replacement;
     }
@@ -32,7 +35,7 @@ public final class RegexReplaceFunction implements Function<String, String> {
     @Override
     public String apply(final String s) {
         if (s == null) {
-            return s;
+            return null;
         }
         final Matcher matcher = pattern.matcher(s);
         if (!matcher.matches()) {

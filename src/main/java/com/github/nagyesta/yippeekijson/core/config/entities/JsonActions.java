@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import java.util.Collections;
@@ -16,7 +17,7 @@ public final class JsonActions {
 
     private final Map<String, JsonAction> actions;
 
-    JsonActions(@NonNull final JsonActionsBuilder builder) {
+    private JsonActions(@NotNull final JsonActionsBuilder builder) {
         this.actions = Map.copyOf(builder.actions);
     }
 

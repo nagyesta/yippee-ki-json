@@ -1,0 +1,33 @@
+actions:
+  - name: "action"
+    rules:
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          keepValue:
+            name: "notNull"
+          deleteValue:
+            name: "isNull"
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          keepKey:
+            name: "allMatch"
+            from:
+              - name: "notNull"
+              - name: "containsKey"
+                key: "name"
+              - name: "evalOn"
+                childPath: "name"
+                predicate:
+                  name: "notNull"
+              - name: "evalOn"
+                childPath: "name"
+                predicate:
+                  name: "regex"
+                  pattern: (?<firstName>[A-Za-z\-]+) (?<lastName>[A-Za-z\-]+)
+          deleteKey:
+            name: "noneMatch"
+            from:
+              - name: "notNull"
+              - name: "notNull"

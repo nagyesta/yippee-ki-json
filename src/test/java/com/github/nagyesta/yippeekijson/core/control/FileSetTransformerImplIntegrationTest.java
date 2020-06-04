@@ -103,6 +103,15 @@ class FileSetTransformerImplIntegrationTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.transformToFilePairs(runConfig));
     }
 
+    @Test
+    void testTransformToFilePairsShouldNotAllowNull() {
+        //given
+        final FileSetTransformer underTest = new FileSetTransformerImpl();
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.transformToFilePairs(null));
+    }
+
     private File gerFileResource(final String resource) {
         return new File(this.getClass().getResource(resource).getFile());
     }

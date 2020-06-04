@@ -2,7 +2,6 @@ package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidYippeeConfig;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.apache.commons.io.filefilter.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -43,7 +42,7 @@ public class RunConfig {
     public RunConfig() {
     }
 
-    RunConfig(@NonNull final RunConfigBuilder builder) {
+    private RunConfig(@org.jetbrains.annotations.NotNull final RunConfigBuilder builder) {
         this.config = builder.config;
         this.action = builder.action;
         this.input = builder.input;

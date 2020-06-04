@@ -1,6 +1,7 @@
-package com.github.nagyesta.yippeekijson.core.function;
+package com.github.nagyesta.yippeekijson.core.predicate;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.StringJoiner;
 import java.util.function.Predicate;
@@ -8,15 +9,17 @@ import java.util.function.Predicate;
 /**
  * {@link Predicate} matching any {@link String}.
  */
-public final class AnyStringPredicate implements Predicate<String> {
+public final class AnyStringPredicate implements Predicate<Object> {
 
-    @NamedPredicate("anyString")
+    static final String NAME = "anyString";
+
+    @NamedPredicate(NAME)
     public AnyStringPredicate() {
     }
 
     @Override
-    public boolean test(final String s) {
-        return true;
+    public boolean test(@Nullable final Object o) {
+        return o == null || o instanceof String;
     }
 
     @Override

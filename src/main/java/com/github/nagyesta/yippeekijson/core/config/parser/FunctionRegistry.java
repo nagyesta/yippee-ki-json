@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +21,7 @@ public interface FunctionRegistry {
      * @param <T> The type of items we need to supply.
      * @return The configured {@link Supplier}
      */
-    @NotNull <T> Supplier<T> lookupSupplier(Map<String, String> map);
+    @NotNull <T> Supplier<T> lookupSupplier(Map<String, RawConfigParam> map);
 
     /**
      * Finds a {@link Function} based on the provided input parameters.
@@ -30,16 +31,22 @@ public interface FunctionRegistry {
      * @param <E> The destination type we want to convert to.
      * @return The configured {@link Function}
      */
-    @NotNull <T, E> Function<T, E> lookupFunction(Map<String, String> map);
+    @NotNull <T, E> Function<T, E> lookupFunction(Map<String, RawConfigParam> map);
 
     /**
      * Finds a {@link Predicate} based on the provided input parameters.
      *
      * @param map The input parameters.
-     * @param <T> The type of items we need to test.
      * @return The configured {@link Predicate}
      */
-    @NotNull <T> Predicate<T> lookupPredicate(Map<String, String> map);
+    @NotNull Predicate<Object> lookupPredicate(Map<String, RawConfigParam> map);
+
+    /**
+     * Returns a {@link JsonMapper} implementation for object mapping.
+     *
+     * @return a mapper
+     */
+    JsonMapper jsonMapper();
 
     /**
      * Registers a {@link Supplier} implementation annotated with @{@link com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier}.

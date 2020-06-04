@@ -5,9 +5,12 @@ import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
-import com.github.nagyesta.yippeekijson.core.function.AnyStringPredicate;
+import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
+import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
+import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigValue;
 import com.github.nagyesta.yippeekijson.core.function.RegexReplaceFunction;
-import com.github.nagyesta.yippeekijson.core.function.StaticStringSupplier;
+import com.github.nagyesta.yippeekijson.core.predicate.AnyStringPredicate;
+import com.github.nagyesta.yippeekijson.core.supplier.StaticStringSupplier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,6 +27,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static org.mockito.Mockito.mock;
+
 class FunctionRegistryImplTest {
 
     private static final String FAILING = "failing";
@@ -32,18 +37,20 @@ class FunctionRegistryImplTest {
     private static final String NAME = "name";
     private static final String VALUE = "value";
     private static final String BLANK = " ";
-    private static final String STATIC_STRING = "staticString";
-    private static final String REGEX = "regex";
+    private static final RawConfigParam STATIC_STRING = new RawConfigValue(NAME, "staticString");
+    private static final RawConfigParam REGEX = new RawConfigValue(NAME, "regex");
     private static final String PATTERN = "pattern";
     private static final String REPLACEMENT = "replacement";
-    private static final String ANY_STRING = "anyString";
+    private static final RawConfigParam ANY_STRING = new RawConfigValue(NAME, "anyString");
 
     private static Stream<Arguments> invalidMapProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(Map.of(NAME, UNKNOWN, VALUE, VALUE), IllegalArgumentException.class))
-                .add(Arguments.of(Map.of(NAME, UNKNOWN), IllegalArgumentException.class))
-                .add(Arguments.of(Map.of(NAME, FAILING), IllegalArgumentException.class))
-                .add(Arguments.of(Map.of(NAME, FAILING, NONE, BLANK), IllegalStateException.class))
+                .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, UNKNOWN), VALUE, new RawConfigValue(NAME, VALUE)),
+                        IllegalArgumentException.class))
+                .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, UNKNOWN)), IllegalArgumentException.class))
+                .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, FAILING)), IllegalArgumentException.class))
+                .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, FAILING), NONE, new RawConfigValue(NAME, BLANK)),
+                        IllegalStateException.class))
                 .add(Arguments.of(Collections.emptyMap(), IllegalArgumentException.class))
                 .add(Arguments.of(null, IllegalArgumentException.class))
                 .build();
@@ -51,13 +58,15 @@ class FunctionRegistryImplTest {
 
     private static Stream<Arguments> nullListProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(Collections.emptyList(), null, null))
-                .add(Arguments.of(null, Collections.emptyList(), null))
-                .add(Arguments.of(null, null, Collections.emptyList()))
-                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null))
-                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList()))
-                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList()))
+                .add(Arguments.of(null, null, null, null))
+                .add(Arguments.of(Collections.emptyList(), null, null, null))
+                .add(Arguments.of(null, Collections.emptyList(), null, null))
+                .add(Arguments.of(null, null, Collections.emptyList(), null))
+                .add(Arguments.of(null, null, null, mock(JsonMapper.class)))
+                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null))
+                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null, mock(JsonMapper.class)))
+                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList(), mock(JsonMapper.class)))
+                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList(), mock(JsonMapper.class)))
                 .build();
     }
 
@@ -65,21 +74,23 @@ class FunctionRegistryImplTest {
     @MethodSource("nullListProvider")
     void testConstructorShouldFailIfNullProvided(final List<Class<? extends Supplier<?>>> suppliers,
                                                  final List<Class<? extends Function<?, ?>>> functions,
-                                                 final List<Class<? extends Predicate<?>>> predicates) {
+                                                 final List<Class<? extends Predicate<Object>>> predicates,
+                                                 final JsonMapper jsonMapper) {
         //given
-
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new FunctionRegistryImpl(suppliers, functions, predicates));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> new FunctionRegistryImpl(jsonMapper, suppliers, functions, predicates));
     }
 
     @Test
     void testLookupSupplierShouldReturnAnInstanceWhenFound() {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(List.of(StaticStringSupplier.class),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, List.of(StaticStringSupplier.class),
                 Collections.emptyList(), Collections.emptyList());
 
         //when
-        final Supplier<Object> actual = underTest.lookupSupplier(Map.of(NAME, STATIC_STRING, VALUE, VALUE));
+        final Supplier<Object> actual = underTest.lookupSupplier(Map.of(NAME, STATIC_STRING, VALUE, new RawConfigValue(NAME, VALUE)));
 
         //then
         Assertions.assertNotNull(actual);
@@ -88,10 +99,11 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(final Map<String, String> map,
+    void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(final Map<String, RawConfigParam> map,
                                                                     final Class<? extends Exception> exception) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerSupplierClass(FailingSupplier.class);
 
@@ -102,12 +114,13 @@ class FunctionRegistryImplTest {
     @Test
     void testLookupFunctionShouldReturnAnInstanceWhenFound() {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 List.of(RegexReplaceFunction.class), Collections.emptyList());
 
         //when
         final Function<Object, Object> actual = underTest.lookupFunction(
-                Map.of(NAME, REGEX, PATTERN, VALUE, REPLACEMENT, NONE));
+                Map.of(NAME, REGEX, PATTERN, new RawConfigValue(NAME, VALUE), REPLACEMENT, new RawConfigValue(NAME, NONE)));
 
         //then
         Assertions.assertNotNull(actual);
@@ -116,10 +129,11 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(final Map<String, String> map,
+    void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(final Map<String, RawConfigParam> map,
                                                                     final Class<? extends Exception> exception) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerFunctionClass(FailingFunction.class);
 
@@ -130,7 +144,8 @@ class FunctionRegistryImplTest {
     @Test
     void testLookupPredicateShouldReturnAnInstanceWhenFound() {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), List.of(AnyStringPredicate.class));
 
         //when
@@ -144,10 +159,11 @@ class FunctionRegistryImplTest {
 
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
-    void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(final Map<String, String> map,
+    void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(final Map<String, RawConfigParam> map,
                                                                       final Class<? extends Exception> exception) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerPredicateClass(FailingPredicate.class);
 
@@ -160,7 +176,8 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongSupplier.class, FailingSupplier.class})
     void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(final Class<? extends Supplier<?>> clazz) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerSupplierClass(FailingSupplier.class);
 
@@ -173,7 +190,8 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongFunction.class, FailingFunction.class})
     void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Function<?, ?>> clazz) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerFunctionClass(FailingFunction.class);
 
@@ -186,7 +204,8 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongPredicate.class, FailingPredicate.class})
     void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Predicate<?>> clazz) {
         //given
-        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
+        final JsonMapper jsonMapper = mock(JsonMapper.class);
+        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
         underTest.registerPredicateClass(FailingPredicate.class);
 
