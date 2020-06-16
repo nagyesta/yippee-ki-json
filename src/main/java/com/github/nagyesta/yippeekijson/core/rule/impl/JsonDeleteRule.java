@@ -8,7 +8,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 /**
  * Defines a simple rule deleting nodes matching the selected {@link JsonPath}.
@@ -16,13 +15,7 @@ import org.jetbrains.annotations.TestOnly;
 @Slf4j
 public final class JsonDeleteRule extends AbstractJsonRule {
 
-    private static final String RULE_NAME = "delete";
-
-    @TestOnly
-    protected JsonDeleteRule(@NotNull final Integer order,
-                             @NotNull final JsonPath jsonPath) {
-        super(order, jsonPath);
-    }
+    static final String RULE_NAME = "delete";
 
     @NamedRule(RULE_NAME)
     public JsonDeleteRule(@SuppressWarnings("unused") @NotNull final FunctionRegistry functionRegistry,

@@ -8,7 +8,6 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.function.Supplier;
 
@@ -18,27 +17,20 @@ import java.util.function.Supplier;
 @Slf4j
 public final class JsonCopyRule extends AbstractJsonRule {
 
-    private static final String RULE_NAME = "copy";
+    static final String RULE_NAME = "copy";
+    static final String PARAM_TO = "to";
+    static final String PARAM_TO_VALUE = "value";
+    static final String PARAM_KEY = "key";
 
     private final JsonPath destination;
     private final Supplier<String> keySupplier;
-
-    @TestOnly
-    protected JsonCopyRule(@NotNull final Integer order,
-                           @NotNull final JsonPath jsonPath,
-                           @NotNull final JsonPath destination,
-                           @NotNull final Supplier<String> keySupplier) {
-        super(order, jsonPath);
-        this.destination = destination;
-        this.keySupplier = keySupplier;
-    }
 
     @NamedRule(RULE_NAME)
     public JsonCopyRule(@NotNull final FunctionRegistry functionRegistry,
                         @NotNull final RawJsonRule jsonRule) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
-        this.destination = JsonPath.compile(jsonRule.getParams().get("to").get("value"));
-        this.keySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("key"));
+        this.destination = JsonPath.compile(jsonRule.configParamMap(PARAM_TO).get(PARAM_TO_VALUE).asString());
+        this.keySupplier = functionRegistry.lookupSupplier(jsonRule.configParamMap(PARAM_KEY));
     }
 
     @Override

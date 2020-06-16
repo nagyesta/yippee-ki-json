@@ -3,6 +3,7 @@ package com.github.nagyesta.yippeekijson.core.function;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class RegexReplaceFunctionTest {
 
@@ -28,7 +29,8 @@ class RegexReplaceFunctionTest {
                 {JOHN_DOE, FIRST_LAST, NOTHING, NOTHING},
                 {JOHN_DOE, FIRST_LAST, ROOT_WONT_MATCH, JOHN_DOE},
                 {JOHN_DOE, FIRST_LAST, ROOT_FIRST, JOHN},
-                {JOHN, FIRST_LAST, ROOT_WONT_MATCH, JOHN}
+                {JOHN, FIRST_LAST, ROOT_WONT_MATCH, JOHN},
+                {null, FIRST_LAST, ROOT_LAST, null}
         };
     }
 
@@ -36,7 +38,8 @@ class RegexReplaceFunctionTest {
         return new Object[][]{
                 {null, null},
                 {null, JOHN},
-                {JOHN, null}
+                {JOHN, null},
+                {ROOT_LAST, ROOT_LAST}
         };
     }
 
@@ -57,5 +60,21 @@ class RegexReplaceFunctionTest {
     @MethodSource(value = "invalidParams")
     void testConstructorShouldNotAllowNulls(final String regex, final String replacement) {
         Assertions.assertThrows(IllegalArgumentException.class, () -> new RegexReplaceFunction(regex, replacement));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {FIRST_LAST, DOE})
+    void testToStringShouldContainClassNameAndPattern(final String pattern) {
+        //given
+        final String replacement = new StringBuilder(pattern).reverse().toString();
+        final RegexReplaceFunction underTest = new RegexReplaceFunction(pattern, replacement);
+
+        //when
+        final String actual = underTest.toString();
+
+        //then
+        Assertions.assertTrue(actual.contains(RegexReplaceFunction.class.getSimpleName()));
+        Assertions.assertTrue(actual.contains(pattern));
+        Assertions.assertTrue(actual.contains(replacement));
     }
 }

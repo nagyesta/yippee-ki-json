@@ -1,17 +1,26 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
+import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
+import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.internal.ParseContextImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonReplaceRule.*;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class JsonReplaceRuleTest {
 
@@ -37,11 +46,23 @@ class JsonReplaceRuleTest {
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testAcceptShouldReplaceMatchingStringsOnly(final String input, final String path, final Predicate<String> matches,
+    void testAcceptShouldReplaceMatchingStringsOnly(final String input, final String path, final Predicate<Object> matches,
                                                     final Function<String, String> replace, final String expected) {
         //given
-        final DocumentContext document = new ParseContextImpl().parse(input);
-        final JsonReplaceRule rule = new JsonReplaceRule(0, JsonPath.compile(path), matches, replace);
+        final JsonMapper jsonMapper = new JsonMapperImpl();
+        final DocumentContext document = JsonPath.parse(input, jsonMapper.parserConfiguration());
+        RawJsonRule raw = RawJsonRule.builder()
+                .path(path)
+                .name(RULE_NAME)
+                .order(0)
+                .putParams(Map.of(PARAM_STRING_FUNCTION, Map.of(), PARAM_PREDICATE, Map.of()))
+                .build();
+
+        final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
+        when(functionRegistry.lookupFunction(anyMap())).thenReturn(s -> replace.apply((String) s));
+        when(functionRegistry.lookupPredicate(anyMap())).thenReturn(matches);
+
+        final JsonReplaceRule rule = new JsonReplaceRule(functionRegistry, raw);
 
         //when
         rule.accept(document);

@@ -5,7 +5,7 @@ name: JavaCI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -21,25 +21,10 @@ jobs:
         java-version: 11
 
     - name: Build with Gradle and publish
-      run: ./gradlew build tagVersion publish -PgithubToken=${{ secrets.PUBLISH_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
+      run: ./gradlew build systemTest tagVersion publish -PgithubToken=${{ secrets.PUBLISH_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./build/reports/jacoco/report.xml
         fail_ci_if_error: false
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v1
-      with:
-        name: jar
-        path: build/libs
-    - name: Archive test reports
-      uses: actions/upload-artifact@v1
-      with:
-        name: test-report
-        path: build/reports/tests/test
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v1
-      with:
-        name: code-coverage-report
-        path: build/reports/jacoco/test/html

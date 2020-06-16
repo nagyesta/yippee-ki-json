@@ -15,7 +15,8 @@ import java.util.stream.Stream;
 
 class AbstractJsonRuleTest {
 
-    private static final Function<Integer, JsonRule> ORDER_TO_RULE_FUNCTION = o -> new AbstractJsonRule(o, JsonPath.compile("$")) {
+    private static final JsonPath ROOT = JsonPath.compile("$");
+    private static final Function<Integer, JsonRule> ORDER_TO_RULE_FUNCTION = o -> new AbstractJsonRule(o, ROOT) {
         @Override
         public void accept(final DocumentContext documentContext) {
             //noop
@@ -29,6 +30,14 @@ class AbstractJsonRuleTest {
                 .add(Arguments.of(Stream.of(1).map(ORDER_TO_RULE_FUNCTION).collect(Collectors.toList())))
                 .add(Arguments.of(Stream.of(1, 2, 3).map(ORDER_TO_RULE_FUNCTION).collect(Collectors.toList())))
                 .add(Arguments.of(Stream.of(34, 32, 12).map(ORDER_TO_RULE_FUNCTION).collect(Collectors.toList())))
+                .build();
+    }
+
+    private static Stream<Arguments> nullProvider() {
+        return Stream.<Arguments>builder()
+                .add(Arguments.of(null, null))
+                .add(Arguments.of(null, ROOT))
+                .add(Arguments.of(0, null))
                 .build();
     }
 
@@ -46,5 +55,19 @@ class AbstractJsonRuleTest {
             Assertions.assertTrue(lastOrder < r.getOrder());
             lastOrder = r.getOrder();
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource("nullProvider")
+    void testConstructorShouldNotAllowNulls(final Integer order, final JsonPath path) {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new AbstractJsonRule(order, path) {
+            @Override
+            public void accept(final DocumentContext documentContext) {
+                //noop
+            }
+        });
     }
 }

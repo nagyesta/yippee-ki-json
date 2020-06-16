@@ -2,7 +2,7 @@
 
 ---
 
-[![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE)
+[![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE)
 [![Java version](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)
 [![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
 [![jar](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=spring&label=latest%20jar&sort=semver)](https://github.com/nagyesta/yippee-ki-json/packages/248363/versions)
@@ -102,7 +102,7 @@ exclusion: `exclude.json`.
 ##### Spring Boot options
 All generic Spring Boot options are supported. Please find a few useful ones below.
 
-| Option                      |                                                      |
+| Option                      | Description                                          |
 | --------------------------- | ---------------------------------------------------- |
 | `--logging.level.root`      | Sets the log level of the root package.              |
 | `--logging.level.<package>` | Sets the log level of the package named `<package>`. |

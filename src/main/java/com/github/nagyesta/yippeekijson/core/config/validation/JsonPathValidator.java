@@ -23,15 +23,15 @@ public class JsonPathValidator implements ConstraintValidator<JsonPath, String> 
 
     @Override
     public boolean isValid(@Nullable final String value, @NonNull final ConstraintValidatorContext context) {
-        boolean result = true;
+        boolean result = false;
         if (StringUtils.hasText(value)) {
             try {
                 com.jayway.jsonpath.JsonPath.compile(value);
+                result = true;
             } catch (final Exception ex) {
                 log.warn(ex.getMessage());
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(constraintAnnotation.message()).addConstraintViolation();
-                result = false;
             }
         }
         return result;

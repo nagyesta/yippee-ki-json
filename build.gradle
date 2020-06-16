@@ -6,6 +6,8 @@ plugins {
     id 'java'
     id 'maven-publish'
     //noinspection SpellCheckingInspection
+    id "io.freefair.lombok" version "5.1.0"
+    //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.5.0"
 }
 
@@ -16,6 +18,7 @@ sourceCompatibility = '11'
 project.ext {
     //noinspection GroovyAssignabilityCheck
     gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String) : ''
+    //noinspection GroovyAssignabilityCheck
     gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
 }
 
@@ -41,12 +44,6 @@ versioner {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -55,15 +52,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.jayway.jsonpath:json-path'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.glassfish:javax.el'
     implementation 'javax.el:javax.el-api'
     implementation 'commons-io:commons-io'
+    implementation 'com.google.guava:guava'
     implementation 'org.jetbrains:annotations'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
@@ -77,6 +74,7 @@ dependencyManagement {
             dependency 'com.jayway.jsonpath:json-path:2.4.0'
             dependency 'org.jetbrains:annotations:19.0.0'
             dependency 'commons-io:commons-io:2.6'
+            dependency 'com.google.guava:guava:29.0-jre'
         }
     }
 }
@@ -94,12 +92,79 @@ test {
     useJUnitPlatform()
 }
 test.finalizedBy jacocoTestReport
+jacocoTestReport.finalizedBy jacocoTestCoverageVerification
 
 jacoco {
     toolVersion = "0.8.2"
 }
-check.dependsOn jacocoTestCoverageVerification
-jar.dependsOn check
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.8
+            }
+        }
+        rule {
+            element = 'CLASS'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.7
+            }
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.7
+            }
+            excludes = [
+                    'com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper'
+            ]
+        }
+    }
+}
+bootJar.dependsOn check
+
+versioner.apply()
+
+bootJar {
+    archiveVersion.value(project.version as String)
+}
+
+task systemTestRun(type: Exec) {
+    inputs.file(file(bootJar.outputs.files.singleFile))
+    inputs.file(file("./src/test/resources/json/example.json"))
+    inputs.file(file("./src/test/resources/yaml/example.yml"))
+    outputs.file(file("./build/test-results/systemTest/example.json"))
+    dependsOn bootJar
+
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+            "--yippee.config=./src/test/resources/yaml/example.yml",
+            "--yippee.input=./src/test/resources/json/example.json",
+            "--yippee.output=./build/test-results/systemTest/example.json",
+            "--yippee.action=split-name"
+    logging.captureStandardOutput LogLevel.INFO
+    logging.captureStandardError LogLevel.ERROR
+}
+task systemTest {
+    dependsOn systemTestRun
+    inputs.file(file("./build/test-results/systemTest/example.json"))
+    inputs.file(file("./src/test/resources/json/example-split.json"))
+    doLast {
+        if (file("./build/test-results/systemTest/example.json").text != file("./src/test/resources/json/example-split.json").text) {
+            throw new StopExecutionException("System test assertion failed.")
+        }
+    }
+}
 
 tasks.withType(Checkstyle) {
     reports {
@@ -113,10 +178,6 @@ processResources {
     filesMatching('application.properties') {
         expand(project.properties)
     }
-}
-
-springBoot {
-    buildInfo()
 }
 
 publishing {
@@ -147,7 +208,7 @@ publishing {
                         //noinspection GroovyAssignabilityCheck
                         name = 'MIT License'
                         //noinspection GroovyAssignabilityCheck
-                        url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/master/LICENSE'
+                        url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE'
                     }
                 }
                 developers {

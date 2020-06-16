@@ -7,6 +7,23 @@ actions:
         path: "$.accounts[*][?(@.id==3)]"
       - name: "delete"
         path: "$.accounts[*][?(@.id==2)].email"
+      - name: "verify"
+        path: "$.accounts[*][?(@.id==3)]"
+        params:
+          operator: "or"
+          predicate-1:
+            name: "SpEL"
+            expression: "(#root instanceof T(Integer)) && (#root < 43) && (#root > 41)"
+            evalOn: "@"
+          predicate-2:
+            name: "SpEL"
+            expression: "(#root instanceof T(Integer)) && (#root < 20) && (#root > 15)"
+          key:
+            name: "staticString"
+            value: "processed"
+          message:
+            name: "staticString"
+            value: "processed"
   - name: "split-name"
     rules:
       - name: "copy"

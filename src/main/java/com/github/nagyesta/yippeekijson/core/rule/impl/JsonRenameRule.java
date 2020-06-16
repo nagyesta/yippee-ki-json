@@ -9,7 +9,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.TestOnly;
 
 import java.util.function.Supplier;
 
@@ -19,26 +18,19 @@ import java.util.function.Supplier;
 @Slf4j
 public final class JsonRenameRule extends AbstractJsonRule {
 
-    private static final String RULE_NAME = "rename";
+    static final String RULE_NAME = "rename";
+    static final String PARAM_OLD_KEY = "oldKey";
+    static final String PARAM_NEW_KEY = "newKey";
+
     private final Supplier<String> oldKeySupplier;
     private final Supplier<String> newKeySupplier;
-
-    @TestOnly
-    protected JsonRenameRule(@NotNull final Integer order,
-                             @NotNull final JsonPath jsonPath,
-                             @NotNull final Supplier<String> oldKeySupplier,
-                             @NotNull final Supplier<String> newKeySupplier) {
-        super(order, jsonPath);
-        this.oldKeySupplier = oldKeySupplier;
-        this.newKeySupplier = newKeySupplier;
-    }
 
     @NamedRule(RULE_NAME)
     public JsonRenameRule(@NotNull final FunctionRegistry functionRegistry,
                           @NotNull final RawJsonRule jsonRule) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
-        this.oldKeySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("oldKey"));
-        this.newKeySupplier = functionRegistry.lookupSupplier(jsonRule.getParams().get("newKey"));
+        this.oldKeySupplier = functionRegistry.lookupSupplier(jsonRule.configParamMap(PARAM_OLD_KEY));
+        this.newKeySupplier = functionRegistry.lookupSupplier(jsonRule.configParamMap(PARAM_NEW_KEY));
     }
 
     @Override

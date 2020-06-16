@@ -4,7 +4,6 @@ import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullSource;
 
 import static org.mockito.Mockito.mock;
 
@@ -27,14 +26,5 @@ class JsonActionTest {
 
         //when + then exception
         Assertions.assertThrows(IllegalArgumentException.class, () -> JsonAction.builder().name(name).addRule(rule));
-    }
-
-    @ParameterizedTest
-    @NullSource
-    void testConstructorShouldThrowExceptionsWhenCalledWithNull(final JsonAction.JsonActionBuilder builder) {
-        //given
-
-        //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonAction(builder));
     }
 }

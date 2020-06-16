@@ -1,4 +1,4 @@
-package com.github.nagyesta.yippeekijson.core.function;
+package com.github.nagyesta.yippeekijson.core.supplier;
 
 import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
@@ -12,10 +12,13 @@ import java.util.function.Supplier;
  */
 public final class StaticStringSupplier implements Supplier<String> {
 
+    static final String NAME = "staticString";
+    static final String PARAM_VALUE = "value";
+
     private final String value;
 
-    @NamedSupplier("staticString")
-    public StaticStringSupplier(@NonNull @MethodParam("value") final String value) {
+    @NamedSupplier(NAME)
+    public StaticStringSupplier(@MethodParam(PARAM_VALUE) @NonNull final String value) {
         this.value = value;
     }
 
