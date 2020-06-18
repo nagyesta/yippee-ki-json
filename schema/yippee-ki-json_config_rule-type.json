@@ -1,0 +1,560 @@
+{
+  "$id": "https://github.com/nagyesta/yippee-ki-json/blob/main/schema/yippee-ki-json_config_rule-type.json",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules",
+  "definitions": {
+    "ruleAdd": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#add",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "add"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_supplier-type.json"
+                },
+                {
+                  "description": "The supplier that will define the key of the new node."
+                }
+              ]
+            },
+            "value": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_supplier-type.json"
+                },
+                {
+                  "description": "The supplier that will define the value that will be assigned to the key."
+                }
+              ]
+            }
+          },
+          "required": [
+            "key",
+            "value"
+          ],
+          "minProperties": 2,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleCalculate": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#calculate",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "calculate"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "predicate": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will determine whether we should apply the function."
+                }
+              ]
+            },
+            "numberFunction": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_function-type.json"
+                },
+                {
+                  "description": "The function that will tell the rule what kind of calculation needs to be done."
+                }
+              ]
+            }
+          },
+          "required": [
+            "numberFunction"
+          ],
+          "uniqueItems": true,
+          "minProperties": 1,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleCopy": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#copy",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "copy"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_supplier-type.json"
+                },
+                {
+                  "description": "The supplier that will define the key we want to copy."
+                }
+              ]
+            },
+            "to": {
+              "type": "object",
+              "description": "The destination specific configuration.",
+              "properties": {
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "common/yippee-ki-json_config_json-path-type.json"
+                    },
+                    {
+                      "description": "The destination path where this rule will attempt to create the copied node."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "value"
+              ],
+              "minProperties": 1,
+              "maxProperties": 1,
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "key",
+            "to"
+          ],
+          "minProperties": 2,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleDeleteFrom": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#delete-from",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "deleteFrom"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "predicate": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                }
+              ]
+            },
+            "keepKey": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will be used to test whether a key should be kept, keeping only the matching keys."
+                }
+              ]
+            },
+            "deleteKey": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will be used to test whether a key should be deleted, deleting all the matching keys."
+                }
+              ]
+            },
+            "keepValue": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will be used to test whether an entry should be kept, keeping it only if the value matches."
+                }
+              ]
+            },
+            "deleteValue": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will be used to test whether an entry should be deleted, deleting all of them with matching values."
+                }
+              ]
+            }
+          },
+          "required": [],
+          "minProperties": 1,
+          "maxProperties": 5,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleDelete": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#delete",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "delete"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        }
+      },
+      "required": [
+        "name",
+        "path"
+      ],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "additionalProperties": false
+    },
+    "ruleRename": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#rename",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "rename"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "oldKey": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_supplier-type.json"
+                },
+                {
+                  "description": "The supplier that will define the source key under the matching path."
+                }
+              ]
+            },
+            "newKey": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_supplier-type.json"
+                },
+                {
+                  "description": "The supplier that will define the destination key under the matching path."
+                }
+              ]
+            }
+          },
+          "required": [
+            "oldKey",
+            "newKey"
+          ],
+          "uniqueItems": true,
+          "minProperties": 2,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleReplaceMap": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#replace-map",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "replaceMap"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "predicate": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                }
+              ]
+            },
+            "mapFunction": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_function-type.json"
+                },
+                {
+                  "description": "The function that defines the transformation which needs to be done on the selected map/object."
+                }
+              ]
+            }
+          },
+          "required": [
+            "mapFunction"
+          ],
+          "minProperties": 1,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    },
+    "ruleReplace": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#replace",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "replace"
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "properties": {
+            "predicate": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_predicate-type.json"
+                },
+                {
+                  "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                }
+              ]
+            },
+            "stringFunction": {
+              "allOf": [
+                {
+                  "$ref": "yippee-ki-json_config_function-type.json"
+                },
+                {
+                  "description": "The function that defines the transformation which needs to be done on the selected String node."
+                }
+              ]
+            }
+          },
+          "required": [
+            "stringFunction"
+          ],
+          "minProperties": 1,
+          "maxProperties": 2,
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "name",
+        "path",
+        "params"
+      ],
+      "minProperties": 3,
+      "maxProperties": 3,
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "add",
+            "calculate",
+            "copy",
+            "deleteFrom",
+            "delete",
+            "rename",
+            "replaceMap",
+            "replace"
+          ],
+          "description": "The name of the rule."
+        },
+        "path": {
+          "$ref": "common/yippee-ki-json_config_json-path-type.json"
+        },
+        "params": {
+          "type": "object",
+          "description": "The optional parameter map to allow configuration of the selected rule."
+        }
+      },
+      "required": [
+        "name",
+        "path"
+      ],
+      "uniqueItems": true,
+      "propertyNames": true,
+      "additionalProperties": false
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "add"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleAdd"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "calculate"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleCalculate"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "copy"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleCopy"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "deleteFrom"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleDeleteFrom"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "delete"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleDelete"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "rename"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleRename"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "replaceMap"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleReplaceMap"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "replace"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/ruleReplace"
+      }
+    }
+  ]
+}

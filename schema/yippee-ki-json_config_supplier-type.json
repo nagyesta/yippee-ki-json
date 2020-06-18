@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/nagyesta/yippee-ki-json/blob/main/schema/yippee-ki-json_config_supplier-type.json",
+  "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers",
+  "definitions": {
+    "supplierStaticString": {
+      "type": "object",
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-string-supplier",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "staticString",
+          "description": "The name of the supplier."
+        },
+        "value": {
+          "type": "string",
+          "description": "The static value that must be returned each time the supplier is called."
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "uniqueItems": true,
+      "additionalProperties": false
+    },
+    "supplierStaticJson": {
+      "type": "object",
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-json-supplier",
+      "properties": {
+        "name": {
+          "type": "string",
+          "const": "staticJson",
+          "description": "The name of the supplier."
+        },
+        "value": {
+          "type": "string",
+          "description": "The static value that must be parsed and returned each time the supplier is called."
+        }
+      },
+      "required": [
+        "name",
+        "value"
+      ],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "uniqueItems": true,
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "staticString",
+            "staticJson"
+          ]
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "staticJson"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/supplierStaticJson"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "const": "staticString"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/supplierStaticString"
+      }
+    }
+  ]
+}
