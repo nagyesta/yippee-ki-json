@@ -2,52 +2,1490 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Configuring-your-actions",
   "definitions": {
-    "nameType": {
-      "type": "string",
-      "pattern": "^[a-zA-Z]+[a-zA-Z0-9\\-_]+$"
-    },
-    "actionName": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/nameType"
-        },
-        {
-          "description": "The name of the action (rule sequence) to allow selecting it when we want to start transformation."
-        }
-      ]
-    },
-    "action": {
-      "type": "object",
-      "properties": {
+    "commonTypes": {
+      "$comment": "Some of the reusable base types",
+      "definitions": {
         "name": {
-          "$ref": "#/definitions/actionName"
+          "$comment": "A single JSON key name",
+          "type": "string",
+          "pattern": "^[a-zA-Z]+[a-zA-Z0-9\\-_]*$"
         },
-        "rules": {
-          "type": "array",
-          "minItems": 1,
-          "description": "The array of rules representing the sequentially triggered steps of the transformation action.",
-          "items": {
-            "$ref": "yippee-ki-json_config_rule-type.json"
-          },
-          "additionalItems": false
+        "jsonPath": {
+          "$comment": "https://github.com/json-path/JsonPath",
+          "type": "string",
+          "pattern": "^[$@](((\\.|\\.\\.)([a-zA-Z]+[a-zA-Z0-9\\-_]*|\\*))|\\[\\*]|\\[[0-9]+((, [0-9]+)*|:[0-9]+)]|\\['[a-zA-Z]+[a-zA-Z0-9\\-_]*'(, '[a-zA-Z]+[a-zA-Z0-9\\-_]*')*]|\\[\\?\\(.+\\)])*$",
+          "description": "A JSON Path selecting one or more nodes of the parsed JSON document."
+        },
+        "chronoUnit": {
+          "type": "string",
+          "enum": [
+            "NANOS",
+            "MICROS",
+            "MILLIS",
+            "SECONDS",
+            "MINUTES",
+            "HOURS",
+            "HALF_DAYS",
+            "DAYS",
+            "WEEKS",
+            "MONTHS",
+            "YEARS",
+            "DECADES",
+            "CENTURIES",
+            "MILLENIA"
+          ],
+          "description": "The chrono unit we want to use."
         }
-      },
-      "required": [
-        "name",
-        "rules"
-      ],
-      "minProperties": 2,
-      "maxProperties": 2,
-      "additionalProperties": false
+      }
+    },
+    "functionTypes": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions",
+      "definitions": {
+        "functionChangeCase": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#change-case-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "changeCase",
+              "description": "The name of the function."
+            },
+            "to": {
+              "type": "string",
+              "enum": [
+                "CAPITALIZED",
+                "UNCAPITALIZED",
+                "LOWER_CASE",
+                "UPPER_CASE"
+              ],
+              "description": "The type of case transformation we want to execute."
+            }
+          },
+          "required": [
+            "name",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        "functionCloneKey": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#clone-key-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "cloneKey",
+              "description": "The name of the function."
+            },
+            "from": {
+              "allOf": [
+                {
+                  "type": "string",
+                  "description": "The name of the key we want to clone from."
+                },
+                {
+                  "$ref": "#/definitions/commonTypes/definitions/name"
+                }
+              ]
+            },
+            "to": {
+              "allOf": [
+                {
+                  "type": "string",
+                  "description": "The name of the destination key we want to use."
+                },
+                {
+                  "$ref": "#/definitions/commonTypes/definitions/name"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "from",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        "functionAdd": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-add-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "add",
+              "description": "The name of the function."
+            },
+            "operand": {
+              "type": "number",
+              "description": "The numerical value we want to use as operand."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The scale of the result we want to see once the calculation is done."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionDivide": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-divide-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "divide",
+              "description": "The name of the function."
+            },
+            "operand": {
+              "type": "number",
+              "description": "The numerical value we want to use as operand."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The scale of the result we want to see once the calculation is done."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionMultiply": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-multiply-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "multiply",
+              "description": "The name of the function."
+            },
+            "operand": {
+              "type": "number",
+              "description": "The numerical value we want to use as operand."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The scale of the result we want to see once the calculation is done."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionSubtract": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-subtract-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "subtract",
+              "description": "The name of the function."
+            },
+            "operand": {
+              "type": "number",
+              "description": "The numerical value we want to use as operand."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The scale of the result we want to see once the calculation is done."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionEpochMillisDateAdd": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#epoch-millis-date-add-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "epochMillisDateAdd",
+              "description": "The name of the function."
+            },
+            "amount": {
+              "type": "integer",
+              "description": "The amount of time we want to apply as adjustment."
+            },
+            "unit": {
+              "$ref": "#/definitions/commonTypes/definitions/chronoUnit"
+            }
+          },
+          "required": [
+            "name",
+            "amount",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
+        "functionReplace": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#literal-replace-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "replace",
+              "description": "The name of the function."
+            },
+            "find": {
+              "type": "string",
+              "description": "The value which needs to be replaced (all occurrences)."
+            },
+            "replace": {
+              "type": "string",
+              "description": "The value which needs to be used as replacement (for all occurrences)."
+            }
+          },
+          "required": [
+            "name",
+            "find",
+            "replace"
+          ],
+          "additionalProperties": false
+        },
+        "functionRegex": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#regex-replace-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "regex",
+              "description": "The name of the function."
+            },
+            "pattern": {
+              "type": "string",
+              "description": "The regular expression we want to use for matching, capturing named groups."
+            },
+            "replacement": {
+              "type": "string",
+              "description": "The replacement format we want to use allowing EL-like placeholders for the captured groups."
+            }
+          },
+          "required": [
+            "name",
+            "pattern",
+            "replacement"
+          ],
+          "additionalProperties": false
+        },
+        "functionStringDateAdd": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#string-date-add-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "stringDateAdd",
+              "description": "The name of the function."
+            },
+            "formatter": {
+              "$comment": "https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html",
+              "type": "string",
+              "description": "The date time format we want to use for parsing.",
+              "default": "yyyy-MM-dd'T'HH:mm:ssZ"
+            },
+            "amount": {
+              "type": "integer",
+              "description": "The amount of time we want to apply as adjustment."
+            },
+            "unit": {
+              "$ref": "#/definitions/commonTypes/definitions/chronoUnit"
+            }
+          },
+          "required": [
+            "name",
+            "amount",
+            "unit",
+            "formatter"
+          ],
+          "additionalProperties": false
+        },
+        "anyFunction": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "changeCase",
+                    "cloneKey",
+                    "add",
+                    "divide",
+                    "multiply",
+                    "subtract",
+                    "epochMillisDateAdd",
+                    "replace",
+                    "regex",
+                    "stringDateAdd"
+                  ],
+                  "additionalItems": false
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "changeCase"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionChangeCase"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "cloneKey"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionCloneKey"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "add"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionAdd"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "divide"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionDivide"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "multiply"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionMultiply"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "subtract"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionSubtract"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "epochMillisDateAdd"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionEpochMillisDateAdd"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "replace"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionReplace"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "regex"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionRegex"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "stringDateAdd"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionStringDateAdd"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "supplierTypes": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers",
+      "definitions": {
+        "supplierStaticString": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-string-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "staticString",
+              "description": "The name of the supplier."
+            },
+            "value": {
+              "type": "string",
+              "description": "The static value that must be returned each time the supplier is called."
+            }
+          },
+          "required": [
+            "name",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "supplierStaticJson": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-json-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "staticJson",
+              "description": "The name of the supplier."
+            },
+            "value": {
+              "type": "string",
+              "description": "The static value that must be parsed and returned each time the supplier is called."
+            }
+          },
+          "required": [
+            "name",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "anySupplier": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "staticString",
+                    "staticJson"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "staticJson"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticJson"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "staticString"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticString"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "predicateTypes": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates",
+      "definitions": {
+        "predicateAllMatch": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#all-match-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "allMatch",
+              "description": "The name of the predicate."
+            },
+            "from": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+              },
+              "description": "The array of predicates we need to evaluate one by one."
+            }
+          },
+          "required": [
+            "name",
+            "from"
+          ],
+          "additionalProperties": false
+        },
+        "predicateAnyMatch": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#any-match-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "anyMatch",
+              "description": "The name of the predicate."
+            },
+            "from": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+              },
+              "description": "The array of predicates we need to evaluate one by one."
+            }
+          },
+          "required": [
+            "name",
+            "from"
+          ],
+          "additionalProperties": false
+        },
+        "predicateAnyString": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#any-string-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "anyString",
+              "description": "The name of the predicate."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "predicateContainsKey": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#contains-key-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "containsKey",
+              "description": "The name of the predicate."
+            },
+            "key": {
+              "allOf": [
+                {
+                  "type": "string",
+                  "description": "The key that needs to be verified that it is present."
+                },
+                {
+                  "$ref": "#/definitions/commonTypes/definitions/name"
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "key"
+          ],
+          "additionalProperties": false
+        },
+        "predicateEvalOn": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#eval-on-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "evalOn",
+              "description": "The name of the predicate."
+            },
+            "childPath": {
+              "type": "string",
+              "pattern": "^([a-zA-Z]+[a-zA-Z0-9\\-_]+)(.[a-zA-Z]+[a-zA-Z0-9\\-_]+)*$",
+              "description": "The path (relative to the rule's JSON Path) in a dotted format."
+            },
+            "predicate": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                },
+                {
+                  "description": "The predicate we need to evaluate."
+                }
+              ]
+            }
+          },
+          "required": [
+            "name",
+            "childPath",
+            "predicate"
+          ],
+          "additionalProperties": false
+        },
+        "predicateIsNull": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#is-null-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "isNull",
+              "description": "The name of the predicate."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "predicateNoneMatch": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#none-match-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "noneMatch",
+              "description": "The name of the predicate."
+            },
+            "from": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+              },
+              "description": "The array of predicates we need to evaluate one by one."
+            }
+          },
+          "required": [
+            "name",
+            "from"
+          ],
+          "additionalProperties": false
+        },
+        "predicateNonNull": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#non-null-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "notNull",
+              "description": "The name of the predicate."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
+        "predicateRegex": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#regex-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "regex",
+              "description": "The name of the predicate."
+            },
+            "pattern": {
+              "type": "string",
+              "description": "The regular expression we need to evaluate."
+            }
+          },
+          "required": [
+            "name",
+            "pattern"
+          ],
+          "additionalProperties": false
+        },
+        "predicateSpEL": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-predicates#spel-predicate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "SpEL",
+              "description": "The name of the predicate."
+            },
+            "expression": {
+              "type": "string",
+              "description": "The SpEL expression we need to evaluate."
+            }
+          },
+          "required": [
+            "name",
+            "expression"
+          ],
+          "additionalProperties": false
+        },
+        "anyPredicate": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "allMatch",
+                    "anyMatch",
+                    "anyString",
+                    "containsKey",
+                    "evalOn",
+                    "isNull",
+                    "noneMatch",
+                    "notNull",
+                    "regex",
+                    "SpEL"
+                  ]
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "allMatch"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateAllMatch"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "anyMatch"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateAnyMatch"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "anyString"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateAnyString"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "containsKey"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateContainsKey"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "evalOn"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateEvalOn"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "isNull"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateIsNull"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "noneMatch"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateNoneMatch"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "notNull"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateNonNull"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "regex"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateRegex"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "SpEL"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/predicateTypes/definitions/predicateSpEL"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "ruleTypes": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules",
+      "definitions": {
+        "ruleAdd": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#add",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "add"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier that will define the key of the new node."
+                    }
+                  ]
+                },
+                "value": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier that will define the value that will be assigned to the key."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "key",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleCalculate": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#calculate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "calculate"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "predicate": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will determine whether we should apply the function."
+                    }
+                  ]
+                },
+                "numberFunction": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+                    },
+                    {
+                      "description": "The function that will tell the rule what kind of calculation needs to be done."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "numberFunction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleCopy": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#copy",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "copy"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier that will define the key we want to copy."
+                    }
+                  ]
+                },
+                "to": {
+                  "type": "object",
+                  "description": "The destination specific configuration.",
+                  "properties": {
+                    "value": {
+                      "allOf": [
+                        {
+                          "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+                        },
+                        {
+                          "description": "The destination path where this rule will attempt to create the copied node."
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "value"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "key",
+                "to"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleDeleteFrom": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#delete-from",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "deleteFrom"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "predicate": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                    }
+                  ]
+                },
+                "keepKey": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will be used to test whether a key should be kept, keeping only the matching keys."
+                    }
+                  ]
+                },
+                "deleteKey": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will be used to test whether a key should be deleted, deleting all the matching keys."
+                    }
+                  ]
+                },
+                "keepValue": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will be used to test whether an entry should be kept, keeping it only if the value matches."
+                    }
+                  ]
+                },
+                "deleteValue": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will be used to test whether an entry should be deleted, deleting all of them with matching values."
+                    }
+                  ]
+                }
+              },
+              "minProperties": 1,
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleDelete": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#delete",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "delete"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            }
+          },
+          "required": [
+            "name",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "ruleRename": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#rename",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "rename"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "oldKey": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier that will define the source key under the matching path."
+                    }
+                  ]
+                },
+                "newKey": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier that will define the destination key under the matching path."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "oldKey",
+                "newKey"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleReplaceMap": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#replace-map",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "replaceMap"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "predicate": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                    }
+                  ]
+                },
+                "mapFunction": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+                    },
+                    {
+                      "description": "The function that defines the transformation which needs to be done on the selected map/object."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "mapFunction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "ruleReplace": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#replace",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "replace"
+            },
+            "path": {
+              "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "predicate": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/predicateTypes/definitions/anyPredicate"
+                    },
+                    {
+                      "description": "The predicate that will determine whether we need to run the rule on the matching path."
+                    }
+                  ]
+                },
+                "stringFunction": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+                    },
+                    {
+                      "description": "The function that defines the transformation which needs to be done on the selected String node."
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "stringFunction"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
+        "anyRule": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "add",
+                    "calculate",
+                    "copy",
+                    "deleteFrom",
+                    "delete",
+                    "rename",
+                    "replaceMap",
+                    "replace"
+                  ],
+                  "description": "The name of the rule."
+                },
+                "path": {
+                  "$ref": "#/definitions/commonTypes/definitions/jsonPath"
+                },
+                "params": {
+                  "type": "object",
+                  "description": "The optional parameter map to allow configuration of the selected rule."
+                }
+              },
+              "required": [
+                "name",
+                "path"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "add"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleAdd"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "calculate"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleCalculate"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "copy"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleCopy"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "deleteFrom"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleDeleteFrom"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "delete"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleDelete"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "rename"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleRename"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "replaceMap"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleReplaceMap"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "replace"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleReplace"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "actionTypes": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Configuring-your-actions",
+      "definitions": {
+        "actionName": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonTypes/definitions/name"
+            },
+            {
+              "description": "The name of the action (rule sequence) to allow selecting it when we want to start transformation."
+            }
+          ]
+        },
+        "action": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "$ref": "#/definitions/actionTypes/definitions/actionName"
+            },
+            "rules": {
+              "type": "array",
+              "minItems": 1,
+              "description": "The array of rules representing the sequentially triggered steps of the transformation action.",
+              "items": {
+                "$ref": "#/definitions/ruleTypes/definitions/anyRule"
+              },
+              "additionalItems": false
+            }
+          },
+          "required": [
+            "name",
+            "rules"
+          ],
+          "additionalProperties": false
+        }
+      }
     }
   },
   "properties": {
     "actions": {
+      "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Configuring-your-actions",
       "type": "array",
       "minItems": 1,
       "description": "The array of transformation action we will be able to select from at startup.",
       "items": {
-        "$ref": "#/definitions/action"
+        "$ref": "#/definitions/actionTypes/definitions/action"
       },
       "additionalProperties": false
     }

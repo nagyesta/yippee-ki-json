@@ -1,0 +1,80 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$..a"
+        params:
+          key:
+            name: "staticString"
+            value: "key"
+          value:
+            name: "staticJson"
+            value: '{"name":"value"}'
+      - name: "calculate"
+        path: "$[*]"
+        params:
+          numberFunction:
+            name: "add"
+            operand: 42.00
+            scale: 1
+      - name: "copy"
+        path: "$.accounts[0].name"
+        params:
+          key:
+            name: "staticString"
+            value: "firstName"
+          to:
+            value: "$.accounts[0]"
+      - name: "deleteFrom"
+        path: "$.accounts[1].name"
+        params:
+          predicate:
+            name: "notNull"
+          keepKey:
+            name: "allMatch"
+            from:
+              - name: "regex"
+                pattern: .{0,10}
+              - name: "anyString"
+          keepValue:
+            name: "noneMatch"
+            from:
+              - name: "isNull"
+          deleteKey:
+            name: "anyMatch"
+            from:
+              - name: "isNull"
+          deleteValue:
+            name: "evalOn"
+            childPath: "node.child"
+            predicate:
+              name: SpEL
+              expression: "T(java.util.Objects).isNull(#root)"
+      - name: "rename"
+        path: "$"
+        params:
+          oldKey:
+            name: "staticString"
+            value: "name"
+          newKey:
+            name: "staticString"
+            value: "new"
+      - name: "replace"
+        path: "$.accounts..name"
+        params:
+          stringFunction:
+            name: "regex"
+            pattern: ^((?<firstName>[A-Za-z\-]+) (?<lastName>[A-Za-z\-]+))$
+            replacement: "${lastName}"
+          predicate:
+            name: "anyString"
+      - name: "replaceMap"
+        path: "$.accounts..firstName"
+        params:
+          predicate:
+            name: "containsKey"
+            key: "source"
+          mapFunction:
+            name: "cloneKey"
+            from: "source"
+            to: "destination"
