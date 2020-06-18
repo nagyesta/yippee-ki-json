@@ -1,8 +1,0 @@
-{
-  "$id": "https://github.com/nagyesta/yippee-ki-json/blob/main/schema/common/yippee-ki-json_config_json-path-type.json",
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "$comment": "https://github.com/json-path/JsonPath",
-  "type": "string",
-  "pattern": "^[$@](((\\.|\\.\\.)([a-zA-Z]+[a-zA-Z0-9\\-_]*|\\*))|\\[\\*]|\\[[0-9]+((, [0-9]+)*|:[0-9]+)]|\\['[a-zA-Z]+[a-zA-Z0-9\\-_]*'(, '[a-zA-Z]+[a-zA-Z0-9\\-_]*')*]|\\[\\?\\(.+\\)])*$",
-  "description": "A JSON Path selecting one or more nodes of the parsed JSON document."
-}
