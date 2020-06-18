@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Configuring-your-actions",
+  "definitions": {
+    "nameType": {
+      "type": "string",
+      "pattern": "^[a-zA-Z]+[a-zA-Z0-9\\-_]+$"
+    },
+    "actionName": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/nameType"
+        },
+        {
+          "description": "The name of the action (rule sequence) to allow selecting it when we want to start transformation."
+        }
+      ]
+    },
+    "action": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/actionName"
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "description": "The array of rules representing the sequentially triggered steps of the transformation action.",
+          "items": {
+            "$ref": "yippee-ki-json_config_rule-type.json"
+          },
+          "additionalItems": false
+        }
+      },
+      "required": [
+        "name",
+        "rules"
+      ],
+      "minProperties": 2,
+      "maxProperties": 2,
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "The array of transformation action we will be able to select from at startup.",
+      "items": {
+        "$ref": "#/definitions/action"
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "actions"
+  ],
+  "additionalProperties": false
+}
