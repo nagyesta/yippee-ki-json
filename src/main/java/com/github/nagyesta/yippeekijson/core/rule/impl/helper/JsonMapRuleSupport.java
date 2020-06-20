@@ -1,4 +1,4 @@
-package com.github.nagyesta.yippeekijson.core.rule.impl;
+package com.github.nagyesta.yippeekijson.core.rule.impl.helper;
 
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
@@ -14,22 +14,27 @@ import org.slf4j.Logger;
 import java.util.Map;
 import java.util.function.Predicate;
 
-public abstract class JsonMapRule extends AbstractJsonRule {
-    static final String PARAM_PREDICATE = "predicate";
+/**
+ * Rule allowing easier processing of Map types.
+ */
+public abstract class JsonMapRuleSupport extends AbstractJsonRule {
+
     private static final String ALL_CHILDREN_OF_ROOT = "$.[*]";
 
     private final Predicate<Object> predicate;
     private final JsonMapper jsonMapper;
     private final Logger log;
 
-    public JsonMapRule(@NotNull final FunctionRegistry functionRegistry,
-                       @NotNull final RawJsonRule jsonRule,
-                       @NotNull final Logger log) {
+    public JsonMapRuleSupport(@NotNull final FunctionRegistry functionRegistry,
+                              @NotNull final JsonMapper jsonMapper,
+                              @NotNull final RawJsonRule jsonRule,
+                              @NotNull final Logger log,
+                              @NotNull final String predicateName) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
         this.log = log;
-        this.jsonMapper = functionRegistry.jsonMapper();
-        if (jsonRule.getParams().containsKey(PARAM_PREDICATE)) {
-            this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_PREDICATE));
+        this.jsonMapper = jsonMapper;
+        if (jsonRule.getParams().containsKey(predicateName)) {
+            this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(predicateName));
         } else {
             this.predicate = new NotNullPredicate();
         }

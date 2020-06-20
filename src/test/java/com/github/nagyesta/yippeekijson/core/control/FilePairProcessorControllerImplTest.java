@@ -24,6 +24,7 @@ import javax.validation.Path;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
@@ -58,6 +59,7 @@ class FilePairProcessorControllerImplTest {
                 .add(Arguments.of(RunConfig.builder()
                                 .action(null)
                                 .allowOverwrite(true)
+                                .relaxedYmlSchema(true)
                                 .config(null)
                                 .excludes(Collections.emptyList())
                                 .includes(Collections.emptyList())
@@ -69,6 +71,7 @@ class FilePairProcessorControllerImplTest {
                 .add(Arguments.of(RunConfig.builder()
                                 .action(EMPTY)
                                 .allowOverwrite(true)
+                                .relaxedYmlSchema(false)
                                 .config(EMPTY)
                                 .excludes(Collections.emptyList())
                                 .includes(Collections.emptyList())
@@ -80,6 +83,7 @@ class FilePairProcessorControllerImplTest {
                 .add(Arguments.of(RunConfig.builder()
                                 .action(ACTION)
                                 .allowOverwrite(false)
+                                .relaxedYmlSchema(true)
                                 .config(CONFIG)
                                 .excludes(Collections.emptyList())
                                 .includes(Collections.emptyList())
@@ -91,6 +95,7 @@ class FilePairProcessorControllerImplTest {
                 .add(Arguments.of(RunConfig.builder()
                                 .action(ACTION)
                                 .allowOverwrite(false)
+                                .relaxedYmlSchema(false)
                                 .config(CONFIG)
                                 .excludes(Collections.emptyList())
                                 .includes(Collections.emptyList())
@@ -134,6 +139,7 @@ class FilePairProcessorControllerImplTest {
                 .allowOverwrite(false)
                 .input(INPUT)
                 .output(OUTPUT)
+                .charset(StandardCharsets.UTF_8)
                 .build());
 
         final File configFileMock = mock(File.class);
@@ -148,9 +154,9 @@ class FilePairProcessorControllerImplTest {
 
         final JsonAction jsonAction = JsonAction.builder().name(ACTION_NAME).build();
         final JsonActions jsonActions = JsonActions.builder().addAction(ACTION_NAME, jsonAction).build();
-        when(configParser.parse(any(File.class))).thenReturn(jsonActions);
+        when(configParser.parse(any(File.class), anyBoolean())).thenReturn(jsonActions);
         when(fileSetTransformer.transformToFilePairs(eq(runConfig))).thenReturn(Map.of(inputFileMock, outputFileMock));
-        when(jsonTransformer.transform(any(File.class), any(JsonAction.class)))
+        when(jsonTransformer.transform(any(File.class), any(Charset.class), any(JsonAction.class)))
                 .thenThrow(new JsonTransformException("message", new IllegalArgumentException()));
 
         final FilePairProcessorControllerImpl underTest = spy(new FilePairProcessorControllerImpl(
@@ -165,10 +171,12 @@ class FilePairProcessorControllerImplTest {
         inOrder.verify(underTest).process(same(runConfig));
         inOrder.verify(underTest).validateConfig(same(runConfig));
         inOrder.verify(validator).validate(same(runConfig));
-        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()));
+        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()), anyBoolean());
         inOrder.verify(fileSetTransformer).transformToFilePairs(same(runConfig));
-        inOrder.verify(jsonTransformer).transform(eq(runConfig.getInputAsFile()), same(jsonAction));
-        inOrder.verify(underTest, never()).writeToFile(any(File.class), anyString());
+        inOrder.verify(jsonTransformer)
+                .transform(same(inputFileMock), eq(StandardCharsets.UTF_8), same(jsonAction));
+        inOrder.verify(underTest, never())
+                .writeToFile(same(outputFileMock), eq(StandardCharsets.UTF_8), anyString());
         inOrder.verify(underTest, times(2)).summarize(anyMap());
         inOrder.verifyNoMoreInteractions();
     }
@@ -203,7 +211,7 @@ class FilePairProcessorControllerImplTest {
 
         final JsonAction jsonAction = JsonAction.builder().name(ACTION_NAME).build();
         final JsonActions jsonActions = JsonActions.builder().addAction(ACTION_NAME, jsonAction).build();
-        when(configParser.parse(any(File.class))).thenReturn(jsonActions);
+        when(configParser.parse(any(File.class), anyBoolean())).thenReturn(jsonActions);
         when(fileSetTransformer.transformToFilePairs(eq(runConfig))).thenReturn(Map.of(inputFileMock, outputFileMock));
 
         final FilePairProcessorControllerImpl underTest = spy(new FilePairProcessorControllerImpl(
@@ -218,10 +226,12 @@ class FilePairProcessorControllerImplTest {
         inOrder.verify(underTest).process(same(runConfig));
         inOrder.verify(underTest).validateConfig(same(runConfig));
         inOrder.verify(validator).validate(same(runConfig));
-        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()));
+        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()), anyBoolean());
         inOrder.verify(fileSetTransformer).transformToFilePairs(same(runConfig));
-        inOrder.verify(jsonTransformer, never()).transform(eq(runConfig.getInputAsFile()), same(jsonAction));
-        inOrder.verify(underTest, never()).writeToFile(any(File.class), anyString());
+        inOrder.verify(jsonTransformer, never())
+                .transform(eq(runConfig.getInputAsFile()), eq(StandardCharsets.UTF_8), same(jsonAction));
+        inOrder.verify(underTest, never())
+                .writeToFile(any(File.class), eq(StandardCharsets.UTF_8), anyString());
         inOrder.verify(underTest, times(2)).summarize(anyMap());
         inOrder.verifyNoMoreInteractions();
     }
@@ -254,13 +264,14 @@ class FilePairProcessorControllerImplTest {
 
         final JsonAction jsonAction = JsonAction.builder().name(ACTION_NAME).build();
         final JsonActions jsonActions = JsonActions.builder().addAction(ACTION_NAME, jsonAction).build();
-        when(configParser.parse(any(File.class))).thenReturn(jsonActions);
+        when(configParser.parse(any(File.class), anyBoolean())).thenReturn(jsonActions);
         when(fileSetTransformer.transformToFilePairs(eq(runConfig))).thenReturn(Map.of(inputFileMock, outputFileMock));
-        when(jsonTransformer.transform(eq(inputFileMock), eq(jsonAction))).thenReturn(TRANSFORMED);
+        when(jsonTransformer.transform(eq(inputFileMock), any(Charset.class), eq(jsonAction))).thenReturn(TRANSFORMED);
 
         final FilePairProcessorControllerImpl underTest = spy(new FilePairProcessorControllerImpl(
                 jsonTransformer, fileSetTransformer, configParser, validator));
-        doNothing().when(underTest).writeToFile(eq(outputFileMock), eq(TRANSFORMED));
+        doNothing().when(underTest)
+                .writeToFile(eq(outputFileMock), any(Charset.class), eq(TRANSFORMED));
 
         //when
         underTest.process(runConfig);
@@ -271,10 +282,12 @@ class FilePairProcessorControllerImplTest {
         inOrder.verify(underTest).process(same(runConfig));
         inOrder.verify(underTest).validateConfig(same(runConfig));
         inOrder.verify(validator).validate(same(runConfig));
-        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()));
+        inOrder.verify(configParser).parse(eq(runConfig.getConfigAsFile()), anyBoolean());
         inOrder.verify(fileSetTransformer).transformToFilePairs(same(runConfig));
-        inOrder.verify(jsonTransformer).transform(eq(runConfig.getInputAsFile()), same(jsonAction));
-        inOrder.verify(underTest).writeToFile(eq(runConfig.getOutputAsFile()), eq(TRANSFORMED));
+        inOrder.verify(jsonTransformer)
+                .transform(eq(runConfig.getInputAsFile()), eq(StandardCharsets.UTF_8), same(jsonAction));
+        inOrder.verify(underTest)
+                .writeToFile(eq(runConfig.getOutputAsFile()), eq(StandardCharsets.UTF_8), eq(TRANSFORMED));
         inOrder.verify(underTest, times(2)).summarize(anyMap());
         inOrder.verifyNoMoreInteractions();
     }
@@ -328,7 +341,7 @@ class FilePairProcessorControllerImplTest {
                 jsonTransformer, fileSetTransformer, configParser, validator);
 
         //when
-        underTest.writeToFile(file, content);
+        underTest.writeToFile(file, StandardCharsets.UTF_8, content);
 
         //then
         final String actual = IOUtils.toString(file.toURI(), StandardCharsets.UTF_8);

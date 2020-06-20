@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
 import com.fasterxml.jackson.databind.*;
+import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.TypeRef;
@@ -9,6 +10,7 @@ import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
+@Injectable(forType = JsonMapper.class)
 public class JsonMapperImpl implements JsonMapper {
 
     @Override
@@ -24,18 +26,9 @@ public class JsonMapperImpl implements JsonMapper {
         return mappingProvider().map(input, typeRef, parserConfiguration());
     }
 
+    @Override
     @NotNull
-    private JacksonMappingProvider mappingProvider() {
-        return new JacksonMappingProvider(objectMapper());
-    }
-
-    @NotNull
-    private JacksonJsonProvider jsonProvider() {
-        return new JacksonJsonProvider(objectMapper());
-    }
-
-    @NotNull
-    private ObjectMapper objectMapper() {
+    public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         final SerializationConfig serializationConfig = objectMapper.getSerializationConfig()
                 .withoutFeatures(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -45,5 +38,15 @@ public class JsonMapperImpl implements JsonMapper {
                 .with(DeserializationFeature.USE_BIG_INTEGER_FOR_INTS);
         objectMapper.setConfig(deserializationConfig);
         return objectMapper;
+    }
+
+    @NotNull
+    private JacksonMappingProvider mappingProvider() {
+        return new JacksonMappingProvider(objectMapper());
+    }
+
+    @NotNull
+    private JacksonJsonProvider jsonProvider() {
+        return new JacksonJsonProvider(objectMapper());
     }
 }

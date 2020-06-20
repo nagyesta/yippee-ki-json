@@ -19,6 +19,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonCalculateRule.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,6 +48,7 @@ class JsonCalculateRuleTest {
         );
     }
 
+    @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("validInputProvider")
     void testAcceptShouldReplaceMatchingStringsOnly(final String input, final String path, final Predicate<Object> matches,
@@ -69,7 +71,7 @@ class JsonCalculateRuleTest {
 
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         when(functionRegistry.lookupFunction(anyMap())).thenReturn(bd -> calculate.apply((BigDecimal) bd));
-        when(functionRegistry.lookupPredicate(anyMap())).thenReturn(matches);
+        when(functionRegistry.lookupPredicate(anyMap(), any(Predicate.class))).thenReturn(matches);
 
         final JsonCalculateRule rule = new JsonCalculateRule(functionRegistry, raw);
 

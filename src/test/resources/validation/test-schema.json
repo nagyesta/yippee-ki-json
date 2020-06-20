@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "properties": {
+    "object": {
+      "type": "object",
+      "properties": {
+        "object-inner": {
+          "type": "object"
+        },
+        "array-inner": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "array-inner",
+        "object-inner"
+      ],
+      "additionalProperties": false
+    },
+    "array": {
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2
+    },
+    "object.array": {
+      "type": "number"
+    },
+    "object...array": {
+      "type": "number"
+    },
+    "array-inner": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false
+}

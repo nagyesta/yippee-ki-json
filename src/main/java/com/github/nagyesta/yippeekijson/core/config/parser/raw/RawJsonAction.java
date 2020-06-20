@@ -4,12 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Raw class for parsing JsonAction configuration.
@@ -25,22 +26,29 @@ public class RawJsonAction {
     @Valid
     private List<RawJsonRule> rules = Collections.emptyList();
 
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
+
         if (!(o instanceof RawJsonAction)) {
             return false;
         }
 
-        final RawJsonAction that = (RawJsonAction) o;
+        RawJsonAction that = (RawJsonAction) o;
 
-        return Objects.equals(name, that.name);
+        return new EqualsBuilder()
+                .append(name, that.name)
+                .isEquals();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return new HashCodeBuilder(17, 37)
+                .append(name)
+                .toHashCode();
     }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.CollectionUtils;
 
 import javax.validation.Valid;
@@ -53,8 +54,8 @@ public class RawJsonRule {
      * @return The preprocessed map.
      */
     @NotNull
-    public Map<String, RawConfigParam> configParamMap(@NonNull final String param) {
-        if (CollectionUtils.isEmpty(params) || !params.containsKey(param)) {
+    public Map<String, RawConfigParam> configParamMap(@Nullable final String param) {
+        if (param == null || CollectionUtils.isEmpty(params) || !params.containsKey(param)) {
             return Collections.emptyMap();
         }
         return new RawConfigMap(getConfigPath(param), params.get(param)).asMap();
@@ -107,13 +108,6 @@ public class RawJsonRule {
             final RawJsonRule rawJsonRule = new RawJsonRule(this);
             this.reset();
             return rawJsonRule;
-        }
-
-        public String toString() {
-            return "RawJsonRule.RawJsonRuleBuilder(order=" + this.order
-                    + ", name=" + this.name
-                    + ", path=" + this.path
-                    + ", params=" + this.params + ")";
         }
     }
 }

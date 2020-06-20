@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class RawConfigParamDefaultImplTest {
         }
 
         @Override
-        public @NotNull Object suitableFor(final boolean stringMap, final boolean paramMap, final boolean repeat) {
+        public @NotNull Object suitableFor(final ParameterContext parameterContext) {
             return "null";
         }
     };
@@ -58,5 +59,21 @@ class RawConfigParamDefaultImplTest {
 
         //when + then exception
         Assertions.assertThrows(UnsupportedOperationException.class, underTest::asMaps);
+    }
+
+    @Test
+    void testAsStringMapShouldThrowException() {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(UnsupportedOperationException.class, underTest::asStringMap);
+    }
+
+    @Test
+    void testAsStringMapsShouldThrowException() {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(UnsupportedOperationException.class, underTest::asStringMaps);
     }
 }

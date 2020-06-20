@@ -113,11 +113,11 @@ class YamlActionConfigParserTest {
         final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
 
         //when
-        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parse((InputStream) null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parse((InputStream) null, false));
 
         //then
         final InOrder inOrder = inOrder(underTest, jsonRuleRegistry);
-        inOrder.verify(underTest).parse((InputStream) isNull());
+        inOrder.verify(underTest).parse((InputStream) isNull(), anyBoolean());
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -131,16 +131,16 @@ class YamlActionConfigParserTest {
 
         final YamlActionConfigParser underTest = spy(new YamlActionConfigParser(jsonRuleRegistry, mock(Validator.class)));
         doReturn(expected).when(underTest).convertActions(eq(rawJsonActions));
-        doReturn(rawJsonActions).when(underTest).parseAsRawJsonActions(eq(stream));
+        doReturn(rawJsonActions).when(underTest).parseAsRawJsonActions(eq(stream), anyBoolean());
 
         //when
-        final JsonActions actual = underTest.parse(stream);
+        final JsonActions actual = underTest.parse(stream, false);
 
         //then
         Assertions.assertEquals(expected, actual);
         final InOrder inOrder = inOrder(underTest, jsonRuleRegistry);
-        inOrder.verify(underTest).parse(eq(stream));
-        inOrder.verify(underTest).parseAsRawJsonActions(eq(stream));
+        inOrder.verify(underTest).parse(eq(stream), anyBoolean());
+        inOrder.verify(underTest).parseAsRawJsonActions(eq(stream), anyBoolean());
         inOrder.verify(underTest).convertActions(eq(rawJsonActions));
         inOrder.verifyNoMoreInteractions();
     }

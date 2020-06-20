@@ -8,12 +8,12 @@
         "name": {
           "$comment": "A single JSON key name",
           "type": "string",
-          "pattern": "^[a-zA-Z]+[a-zA-Z0-9\\-_]*$"
+          "pattern": "^[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*$"
         },
         "jsonPath": {
           "$comment": "https://github.com/json-path/JsonPath",
           "type": "string",
-          "pattern": "^[$@](((\\.|\\.\\.)([a-zA-Z]+[a-zA-Z0-9\\-_]*|\\*))|\\[\\*]|\\[[0-9]+((, [0-9]+)*|:[0-9]+)]|\\['[a-zA-Z]+[a-zA-Z0-9\\-_]*'(, '[a-zA-Z]+[a-zA-Z0-9\\-_]*')*]|\\[\\?\\(.+\\)])*$",
+          "pattern": "^[$@](((\\.|\\.\\.)([$_a-zA-Z]+[$a-zA-Z0-9\\-_]*|\\*))|\\[\\*]|\\[[0-9]+((, [0-9]+)*|:[0-9]+)]|\\['[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*'(, '[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*')*]|\\[\\?\\(.+\\)])*$",
           "description": "A JSON Path selecting one or more nodes of the parsed JSON document."
         },
         "chronoUnit": {
@@ -35,6 +35,33 @@
             "MILLENIA"
           ],
           "description": "The chrono unit we want to use."
+        },
+        "charSet": {
+          "type": "string",
+          "enum": [
+            "UTF-8",
+            "UTF-16",
+            "UTF-16LE",
+            "UTF-16BE",
+            "ISO-8859-1",
+            "US-ASCII"
+          ],
+          "description": "Standard character sets."
+        },
+        "httpMethod": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST"
+          ],
+          "description": "Supported HTTP methods."
+        },
+        "httpHeaders": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "uniqueItems": true
         }
       }
     },
@@ -230,6 +257,85 @@
           ],
           "additionalProperties": false
         },
+        "functionHttpResourceByUri": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#http-resource-by-uri-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "httpResourceByUri",
+              "description": "The name of the function."
+            },
+            "uriFunction": {
+              "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+            },
+            "uri": {
+              "type": "string",
+              "description": "The default value of the URI we want to use."
+            },
+            "httpMethod": {
+              "$ref": "#/definitions/commonTypes/definitions/httpMethod"
+            },
+            "httpHeaders": {
+              "$ref": "#/definitions/commonTypes/definitions/httpHeaders"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "minProperties": 2,
+          "additionalProperties": false
+        },
+        "functionHttpResource": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#http-resource-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "httpResource",
+              "description": "The name of the function."
+            },
+            "uriFunction": {
+              "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+            },
+            "methodFunction": {
+              "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+            },
+            "headerFunction": {
+              "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+            },
+            "uri": {
+              "type": "string",
+              "description": "The default value of the URI we want to use."
+            },
+            "httpMethod": {
+              "$ref": "#/definitions/commonTypes/definitions/httpMethod"
+            },
+            "httpHeaders": {
+              "$ref": "#/definitions/commonTypes/definitions/httpHeaders"
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "minProperties": 2,
+          "additionalProperties": false
+        },
+        "functionJsonParse": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#ljson-parse-function",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "jsonParse",
+              "description": "The name of the function."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        },
         "functionReplace": {
           "type": "object",
           "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#literal-replace-function",
@@ -326,6 +432,9 @@
                     "multiply",
                     "subtract",
                     "epochMillisDateAdd",
+                    "httpResourceByUri",
+                    "httpResource",
+                    "jsonParse",
                     "replace",
                     "regex",
                     "stringDateAdd"
@@ -425,6 +534,42 @@
               "if": {
                 "properties": {
                   "name": {
+                    "const": "httpResourceByUri"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionHttpResourceByUri"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "httpResource"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionHttpResource"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "jsonParse"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionJsonParse"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
                     "const": "replace"
                   }
                 }
@@ -504,6 +649,119 @@
           ],
           "additionalProperties": false
         },
+        "supplierFile": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#file-content-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "file",
+              "description": "The name of the supplier."
+            },
+            "path": {
+              "type": "string",
+              "description": "The file path where the source file can be found."
+            },
+            "charset": {
+              "$ref": "#/definitions/commonTypes/definitions/charSet"
+            }
+          },
+          "required": [
+            "name",
+            "path"
+          ],
+          "additionalProperties": false
+        },
+        "supplierHttpResource": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#http-resource-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "httpResource",
+              "description": "The name of the supplier."
+            },
+            "uri": {
+              "type": "string",
+              "description": "The URI where the content is located."
+            },
+            "httpHeaders": {
+              "$ref": "#/definitions/commonTypes/definitions/httpHeaders"
+            },
+            "httpMethod": {
+              "$ref": "#/definitions/commonTypes/definitions/httpMethod"
+            },
+            "charset": {
+              "$ref": "#/definitions/commonTypes/definitions/charSet"
+            }
+          },
+          "required": [
+            "name",
+            "uri"
+          ],
+          "additionalProperties": false
+        },
+        "supplierJsonSchema": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#json-schema-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "jsonSchema",
+              "description": "The name of the supplier."
+            },
+            "source": {
+              "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+            }
+          },
+          "required": [
+            "name",
+            "source"
+          ],
+          "additionalProperties": false
+        },
+        "supplierSchemaStore": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#json-schemastore-schema-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "schemaStore",
+              "description": "The name of the supplier."
+            },
+            "schemaName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "schemaName"
+          ],
+          "additionalProperties": false
+        },
+        "supplierConverting": {
+          "type": "object",
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#converting-supplier",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "converting",
+              "description": "The name of the supplier."
+            },
+            "stringSource": {
+              "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+            },
+            "converter": {
+              "$ref": "#/definitions/functionTypes/definitions/anyFunction"
+            }
+          },
+          "required": [
+            "name",
+            "stringSource",
+            "converter"
+          ],
+          "additionalProperties": false
+        },
         "anySupplier": {
           "allOf": [
             {
@@ -512,6 +770,11 @@
                 "name": {
                   "type": "string",
                   "enum": [
+                    "converting",
+                    "httpResource",
+                    "jsonSchema",
+                    "file",
+                    "schemaStore",
                     "staticString",
                     "staticJson"
                   ]
@@ -520,6 +783,66 @@
               "required": [
                 "name"
               ]
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "converting"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierConverting"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "httpResource"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierHttpResource"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "jsonSchema"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierJsonSchema"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "file"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierFile"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "schemaStore"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierSchemaStore"
+              }
             },
             {
               "if": {
@@ -653,7 +976,7 @@
             },
             "childPath": {
               "type": "string",
-              "pattern": "^([a-zA-Z]+[a-zA-Z0-9\\-_]+)(.[a-zA-Z]+[a-zA-Z0-9\\-_]+)*$",
+              "pattern": "^([$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)(.[$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)*$",
               "description": "The path (relative to the rule's JSON Path) in a dotted format."
             },
             "predicate": {
@@ -1307,6 +1630,74 @@
           ],
           "additionalProperties": false
         },
+        "ruleValidate": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-rules#validate",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "validate"
+            },
+            "path": {
+              "type": "string",
+              "const": "$",
+              "description": "Must be the root JSON Path as the validator cannot work on sub-schema."
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/supplierTypes/definitions/anySupplier"
+                    },
+                    {
+                      "description": "The supplier which will supply the JSON Schema used for the validation."
+                    }
+                  ]
+                },
+                "onFailure": {
+                  "properties": {
+                    "transformation": {
+                      "type": "string",
+                      "enum": [
+                        "ABORT",
+                        "SKIP_REST",
+                        "CONTINUE"
+                      ],
+                      "description": "Defines what to do with the rule chain in case of failure."
+                    },
+                    "violation": {
+                      "type": "string",
+                      "enum": [
+                        "LOG_ONLY",
+                        "COMMENT_JSON",
+                        "IGNORE"
+                      ],
+                      "description": "Defines what to do with the violations found (how to report them)."
+                    }
+                  },
+                  "required": [
+                    "transformation",
+                    "violation"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "description": "Defines behavior which will be used in case of validation failure.",
+              "required": [
+                "onFailure",
+                "schema"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "path",
+            "params"
+          ],
+          "additionalProperties": false
+        },
         "anyRule": {
           "allOf": [
             {
@@ -1322,7 +1713,8 @@
                     "delete",
                     "rename",
                     "replaceMap",
-                    "replace"
+                    "replace",
+                    "validate"
                   ],
                   "description": "The name of the rule."
                 },
@@ -1434,6 +1826,18 @@
               },
               "then": {
                 "$ref": "#/definitions/ruleTypes/definitions/ruleReplace"
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "const": "validate"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/ruleTypes/definitions/ruleValidate"
               }
             }
           ]

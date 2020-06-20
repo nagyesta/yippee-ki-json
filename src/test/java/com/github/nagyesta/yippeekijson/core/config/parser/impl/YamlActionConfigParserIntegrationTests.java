@@ -8,6 +8,8 @@ import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.impl.JsonDeleteFromMapRule;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
@@ -21,6 +23,7 @@ import java.util.Map;
 @TestPropertySource(properties = "logging.level.root=DEBUG")
 class YamlActionConfigParserIntegrationTests {
 
+    private static final String ALL_RULES_YML = "/yaml/all-rules.yml";
     private static final String EXAMPLE_YML = "/yaml/example.yml";
     private static final String MULTI_LEVEL_YML = "/yaml/multi-level.yml";
     private static final String EXAMPLE_INVALID_YML = "/yaml/example-invalid.yml";
@@ -29,17 +32,29 @@ class YamlActionConfigParserIntegrationTests {
     private ActionConfigParser actionConfigParser;
 
     @Test
+    void testParseStreamShouldWorkForLargeYml() throws ConfigParseException {
+        //given
+        final InputStream stream = this.getClass().getResourceAsStream(ALL_RULES_YML);
+
+        //when
+        final JsonActions parse = actionConfigParser.parse(stream, false);
+
+        //then
+        Assertions.assertNotNull(parse);
+        Assertions.assertEquals(2, parse.getActions().size());
+    }
+
+    @Test
     void testParseStreamShouldWorkForValidYml() throws ConfigParseException {
         //given
         final InputStream stream = this.getClass().getResourceAsStream(EXAMPLE_YML);
 
         //when
-        final JsonActions parse = actionConfigParser.parse(stream);
+        final JsonActions parse = actionConfigParser.parse(stream, false);
 
         //then
         assertExampleParsedWell(parse);
     }
-
 
     @Test
     void testParseStreamShouldWorkForValidMultiLevelConfigYml() throws ConfigParseException {
@@ -47,7 +62,7 @@ class YamlActionConfigParserIntegrationTests {
         final InputStream stream = this.getClass().getResourceAsStream(MULTI_LEVEL_YML);
 
         //when
-        final JsonActions parse = actionConfigParser.parse(stream);
+        final JsonActions parse = actionConfigParser.parse(stream, false);
 
         //then
         Assertions.assertNotNull(parse);
@@ -65,10 +80,19 @@ class YamlActionConfigParserIntegrationTests {
         final File file = new File(this.getClass().getResource(EXAMPLE_YML).getFile());
 
         //when
-        final JsonActions parse = actionConfigParser.parse(file);
+        final JsonActions parse = actionConfigParser.parse(file, false);
 
         //then
         assertExampleParsedWell(parse);
+    }
+
+    @Test
+    void testParseFileShouldNotAllowNull() {
+        //given
+        final File input = null;
+
+        //when + then exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> actionConfigParser.parse(input, true));
     }
 
     @Test
@@ -77,25 +101,27 @@ class YamlActionConfigParserIntegrationTests {
         final InputStream stream = this.getClass().getResourceAsStream(INVALID_YML);
 
         //when + then exception
-        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(stream));
+        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(stream, true));
     }
 
-    @Test
-    void testParseStreamShouldFailForYmlNotPassingValidation() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testParseStreamShouldFailForYmlNotPassingValidation(final boolean relaxedValidation) {
         //given
         final InputStream stream = this.getClass().getResourceAsStream(EXAMPLE_INVALID_YML);
 
         //when + then exception
-        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(stream));
+        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(stream, relaxedValidation));
     }
 
-    @Test
-    void testParseFileShouldFailForInvalidYml() {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testParseFileShouldFailForInvalidYml(final boolean relaxedValidation) {
         //given
         final File file = new File(this.getClass().getResource(INVALID_YML).getFile());
 
         //when + then exception
-        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(file));
+        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(file, relaxedValidation));
     }
 
     @Test
@@ -104,7 +130,7 @@ class YamlActionConfigParserIntegrationTests {
         final File file = new File(INVALID_YML);
 
         //when + then exception
-        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(file));
+        Assertions.assertThrows(ConfigParseException.class, () -> actionConfigParser.parse(file, true));
     }
 
     @SuppressWarnings("checkstyle:MagicNumber")

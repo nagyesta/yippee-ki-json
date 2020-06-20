@@ -18,9 +18,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonMapRule.PARAM_PREDICATE;
-import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonReplaceMapRule.PARAM_MAP_FUNCTION;
-import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonReplaceMapRule.RULE_NAME;
+import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonReplaceMapRule.*;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,9 +75,8 @@ class JsonReplaceMapRuleTest {
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         when(functionRegistry.lookupFunction(anyMap())).thenReturn(o -> transform.apply((Map<String, Object>) o));
         when(functionRegistry.lookupPredicate(anyMap())).thenReturn(matches);
-        when(functionRegistry.jsonMapper()).thenReturn(jsonMapper);
 
-        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, raw);
+        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, jsonMapper, raw);
 
         //when
         rule.accept(document);
@@ -107,9 +104,8 @@ class JsonReplaceMapRuleTest {
 
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         when(functionRegistry.lookupFunction(anyMap())).thenReturn(o -> transform.apply((Map<String, Object>) o));
-        when(functionRegistry.jsonMapper()).thenReturn(jsonMapper);
 
-        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, raw);
+        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, jsonMapper, raw);
 
         //when + then exception
         Assertions.assertThrows(expected, () -> rule.accept(document));
@@ -130,9 +126,8 @@ class JsonReplaceMapRuleTest {
 
         final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         when(functionRegistry.lookupFunction(anyMap())).thenReturn(o -> COPY_WITH_SUFFIX.apply((Map<String, Object>) o));
-        when(functionRegistry.jsonMapper()).thenReturn(jsonMapper);
 
-        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, raw);
+        final JsonReplaceMapRule rule = new JsonReplaceMapRule(functionRegistry, jsonMapper, raw);
 
         //when
         final String actual = rule.toString();

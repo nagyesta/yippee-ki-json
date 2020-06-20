@@ -4,10 +4,13 @@ import java.lang.annotation.*;
 
 /**
  * Describes a parameter of a Method/Constructor to help processing externalized configuration.
+ *
+ * @deprecated use any of {@link ValueParam}, {@link MapParam} or {@link EmbedParam}.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Deprecated
 public @interface MethodParam {
 
     /**
@@ -41,4 +44,11 @@ public @interface MethodParam {
      * @return true if raw format is needed for the map.
      */
     boolean paramMap() default false;
+
+    /**
+     * Tells the converter that the parameter can be missing and replaced with null.
+     *
+     * @return true if raw parameter can be missing and replaced wit null.
+     */
+    boolean nullable() default false;
 }

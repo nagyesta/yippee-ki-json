@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ class RawParamConverterTest {
     private static final String VALUE = "value";
     private static final Map<String, Object> VALUE_MAP = Map.of(KEY, VALUE);
     private static final int INT_42 = 42;
+    private static final BigInteger BIG_INT_42 = new BigInteger("42");
 
     private static Stream<Arguments> validInputProvider() {
         return Stream.<Arguments>builder()
@@ -35,7 +37,7 @@ class RawParamConverterTest {
                 .add(Arguments.of(null, IllegalArgumentException.class))
                 .add(Arguments.of(Collections.emptyMap(), IllegalArgumentException.class))
                 .add(Arguments.of(Collections.emptyList(), IllegalArgumentException.class))
-                .add(Arguments.of(INT_42, IllegalArgumentException.class))
+                .add(Arguments.of(BIG_INT_42, IllegalArgumentException.class))
                 .add(Arguments.of(Set.of(VALUE_MAP), IllegalArgumentException.class))
                 .add(Arguments.of(List.of(VALUE_MAP, VALUE), IllegalArgumentException.class))
                 .add(Arguments.of(List.of(INT_42), IllegalArgumentException.class))

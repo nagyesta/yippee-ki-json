@@ -1,7 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedRule;
-import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
@@ -18,8 +17,7 @@ public final class JsonDeleteRule extends AbstractJsonRule {
     static final String RULE_NAME = "delete";
 
     @NamedRule(RULE_NAME)
-    public JsonDeleteRule(@SuppressWarnings("unused") @NotNull final FunctionRegistry functionRegistry,
-                          @NotNull final RawJsonRule jsonRule) {
+    public JsonDeleteRule(@NotNull final RawJsonRule jsonRule) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
     }
 

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -70,13 +71,29 @@ public interface RawConfigParam {
     }
 
     /**
-     * Finds the suitable represantation based on the input parameters and the existing values.
+     * Returns the value as a single {@link String} {@link Map} (if supported).
      *
-     * @param stringMap If a plain {@link String} {@link Map} should be returned.
-     * @param paramMap  If {@link Map} values should be wrapped as {@link RawConfigParam}.
-     * @param repeat    If a {@link Collection} should be returned.
+     * @return value
+     */
+    default Map<String, String> asStringMap() {
+        throw new UnsupportedOperationException("Conversion is not supported from: " + this.getClass());
+    }
+
+    /**
+     * Returns the value as a {@link Collection} of {@link String} {@link Map} values (if supported).
+     *
+     * @return value
+     */
+    default Collection<Map<String, String>> asStringMaps() {
+        return Collections.singletonList(asStringMap());
+    }
+
+    /**
+     * Finds the suitable representation based on the input parameters and the existing values.
+     *
+     * @param context The context where we want to use the configuration values.
      * @return the converted config
      */
     @NotNull
-    Object suitableFor(boolean stringMap, boolean paramMap, boolean repeat);
+    Object suitableFor(ParameterContext context);
 }

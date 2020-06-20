@@ -53,17 +53,22 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.jayway.jsonpath:json-path'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+    implementation 'com.networknt:json-schema-validator'
     implementation 'org.hibernate.validator:hibernate-validator'
     implementation 'org.glassfish:javax.el'
     implementation 'javax.el:javax.el-api'
     implementation 'commons-io:commons-io'
     implementation 'com.google.guava:guava'
     implementation 'org.jetbrains:annotations'
+    implementation 'javax.inject:javax.inject'
+    implementation 'ch.qos.logback:logback-classic'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation 'com.github.tomakehurst:wiremock'
 }
 
 dependencyManagement {
@@ -72,9 +77,17 @@ dependencyManagement {
             dependency 'javax.el:javax.el-api:3.0.0'
             dependency 'org.glassfish:javax.el:3.0.0'
             dependency 'com.jayway.jsonpath:json-path:2.4.0'
+            dependency 'com.networknt:json-schema-validator:1.0.40'
             dependency 'org.jetbrains:annotations:19.0.0'
+            dependency 'javax.inject:javax.inject:1'
             dependency 'commons-io:commons-io:2.6'
             dependency 'com.google.guava:guava:29.0-jre'
+        }
+    }
+
+    testImplementation {
+        dependencies {
+            dependency 'com.github.tomakehurst:wiremock:2.26.3'
         }
     }
 }
@@ -138,30 +151,56 @@ bootJar {
     archiveVersion.value(project.version as String)
 }
 
-task systemTestRun(type: Exec) {
+task systemTestRunConvert(type: Exec) {
     inputs.file(file(bootJar.outputs.files.singleFile))
-    inputs.file(file("./src/test/resources/json/example.json"))
-    inputs.file(file("./src/test/resources/yaml/example.yml"))
-    outputs.file(file("./build/test-results/systemTest/example.json"))
+    inputs.file(file("${buildDir}/resources/test/json/example.json"))
+    inputs.file(file("${buildDir}/resources/test/yaml/example.yml"))
+    outputs.file(file("${buildDir}/test-results/systemTest/example.json"))
     dependsOn bootJar
 
     group = "Execution"
     description = "Run the output executable jar with ExecTask"
     commandLine "java", "-jar", bootJar.outputs.files.singleFile,
-            "--yippee.config=./src/test/resources/yaml/example.yml",
-            "--yippee.input=./src/test/resources/json/example.json",
-            "--yippee.output=./build/test-results/systemTest/example.json",
+            "--yippee.config=${buildDir}/resources/test/yaml/example.yml",
+            "--yippee.input=${buildDir}/resources/test/json/example.json",
+            "--yippee.output=${buildDir}/test-results/systemTest/example.json",
             "--yippee.action=split-name"
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
 }
+task systemTestRunValidate(type: Exec) {
+    inputs.file(file(bootJar.outputs.files.singleFile))
+    inputs.file(file("${buildDir}/resources/test/validation/validation-input.json"))
+    inputs.file(file("${buildDir}/resources/test/validation/test-schema.json"))
+    inputs.file(file("${buildDir}/resources/test/yaml/all-rules.yml"))
+    outputs.file(file("${buildDir}/test-results/systemTest/validation-output.json"))
+    dependsOn bootJar
+
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+            "--yippee.config=${buildDir}/resources/test/yaml/all-rules.yml",
+            "--yippee.input=${buildDir}/resources/test/validation/validation-input.json",
+            "--yippee.output=${buildDir}/test-results/systemTest/validation-output.json",
+            "--yippee.action=validate"
+    logging.captureStandardOutput LogLevel.INFO
+    logging.captureStandardError LogLevel.ERROR
+}
 task systemTest {
-    dependsOn systemTestRun
-    inputs.file(file("./build/test-results/systemTest/example.json"))
-    inputs.file(file("./src/test/resources/json/example-split.json"))
+    dependsOn systemTestRunConvert
+    dependsOn systemTestRunValidate
+    inputs.file(file("${buildDir}/test-results/systemTest/example.json"))
+    inputs.file(file("${buildDir}/resources/test/json/example-split.json"))
+    inputs.file(file("${buildDir}/test-results/systemTest/validation-output.json"))
+    inputs.file(file("${buildDir}/resources/test/validation/validation-output.json"))
     doLast {
-        if (file("./build/test-results/systemTest/example.json").text != file("./src/test/resources/json/example-split.json").text) {
-            throw new StopExecutionException("System test assertion failed.")
+        if (file("${buildDir}/test-results/systemTest/example.json").text
+                != file("${buildDir}/resources/test/json/example-split.json").text) {
+            throw new StopExecutionException("System test (convert) assertion failed.")
+        }
+        if (file("${buildDir}/test-results/systemTest/validation-output.json").text
+                != file("${buildDir}/resources/test/validation/validation-output.json").text) {
+            throw new StopExecutionException("System test (validate) assertion failed.")
         }
     }
 }
@@ -174,10 +213,16 @@ tasks.withType(Checkstyle) {
     }
 }
 
+task includeSchema(type: Copy) {
+    from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
+    into file("${buildDir}/resources/main")
+}
+
 processResources {
     filesMatching('application.properties') {
         expand(project.properties)
     }
+    finalizedBy includeSchema
 }
 
 publishing {

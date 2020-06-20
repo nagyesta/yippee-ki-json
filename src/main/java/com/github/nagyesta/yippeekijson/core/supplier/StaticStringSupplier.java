@@ -1,24 +1,23 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 
 import java.util.StringJoiner;
 import java.util.function.Supplier;
 
 /**
- * {@link Supplier} matching a static {@link String}.
+ * {@link Supplier} returning a static {@link String}.
  */
 public final class StaticStringSupplier implements Supplier<String> {
 
     static final String NAME = "staticString";
-    static final String PARAM_VALUE = "value";
 
     private final String value;
 
     @NamedSupplier(NAME)
-    public StaticStringSupplier(@MethodParam(PARAM_VALUE) @NonNull final String value) {
+    public StaticStringSupplier(@ValueParam @NonNull final String value) {
         this.value = value;
     }
 

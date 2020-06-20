@@ -40,7 +40,7 @@ java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action \
     [--yippee.includes[1]=pattern] ... [--yippee.includes[N]=pattern] \
     [--yippee.excludes[0]=pattern] [--yippee.excludes[1]=pattern] ...\
     [--yippee.excludes[N]=pattern] [--yippee.allow-overwrite={true|false}]\
-     --yippee.output-directory=directory
+    [--yippee.relaxed-yml-schema=={true|false}] --yippee.output-directory=directory
 ```
 
 #### Concept
@@ -88,16 +88,17 @@ exclusion: `exclude.json`.
 
 #### Options
 ##### General options
-| Option                      | Description                                                                            |
-| --------------------------- | -------------------------------------------------------------------------------------- |
-| `--yippee.config`           | The path where the action descriptor can be located. Default: `actions.yml`            |
-| `--yippee.action`           | The name of the action we want to execute.                                             |
-| `--yippee.input`            | The name of the input file/directory. Default: `./`                                    |
-| `--yippee.allow-overwrite`  | Specifies whether we allow overwriting existing outputs. Default: `true`               |
-| `--yippee.includes[0..N]`   | Input file include wildcard patterns. Default: `*.json`                                |
-| `--yippee.excludes[0..N]`   | Input file exclude wildcard patterns.                                                  |
-| `--yippee.output`           | Output file path.                                                                      |
-| `--yippee.output-directory` | Output directory path.                                                                 |
+| Option                        | Description                                                                          |
+| ----------------------------- | ------------------------------------------------------------------------------------ |
+| `--yippee.config`             | The path where the action descriptor can be located. Default: `actions.yml`          |
+| `--yippee.action`             | The name of the action we want to execute.                                           |
+| `--yippee.input`              | The name of the input file/directory. Default: `./`                                  |
+| `--yippee.allow-overwrite`    | Specifies whether we allow overwriting existing outputs. Default: `true`             |
+| `--yippee.relaxed-yml-schema` | Allows suppression of YML configuration related schema violations. Default: `false`  |
+| `--yippee.includes[0..N]`     | Input file include wildcard patterns. Default: `*.json`                              |
+| `--yippee.excludes[0..N]`     | Input file exclude wildcard patterns.                                                |
+| `--yippee.output`             | Output file path.                                                                    |
+| `--yippee.output-directory`   | Output directory path.                                                               |
 
 ##### Spring Boot options
 All generic Spring Boot options are supported. Please find a few useful ones below.

@@ -35,6 +35,10 @@ public class RawParamConverter implements Function<Object, RawConfigParam> {
             RawConfigParam param;
             if (rawValue instanceof String) {
                 param = asString((String) rawValue);
+            } else if (rawValue instanceof Integer
+                    || rawValue instanceof Double
+                    || rawValue instanceof Boolean) {
+                param = asString(String.valueOf(rawValue));
             } else if (rawValue instanceof Map) {
                 param = asMap((Map<String, Object>) rawValue);
             } else if (allInstanceOf((List<?>) rawValue, String.class)) {
@@ -82,7 +86,10 @@ public class RawParamConverter implements Function<Object, RawConfigParam> {
             Assert.notEmpty((Collection<?>) rawValue, "Input collection cannot be empty.");
         } else if (rawValue instanceof Map) {
             Assert.notEmpty((Map<?, ?>) rawValue, "Input map cannot be empty.");
-        } else if (!(rawValue instanceof String)) {
+        } else if (!(rawValue instanceof String
+                || rawValue instanceof Integer
+                || rawValue instanceof Double
+                || rawValue instanceof Boolean)) {
             throw new IllegalArgumentException("Parameter type is not compatible: " + rawValue.getClass());
         }
     }

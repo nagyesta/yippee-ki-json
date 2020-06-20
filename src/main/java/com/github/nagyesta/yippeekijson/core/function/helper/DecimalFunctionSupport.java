@@ -1,4 +1,4 @@
-package com.github.nagyesta.yippeekijson.core.function;
+package com.github.nagyesta.yippeekijson.core.function.helper;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,12 @@ import java.util.function.Function;
  * {@link Function} for replacing {@link String} values using a RegExp .
  */
 @Slf4j
-public abstract class DecimalFunction implements Function<BigDecimal, BigDecimal> {
+public abstract class DecimalFunctionSupport implements Function<BigDecimal, BigDecimal> {
 
     private final BigDecimal operand;
     private final int scale;
 
-    public DecimalFunction(@NonNull final String operand, @NonNull final String scale) {
+    public DecimalFunctionSupport(@NonNull final String operand, @NonNull final String scale) {
         this.operand = new BigDecimal(operand);
         this.scale = Integer.parseInt(scale);
     }

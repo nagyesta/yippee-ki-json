@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonDeleteFromMapRule.*;
-import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonMapRule.PARAM_PREDICATE;
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonReplaceMapRule.RULE_NAME;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
@@ -48,9 +47,8 @@ class JsonDeleteFromMapRuleTest {
                 s -> String.valueOf(s).startsWith("remove"),
                 s -> String.valueOf(s).startsWith("keep"),
                 s -> String.valueOf(s).startsWith("remove"));
-        when(functionRegistry.jsonMapper()).thenReturn(jsonMapper);
 
-        JsonDeleteFromMapRule underTest = new JsonDeleteFromMapRule(functionRegistry, raw);
+        JsonDeleteFromMapRule underTest = new JsonDeleteFromMapRule(functionRegistry, jsonMapper, raw);
 
         //when
         underTest.accept(document);

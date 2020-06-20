@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw.params;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext.UseCase.EMBEDDED;
+import static com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext.UseCase.MAP;
+import static com.github.nagyesta.yippeekijson.core.test.params.ParamAnnotationHolder.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -22,23 +26,23 @@ class BaseRawConfigParamTest {
 
     private static Stream<Arguments> invalidSuitableForProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(true, true, false, false, false))
-                .add(Arguments.of(false, false, false, true, false))
-                .add(Arguments.of(false, false, false, true, false))
-                .add(Arguments.of(false, false, true, true, true))
-                .add(Arguments.of(false, false, true, false, true))
-                .add(Arguments.of(false, false, true, false, false))
+                .add(Arguments.of(true, true, METHOD_PARAM_ALL_FALSE))
+                .add(Arguments.of(false, false, METHOD_PARAM_PARAM_MAP_TRUE))
+                .add(Arguments.of(false, false, METHOD_PARAM_PARAM_MAP_TRUE))
+                .add(Arguments.of(false, false, METHOD_PARAM_ALL_TRUE))
+                .add(Arguments.of(false, false, METHOD_PARAM_PARAM_MAP_FALSE))
+                .add(Arguments.of(false, false, METHOD_PARAM_STRING_MAP_TRUE))
                 .build();
     }
 
     private static Stream<Arguments> validSuitableForProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(true, true, true, true, true))
-                .add(Arguments.of(true, true, true, false, true))
-                .add(Arguments.of(true, false, true, true, false))
-                .add(Arguments.of(true, false, true, false, false))
-                .add(Arguments.of(false, true, false, false, true))
-                .add(Arguments.of(false, false, false, false, false))
+                .add(Arguments.of(true, true, getMethodParamContext(METHOD_PARAM_ALL_TRUE)))
+                .add(Arguments.of(true, true, getMethodParamContext(METHOD_PARAM_PARAM_MAP_FALSE)))
+                .add(Arguments.of(true, false, getMethodParamContext(METHOD_PARAM_REPEAT_FALSE)))
+                .add(Arguments.of(true, false, getMethodParamContext(METHOD_PARAM_STRING_MAP_TRUE)))
+                .add(Arguments.of(false, true, getMethodParamContext(METHOD_PARAM_REPEAT_TRUE)))
+                .add(Arguments.of(false, false, getMethodParamContext(METHOD_PARAM_ALL_FALSE)))
                 .build();
     }
 
@@ -56,30 +60,31 @@ class BaseRawConfigParamTest {
     @ParameterizedTest
     @MethodSource("invalidSuitableForProvider")
     void testSuitableForShouldThrowExceptionWhenInputIsInvalid(final boolean configIsMap, final boolean configRepeated,
-                                                               final boolean stringMap, final boolean paramMap, final boolean repeat) {
+                                                               final String paramName) {
         //given
         final BaseRawConfigParam<String, String> underTest = underTestSpy(configIsMap, configRepeated);
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.suitableFor(stringMap, paramMap, repeat));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.suitableFor(getMethodParamContext(paramName)));
     }
 
     @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("validSuitableForProvider")
     void testSuitableForShouldReturnConvertedValueWhenInputIsValid(final boolean configIsMap, final boolean configRepeated,
-                                                                   final boolean stringMap, final boolean paramMap, final boolean repeat) {
+                                                                   final ParameterContext parameterContext) {
         //given
         final BaseRawConfigParam<String, String> underTest = underTestSpy(configIsMap, configRepeated);
 
         //when
-        final Object actual = underTest.suitableFor(stringMap, paramMap, repeat);
+        final Object actual = underTest.suitableFor(parameterContext);
 
         //then
-        verify(underTest).suitableFor(eq(stringMap), eq(paramMap), eq(repeat));
-        if (stringMap && repeat) {
+        verify(underTest).suitableFor(eq(parameterContext));
+        if (parameterContext.isCollectionTyped()
+                && (parameterContext.getUseCase() == MAP || parameterContext.getUseCase() == EMBEDDED)) {
             Class<?> toCheck = String.class;
-            if (paramMap) {
+            if (parameterContext.getUseCase() == EMBEDDED) {
                 toCheck = RawConfigParam.class;
             }
             verify(underTest).asMaps();
@@ -89,13 +94,13 @@ class BaseRawConfigParamTest {
             Assertions.assertTrue(list.get(0) instanceof Map);
             final List<Map<String, ?>> mapList = (List<Map<String, ?>>) list;
             Assertions.assertTrue(toCheck.isInstance(mapList.get(0).get(VALUE)));
-        } else if (repeat) {
+        } else if (parameterContext.isCollectionTyped()) {
             verify(underTest).asStrings();
             verify(underTest).asString();
             Assertions.assertTrue(actual instanceof List);
-        } else if (stringMap) {
+        } else if ((parameterContext.getUseCase() == MAP || parameterContext.getUseCase() == EMBEDDED)) {
             Class<?> toCheck = String.class;
-            if (paramMap) {
+            if (parameterContext.getUseCase() == EMBEDDED) {
                 toCheck = RawConfigParam.class;
             }
             verify(underTest).asMap();
@@ -161,6 +166,31 @@ class BaseRawConfigParamTest {
 
         //then
         Assertions.assertEquals(expected, actual);
+    }
+
+    @SuppressWarnings({"EqualsWithItself", "ConstantConditions"})
+    @Test
+    void testEqualsShouldCheckSameReference() {
+        //given
+        RawConfigValue a = new RawConfigValue(CONFIG_PATH, CONFIG_PATH);
+
+        //when
+        final boolean actual = a.equals(a);
+
+        //then
+        Assertions.assertTrue(actual);
+    }
+
+    @Test
+    void testEqualsShouldCheckDifferentClass() {
+        //given
+        RawConfigValue a = new RawConfigValue(CONFIG_PATH, CONFIG_PATH);
+
+        //when
+        final boolean actual = a.equals(new Object());
+
+        //then
+        Assertions.assertFalse(actual);
     }
 
     @ParameterizedTest

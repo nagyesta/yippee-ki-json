@@ -1,7 +1,8 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
+import com.github.nagyesta.yippeekijson.core.annotation.EmbedParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.predicate.helper.MapSupport;
@@ -21,17 +22,14 @@ import java.util.regex.Pattern;
 public final class EvalOnPredicate extends MapSupport implements Predicate<Object> {
 
     static final String NAME = "evalOn";
-    static final String PARAM_CHILD_PATH = "childPath";
-    static final String PARAM_PREDICATE = "predicate";
     static final String DELIMITER = ".";
 
     private final String childPath;
     private final Predicate<Object> wrappedPredicate;
 
     @NamedPredicate(NAME)
-    public EvalOnPredicate(@MethodParam(PARAM_CHILD_PATH) @NonNull final String childPath,
-                           @MethodParam(value = PARAM_PREDICATE, stringMap = true, paramMap = true)
-                           @NonNull final Map<String, RawConfigParam> predicate,
+    public EvalOnPredicate(@ValueParam @NonNull final String childPath,
+                           @EmbedParam @NonNull final Map<String, RawConfigParam> predicate,
                            @NonNull final FunctionRegistry functionRegistry) {
         this.childPath = childPath;
         this.wrappedPredicate = functionRegistry.lookupPredicate(predicate);

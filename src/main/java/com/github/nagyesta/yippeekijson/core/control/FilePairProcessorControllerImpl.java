@@ -22,7 +22,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -52,7 +52,7 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
     public void process(@NotNull final RunConfig runConfig) throws ConfigParseException, ConfigValidationException {
         validateConfig(runConfig);
 
-        final JsonActions actions = configParser.parse(runConfig.getConfigAsFile());
+        final JsonActions actions = configParser.parse(runConfig.getConfigAsFile(), runConfig.isRelaxedYmlSchema());
         final JsonAction jsonAction = actions.getActions().get(runConfig.getAction());
         Assert.notNull(jsonAction, "No action found: " + runConfig.getAction());
 
@@ -67,7 +67,8 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
                     log.warn("Overwrite is not allowed: " + value);
                     return;
                 }
-                writeToFile(value, jsonTransformer.transform(key, jsonAction));
+                writeToFile(value, runConfig.getCharset(),
+                        jsonTransformer.transform(key, runConfig.getCharset(), jsonAction));
                 success.put(key, value);
             } catch (final JsonTransformException | IOException e) {
                 failure.put(key, value);
@@ -102,11 +103,14 @@ public class FilePairProcessorControllerImpl implements FilePairProcessorControl
      * Writes the given value to the provided file.
      *
      * @param value       the file we need to write to
+     * @param charset     the file encoding we need to use
      * @param transformed the value we need to write
      * @throws IOException When the file cannot be written.
      */
-    protected void writeToFile(@NotNull final File value, @NotNull final String transformed) throws IOException {
-        FileUtils.write(value, transformed, StandardCharsets.UTF_8, false);
+    protected void writeToFile(@NotNull final File value,
+                               @NotNull final Charset charset,
+                               @NotNull final String transformed) throws IOException {
+        FileUtils.write(value, transformed, charset, false);
     }
 
     /**

@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.predicate.helper.MapSupport;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,12 +17,11 @@ import java.util.function.Predicate;
 public final class ContainsKeyPredicate extends MapSupport implements Predicate<Object> {
 
     static final String NAME = "containsKey";
-    static final String PARAM_KEY = "key";
 
     private final String key;
 
     @NamedPredicate(NAME)
-    public ContainsKeyPredicate(@MethodParam(PARAM_KEY) @NonNull final String key) {
+    public ContainsKeyPredicate(@ValueParam @NonNull final String key) {
         this.key = key;
     }
 

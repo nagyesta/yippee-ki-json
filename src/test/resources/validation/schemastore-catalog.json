@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/schema-catalog",
+  "version": 1.0,
+  "schemas": [
+    {
+      "name": "Yippee-Ki-JSON configuration YML",
+      "description": "Action and rule configuration descriptor for Yippee-Ki-JSON transformations.",
+      "fileMatch": [
+        "**/yippee-*.yml",
+        "**/*.yippee.yml"
+      ],
+      "url": "http://localhost:41562/nagyesta/yippee-ki-json/main/schema/yippee-ki-json_config_schema.json",
+      "versions": {
+        "1.1.2": "https://raw.githubusercontent.com/nagyesta/yippee-ki-json/v1.1.2/schema/yippee-ki-json_config_schema.json",
+        "latest": "https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/schema/yippee-ki-json_config_schema.json"
+      }
+    }
+  ]
+}

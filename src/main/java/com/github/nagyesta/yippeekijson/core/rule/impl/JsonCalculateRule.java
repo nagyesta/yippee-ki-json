@@ -34,11 +34,7 @@ public final class JsonCalculateRule extends AbstractJsonRule {
     public JsonCalculateRule(@NotNull final FunctionRegistry functionRegistry,
                              @NotNull final RawJsonRule jsonRule) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
-        if (jsonRule.getParams().containsKey(PARAM_PREDICATE)) {
-            this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_PREDICATE));
-        } else {
-            this.predicate = new NotNullPredicate();
-        }
+        this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_PREDICATE), new NotNullPredicate());
         this.numberFunction = functionRegistry.lookupFunction(jsonRule.configParamMap(PARAM_NUMBER_FUNCTION));
     }
 

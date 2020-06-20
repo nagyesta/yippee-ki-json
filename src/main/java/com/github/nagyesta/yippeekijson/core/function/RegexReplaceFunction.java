@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,8 +26,8 @@ public final class RegexReplaceFunction implements Function<String, String> {
     private final String replacement;
 
     @NamedFunction(NAME)
-    public RegexReplaceFunction(@MethodParam(PARAM_PATTERN) @NonNull final String pattern,
-                                @MethodParam(PARAM_REPLACEMENT) @NonNull final String replacement) {
+    public RegexReplaceFunction(@ValueParam(PARAM_PATTERN) @NonNull final String pattern,
+                                @ValueParam(PARAM_REPLACEMENT) @NonNull final String replacement) {
         this.pattern = Pattern.compile(pattern);
         this.replacement = replacement;
     }

@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,12 +15,11 @@ import java.util.regex.Pattern;
 public final class RegexPredicate implements Predicate<Object> {
 
     static final String NAME = "regex";
-    static final String PARAM_PATTERN = "pattern";
 
     private final Pattern pattern;
 
     @NamedPredicate(NAME)
-    public RegexPredicate(@MethodParam(PARAM_PATTERN) @NonNull final String pattern) {
+    public RegexPredicate(@ValueParam @NonNull final String pattern) {
         this.pattern = Pattern.compile(pattern);
     }
 

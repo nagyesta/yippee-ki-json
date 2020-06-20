@@ -30,11 +30,7 @@ public final class JsonReplaceRule extends AbstractJsonRule {
     public JsonReplaceRule(@NotNull final FunctionRegistry functionRegistry,
                            @NotNull final RawJsonRule jsonRule) {
         super(jsonRule.getOrder(), JsonPath.compile(jsonRule.getPath()));
-        if (jsonRule.getParams().containsKey(PARAM_PREDICATE)) {
-            this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_PREDICATE));
-        } else {
-            this.predicate = new AnyStringPredicate();
-        }
+        this.predicate = functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_PREDICATE), new AnyStringPredicate());
         this.stringFunction = functionRegistry.lookupFunction(jsonRule.configParamMap(PARAM_STRING_FUNCTION));
     }
 

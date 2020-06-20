@@ -1,0 +1,20 @@
+{
+  "object": {
+    "array": [
+      1
+    ],
+    "$_yippee-schema-violation": [
+      {
+        "path": "$['object'].array",
+        "message": "$['object'].array: there must be a minimum of 2 items in the array"
+      }
+    ]
+  },
+  "array": [
+    {
+      "integer": 1,
+      "float": 2.0,
+      "boolean": true
+    }
+  ]
+}

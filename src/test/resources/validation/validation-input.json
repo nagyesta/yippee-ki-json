@@ -1,0 +1,14 @@
+{
+  "object": {
+    "array-inner": [
+      1
+    ]
+  },
+  "array": [
+    {
+      "integer": 1,
+      "float": 2.0,
+      "boolean": true
+    }
+  ]
+}

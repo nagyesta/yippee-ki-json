@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.expression.spel.standard.SpelExpression;
@@ -17,12 +17,11 @@ import java.util.function.Predicate;
 public final class SpringExpressionLanguagePredicate implements Predicate<Object> {
 
     static final String NAME = "SpEL";
-    static final String PARAM_EXPRESSION = "expression";
 
     private final SpelExpression expression;
 
     @NamedPredicate(NAME)
-    public SpringExpressionLanguagePredicate(@MethodParam(PARAM_EXPRESSION) @NonNull final String expression) {
+    public SpringExpressionLanguagePredicate(@ValueParam @NonNull final String expression) {
         try {
             this.expression = new SpelExpressionParser().parseRaw(expression);
         } catch (final Exception e) {

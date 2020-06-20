@@ -2,7 +2,9 @@ package com.github.nagyesta.yippeekijson.core.rule.impl;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedRule;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
+import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
+import com.github.nagyesta.yippeekijson.core.rule.impl.helper.JsonMapRuleSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +26,9 @@ import java.util.function.Predicate;
  * </ol>
  */
 @Slf4j
-public final class JsonDeleteFromMapRule extends JsonMapRule {
+public final class JsonDeleteFromMapRule extends JsonMapRuleSupport {
 
+    static final String PARAM_PREDICATE = "predicate";
     static final String RULE_NAME = "deleteFrom";
     static final String PARAM_KEEP_KEY = "keepKey";
     static final String PARAM_DELETE_KEY = "deleteKey";
@@ -43,8 +46,9 @@ public final class JsonDeleteFromMapRule extends JsonMapRule {
 
     @NamedRule(RULE_NAME)
     public JsonDeleteFromMapRule(@NotNull final FunctionRegistry functionRegistry,
+                                 @NotNull final JsonMapper jsonMapper,
                                  @NotNull final RawJsonRule jsonRule) {
-        super(functionRegistry, jsonRule, log);
+        super(functionRegistry, jsonMapper, jsonRule, log, PARAM_PREDICATE);
         if (jsonRule.getParams().containsKey(PARAM_KEEP_KEY)) {
             this.keepIfKeyMatches = Optional.of(functionRegistry.lookupPredicate(jsonRule.configParamMap(PARAM_KEEP_KEY)));
         } else {
