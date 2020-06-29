@@ -13,7 +13,7 @@ SYNOPSIS
             [--yippee.includes[0]=pattern] [--yippee.includes[1]=pattern] ... [--yippee.includes[N]=pattern]
             [--yippee.excludes[0]=pattern] [--yippee.excludes[1]=pattern] ... [--yippee.excludes[N]=pattern]
             [--yippee.allow-overwrite={true|false}] [--yippee.relaxed-yml-schema=={true|false}]
-            --yippee.output-directory=directory
+            --yippee.output-directory=directory [--yippee.charset=charset]
 
 DESCRIPTION
     Yippee-Ki-JSON is a Lightweight JSON manipulation application using Spring Boot and JSON Path as core.
@@ -89,6 +89,10 @@ OPTIONS
         --yippee.output-directory
             Output directory path.
 
+        --yippee.charset
+            Default character set used during parsing.
+            Default: UTF-8
+
     Spring Boot options
         All generic Spring Boot options are supported. Please find a few useful ones below.
 
@@ -111,6 +115,40 @@ OPTIONS
 
         --logging.level.com.github.nagyesta.yippeekijson={DEBUG|INFO|WARN|ERROR}
             Set logging of the Yippee-Ki-JSON codebase to DEBUG/INFO/WARN/ERROR.
+
+    SchemaStore integration options
+        --additional.schema-store.catalog-uri
+            The URI of the SchemaStore catalog JSON.
+            Default: https://www.schemastore.org/api/json/catalog.json
+
+        --additional.schema-store.schema-array-path
+            The JSON Path we will use to get the list/array items of the catalog.
+            Default: $.schemas[*]
+
+        --additional.schema-store.mapping-name-key
+            The key referencing the name of the schema item.
+            Default: name
+
+        --additional.schema-store.mapping-url-key
+            The key referencing the URI of the schema item.
+            Default: url
+
+    HTTP Client options
+        --additional.http.user-agent
+            The value of the user-agent HTTP header.
+            Default: Yippee-Ki-JSON/${application.version} (Java ${java.version}) (${os.name} ${os.version})
+
+        --additional.http.add-default-headers
+            Boolean telling the app to add the default HTTP headers automatically.
+            Default: true
+
+        --additional.http.min-success-status
+            The minimum (inclusive) HTTP status code value we should consider as successful.
+            Default: 200
+
+        --additional.http.max-success-status
+            The maximum (inclusive) HTTP status code value we should consider as successful.
+            Default: 299
 
 EXIT STATUS
         0       Successful program execution (not necessarily successful output generation).

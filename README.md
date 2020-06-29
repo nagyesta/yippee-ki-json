@@ -41,6 +41,7 @@ java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action \
     [--yippee.excludes[0]=pattern] [--yippee.excludes[1]=pattern] ...\
     [--yippee.excludes[N]=pattern] [--yippee.allow-overwrite={true|false}]\
     [--yippee.relaxed-yml-schema=={true|false}] --yippee.output-directory=directory
+    [--yippee.charset=charset]
 ```
 
 #### Concept
@@ -99,6 +100,27 @@ exclusion: `exclude.json`.
 | `--yippee.excludes[0..N]`     | Input file exclude wildcard patterns.                                                |
 | `--yippee.output`             | Output file path.                                                                    |
 | `--yippee.output-directory`   | Output directory path.                                                               |
+| `--yippee.charset`            | Default character set used during parsing. Default: `UTF-8`                          |
+
+#### SchemaStore integration
+Prefix: `--additional.schema-store.<option>`
+
+| Option              | Description                                                                                           |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| `catalog-uri`       | The URI of the SchemaStore catalog JSON. Default: `https://www.schemastore.org/api/json/catalog.json` |
+| `schema-array-path` | The JSON Path we will use to get the list/array items of the catalog. Default: `$.schemas[*]`         |
+| `mapping-name-key`  | The key referencing the name of the schema item. Default: `name`                                      |
+| `mapping-url-key`   | The key referencing the URI of the schema item. Default: `url`                                        |
+
+#### HTTP Client
+Prefix: `--additional.http.<option>`
+
+| Option                | Description                                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `user-agent`          | The value of the user-agent HTTP header.                                                        |
+| `add-default-headers` | Boolean telling the app to add the default HTTP headers automatically. Default: `true`          |
+| `min-success-status`  | The minimum (inclusive) HTTP status code value we should consider as successful. Default: `200` |
+| `max-success-status`  | The maximum (inclusive) HTTP status code value we should consider as successful. Default: `299` |
 
 ##### Spring Boot options
 All generic Spring Boot options are supported. Please find a few useful ones below.

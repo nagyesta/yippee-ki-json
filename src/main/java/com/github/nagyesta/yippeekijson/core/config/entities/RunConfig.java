@@ -39,7 +39,7 @@ public class RunConfig {
     private boolean allowOverwrite;
     private boolean relaxedYmlSchema;
     @NotNull
-    private Charset charset = StandardCharsets.UTF_8;
+    private Charset charset;
     @NotNull
     @Size(min = 1)
     private List<String> includes;

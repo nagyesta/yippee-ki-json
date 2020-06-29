@@ -112,6 +112,9 @@ jacoco {
 }
 
 jacocoTestCoverageVerification {
+    inputs.file(file("${buildDir}/reports/jacoco/report.xml"))
+    outputs.file(file("${buildDir}/reports/jacoco/jacocoTestCoverageVerification"))
+
     violationRules {
         rule {
             limit {
@@ -141,6 +144,9 @@ jacocoTestCoverageVerification {
                     'com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper'
             ]
         }
+    }
+    doLast {
+        file("${buildDir}/reports/jacoco/jacocoTestCoverageVerification").write("Passed")
     }
 }
 bootJar.dependsOn check
@@ -193,6 +199,7 @@ task systemTest {
     inputs.file(file("${buildDir}/resources/test/json/example-split.json"))
     inputs.file(file("${buildDir}/test-results/systemTest/validation-output.json"))
     inputs.file(file("${buildDir}/resources/test/validation/validation-output.json"))
+    outputs.file(file("${buildDir}/test-results/systemTest/result"))
     doLast {
         if (file("${buildDir}/test-results/systemTest/example.json").text
                 != file("${buildDir}/resources/test/json/example-split.json").text) {
@@ -202,6 +209,7 @@ task systemTest {
                 != file("${buildDir}/resources/test/validation/validation-output.json").text) {
             throw new StopExecutionException("System test (validate) assertion failed.")
         }
+        file("${buildDir}/test-results/systemTest/result").write("Passed")
     }
 }
 
