@@ -150,6 +150,10 @@ OPTIONS
             The maximum (inclusive) HTTP status code value we should consider as successful.
             Default: 299
 
+        --additional.http.timeout-seconds
+            The maximum time we want to wait for an HTTP response. Ignored if zero or below.
+            Default: 0
+
 EXIT STATUS
         0       Successful program execution (not necessarily successful output generation).
 

@@ -3,12 +3,14 @@ package com.github.nagyesta.yippeekijson.core.config.entities;
 import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Getter
 @Setter
 @Injectable(forType = HttpConfig.class)
 @Configuration
+@ConfigurationProperties(prefix = "additional.http", ignoreUnknownFields = false)
 public class HttpConfig {
     private String userAgent;
     private boolean addDefaultHeaders;

@@ -5,12 +5,14 @@ import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
+import com.google.common.net.HttpHeaders;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.util.MimeTypeUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -150,11 +152,12 @@ class SchemaStoreSchemaContentSupplierTest {
         Assertions.assertTrue(actual.contains(YIPPEE_SCHEMA_NAME));
     }
 
-    private void whenFetchedReturnJson(final String storeCatalogJson, final HttpClient httpClient, final String catalogUri) {
-        HttpRequestContext catalogRequestContext = HttpRequestContext.builder()
-                .uri(catalogUri)
+    private void whenFetchedReturnJson(final String json, final HttpClient httpClient, final String uri) {
+        HttpRequestContext requestContext = HttpRequestContext.builder()
+                .uri(uri)
+                .addHeader(HttpHeaders.ACCEPT, MimeTypeUtils.ALL_VALUE)
                 .build();
-        when(httpClient.fetch(eq(catalogRequestContext))).thenReturn(storeCatalogJson);
+        when(httpClient.fetch(eq(requestContext))).thenReturn(json);
     }
 
     private SchemaStoreConfig schemaStoreConfig() {
