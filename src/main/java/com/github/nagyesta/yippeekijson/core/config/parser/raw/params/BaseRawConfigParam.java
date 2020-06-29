@@ -1,12 +1,14 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw.params;
 
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -43,47 +45,24 @@ public abstract class BaseRawConfigParam<T, R> implements RawConfigParam {
 
     @NotNull
     @Override
-    public Object suitableFor(final boolean stringMap, final boolean paramMap, final boolean repeat) {
-        Assert.isTrue(paramMap == stringMap || !paramMap,
-                "Param maps cannot be used when maps are not selected either: " + configPath);
-        Assert.isTrue(repeat == isRepeated(),
+    public Object suitableFor(@NotNull final ParameterContext parameterContext) {
+        Assert.isTrue(parameterContext.isCollectionTyped() == isRepeated(),
                 "Repeated value requirement needs to match param for: " + configPath);
-        Assert.isTrue(stringMap == isMapType(),
+        Assert.isTrue((parameterContext.getUseCase() == ParameterContext.UseCase.VALUE) == !isMapType(),
                 "Map value requirement needs to match param for: " + configPath);
-        Object result;
-        if (repeat) {
-            result = getCollectionValue(stringMap, paramMap);
-        } else {
-            result = getSingleValue(stringMap, paramMap);
-        }
-        return result;
+        return parameterContext.getUseCase().apply(this, parameterContext.isCollectionTyped());
     }
 
-    @NotNull
-    private Object getSingleValue(final boolean stringMap, final boolean paramMap) {
-        Object result;
-        if (paramMap) {
-            result = this.asMap();
-        } else if (stringMap) {
-            result = this.unwrap(this.asMap());
-        } else {
-            result = this.asString();
-        }
-        return result;
+    @Override
+    public Map<String, String> asStringMap() {
+        return this.unwrap(this.asMap());
     }
 
-    private Collection<?> getCollectionValue(final boolean stringMap, final boolean paramMap) {
-        Collection<?> result;
-        if (paramMap) {
-            result = this.asMaps();
-        } else if (stringMap) {
-            result = this.asMaps().stream()
-                    .map(this::unwrap)
-                    .collect(Collectors.toUnmodifiableList());
-        } else {
-            result = this.asStrings();
-        }
-        return result;
+    @Override
+    public Collection<Map<String, String>> asStringMaps() {
+        return this.asMaps().stream()
+                .map(this::unwrap)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     @NotNull
@@ -148,16 +127,25 @@ public abstract class BaseRawConfigParam<T, R> implements RawConfigParam {
         if (this == o) {
             return true;
         }
-        if (!(this.getClass().isInstance(o))) {
+
+        if (!(o instanceof BaseRawConfigParam)) {
             return false;
         }
 
-        return Boolean.logicalAnd(Objects.equals(value, this.getClass().cast(o).getValue()),
-                Objects.equals(configPath, this.getClass().cast(o).getConfigPath()));
+        BaseRawConfigParam<?, ?> that = (BaseRawConfigParam<?, ?>) o;
+
+        return new EqualsBuilder()
+                .append(configPath, that.configPath)
+                .append(value, that.value)
+                .isEquals();
     }
 
+    @SuppressWarnings("checkstyle:MagicNumber")
     @Override
     public int hashCode() {
-        return Objects.hash(this.value, this.configPath);
+        return new HashCodeBuilder(17, 37)
+                .append(configPath)
+                .append(value)
+                .toHashCode();
     }
 }

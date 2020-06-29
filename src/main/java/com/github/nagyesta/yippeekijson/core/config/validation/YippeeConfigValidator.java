@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.config.validation;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -129,7 +130,7 @@ public class YippeeConfigValidator implements ConstraintValidator<ValidYippeeCon
      * @param obj the config that contains the input file
      * @return the input wrapped with optional
      */
-    protected Optional<File> getOptionalInput(@NonNull final RunConfig obj) {
+    protected Optional<File> getOptionalInput(@NotNull final RunConfig obj) {
         if (obj.getInput() == null) {
             return Optional.empty();
         } else {

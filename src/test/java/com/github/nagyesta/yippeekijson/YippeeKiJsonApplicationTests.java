@@ -90,7 +90,7 @@ class YippeeKiJsonApplicationTests {
     @Test
     @SuppressWarnings("checkstyle:MagicNumber")
     void testParseConfigFile() throws ConfigParseException {
-        final JsonActions parse = actionConfigParser.parse(this.getClass().getResourceAsStream("/yaml/example.yml"));
+        final JsonActions parse = actionConfigParser.parse(this.getClass().getResourceAsStream("/yaml/example.yml"), false);
         Assertions.assertNotNull(parse);
         Assertions.assertEquals(2, parse.getActions().size());
         Assertions.assertEquals(3, parse.getActions().get("filter").getRules().size());

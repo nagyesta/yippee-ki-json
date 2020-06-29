@@ -1,8 +1,10 @@
 package com.github.nagyesta.yippeekijson.core.config.parser;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.TypeRef;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -16,9 +18,7 @@ public interface JsonMapper {
      *
      * @return the parser config
      */
-    default Configuration parserConfiguration() {
-        return Configuration.defaultConfiguration();
-    }
+    Configuration parserConfiguration();
 
     /**
      * Converts and input object to the desired format if possible.
@@ -29,6 +29,14 @@ public interface JsonMapper {
      * @return the converted object
      */
     <T> T mapTo(@NonNull Object input, @NonNull TypeRef<T> typeRef);
+
+    /**
+     * Returns an ObjectMapper with the same configuration we use for parsing/mapping.
+     *
+     * @return objectMapper
+     */
+    @NotNull
+    ObjectMapper objectMapper();
 
     /**
      * {@link TypeRef} implementation for {@link String} to {@link Object} {@link Map} type.

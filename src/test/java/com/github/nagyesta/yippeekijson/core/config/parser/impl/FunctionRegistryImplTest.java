@@ -1,11 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
-import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
-import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
-import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
+import com.github.nagyesta.yippeekijson.core.annotation.*;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
-import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigValue;
 import com.github.nagyesta.yippeekijson.core.function.RegexReplaceFunction;
@@ -18,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class FunctionRegistryImplTest {
 
@@ -51,6 +49,8 @@ class FunctionRegistryImplTest {
                 .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, FAILING)), IllegalArgumentException.class))
                 .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, FAILING), NONE, new RawConfigValue(NAME, BLANK)),
                         IllegalStateException.class))
+                .add(Arguments.of(Map.of(NAME, new RawConfigValue(NAME, FAILING), NONE, new RawConfigValue(NAME, BLANK),
+                        UNKNOWN, new RawConfigValue(NAME, UNKNOWN)), IllegalStateException.class))
                 .add(Arguments.of(Collections.emptyMap(), IllegalArgumentException.class))
                 .add(Arguments.of(null, IllegalArgumentException.class))
                 .build();
@@ -58,15 +58,13 @@ class FunctionRegistryImplTest {
 
     private static Stream<Arguments> nullListProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null, null))
-                .add(Arguments.of(Collections.emptyList(), null, null, null))
-                .add(Arguments.of(null, Collections.emptyList(), null, null))
-                .add(Arguments.of(null, null, Collections.emptyList(), null))
-                .add(Arguments.of(null, null, null, mock(JsonMapper.class)))
-                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null))
-                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null, mock(JsonMapper.class)))
-                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList(), mock(JsonMapper.class)))
-                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList(), mock(JsonMapper.class)))
+                .add(Arguments.of(null, null, null))
+                .add(Arguments.of(Collections.emptyList(), null, null))
+                .add(Arguments.of(null, Collections.emptyList(), null))
+                .add(Arguments.of(null, null, Collections.emptyList()))
+                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null))
+                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList()))
+                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList()))
                 .build();
     }
 
@@ -74,20 +72,22 @@ class FunctionRegistryImplTest {
     @MethodSource("nullListProvider")
     void testConstructorShouldFailIfNullProvided(final List<Class<? extends Supplier<?>>> suppliers,
                                                  final List<Class<? extends Function<?, ?>>> functions,
-                                                 final List<Class<? extends Predicate<Object>>> predicates,
-                                                 final JsonMapper jsonMapper) {
+                                                 final List<Class<? extends Predicate<Object>>> predicates) {
         //given
         //when + then exception
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> new FunctionRegistryImpl(jsonMapper, suppliers, functions, predicates));
+                () -> new FunctionRegistryImpl(suppliers, functions, predicates));
     }
 
     @Test
-    void testLookupSupplierShouldReturnAnInstanceWhenFound() {
+    void testLookupSupplierShouldReturnAnInstanceWhenFound() throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, List.of(StaticStringSupplier.class),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(List.of(StaticStringSupplier.class),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
 
         //when
         final Supplier<Object> actual = underTest.lookupSupplier(Map.of(NAME, STATIC_STRING, VALUE, new RawConfigValue(NAME, VALUE)));
@@ -100,11 +100,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(final Map<String, RawConfigParam> map,
-                                                                    final Class<? extends Exception> exception) {
+                                                                    final Class<? extends Exception> exception) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerSupplierClass(FailingSupplier.class);
 
         //when + then exception
@@ -112,11 +115,14 @@ class FunctionRegistryImplTest {
     }
 
     @Test
-    void testLookupFunctionShouldReturnAnInstanceWhenFound() {
+    void testLookupFunctionShouldReturnAnInstanceWhenFound() throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 List.of(RegexReplaceFunction.class), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
 
         //when
         final Function<Object, Object> actual = underTest.lookupFunction(
@@ -130,11 +136,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(final Map<String, RawConfigParam> map,
-                                                                    final Class<? extends Exception> exception) {
+                                                                    final Class<? extends Exception> exception) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerFunctionClass(FailingFunction.class);
 
         //when + then exception
@@ -142,11 +151,14 @@ class FunctionRegistryImplTest {
     }
 
     @Test
-    void testLookupPredicateShouldReturnAnInstanceWhenFound() {
+    void testLookupPredicateShouldReturnAnInstanceWhenFound() throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), List.of(AnyStringPredicate.class));
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
 
         //when
         final Predicate<Object> actual = underTest.lookupPredicate(
@@ -160,11 +172,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(final Map<String, RawConfigParam> map,
-                                                                      final Class<? extends Exception> exception) {
+                                                                      final Class<? extends Exception> exception) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerPredicateClass(FailingPredicate.class);
 
         //when + then exception
@@ -174,11 +189,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongSupplier.class, FailingSupplier.class})
-    void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(final Class<? extends Supplier<?>> clazz) {
+    void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(final Class<? extends Supplier<?>> clazz) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerSupplierClass(FailingSupplier.class);
 
         //when + then exception
@@ -188,11 +206,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongFunction.class, FailingFunction.class})
-    void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Function<?, ?>> clazz) {
+    void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Function<?, ?>> clazz) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerFunctionClass(FailingFunction.class);
 
         //when + then exception
@@ -202,11 +223,14 @@ class FunctionRegistryImplTest {
     @ParameterizedTest
     @NullSource
     @ValueSource(classes = {WrongPredicate.class, FailingPredicate.class})
-    void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Predicate<?>> clazz) {
+    void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Predicate<?>> clazz) throws Exception {
         //given
-        final JsonMapper jsonMapper = mock(JsonMapper.class);
-        final FunctionRegistry underTest = new FunctionRegistryImpl(jsonMapper, Collections.emptyList(),
+        final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
                 Collections.emptyList(), Collections.emptyList());
+        final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
+        underTest.setApplicationContext(applicationContext);
+        underTest.afterPropertiesSet();
         underTest.registerPredicateClass(FailingPredicate.class);
 
         //when + then exception
@@ -222,7 +246,8 @@ class FunctionRegistryImplTest {
 
     private static final class FailingSupplier extends WrongSupplier {
         @NamedSupplier(FAILING)
-        private FailingSupplier(@MethodParam(NONE) final String something) {
+        private FailingSupplier(@ValueParam(NONE) final String something,
+                                @ValueParam(value = UNKNOWN, nullable = true) final String unknown) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }
@@ -238,7 +263,8 @@ class FunctionRegistryImplTest {
 
     private static final class FailingFunction extends WrongFunction {
         @NamedFunction(FAILING)
-        private FailingFunction(@MethodParam(NONE) final String something) {
+        private FailingFunction(@ValueParam(NONE) final String something,
+                                @ValueParam(value = UNKNOWN, nullable = true) final String unknown) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }
@@ -254,7 +280,8 @@ class FunctionRegistryImplTest {
 
     private static final class FailingPredicate extends WrongPredicate {
         @NamedPredicate(FAILING)
-        private FailingPredicate(@MethodParam(NONE) final String something) {
+        private FailingPredicate(@ValueParam(NONE) final String something,
+                                 @ValueParam(value = UNKNOWN, nullable = true) final String unknown) {
             if (something.isBlank()) {
                 throw new RuntimeException(something);
             }

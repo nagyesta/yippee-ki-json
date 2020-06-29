@@ -1,7 +1,8 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
+import com.github.nagyesta.yippeekijson.core.function.helper.DecimalFunctionSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,7 @@ import java.util.function.BiFunction;
  * {@link java.util.function.Function} for division of a decimal value.
  */
 @Slf4j
-public final class DecimalDivideFunction extends DecimalFunction {
+public final class DecimalDivideFunction extends DecimalFunctionSupport {
 
     static final String NAME = "divide";
     static final String PARAM_OPERAND = "operand";
@@ -22,8 +23,8 @@ public final class DecimalDivideFunction extends DecimalFunction {
     private final int scale;
 
     @NamedFunction(NAME)
-    public DecimalDivideFunction(@NotNull @MethodParam(PARAM_OPERAND) final String operand,
-                                 @NotNull @MethodParam(PARAM_SCALE) final String scale) {
+    public DecimalDivideFunction(@NotNull @ValueParam(PARAM_OPERAND) final String operand,
+                                 @NotNull @ValueParam(PARAM_SCALE) final String scale) {
         super(operand, scale);
         this.scale = Integer.parseInt(scale);
     }

@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
@@ -23,8 +23,8 @@ public final class LiteralReplaceFunction implements Function<String, String> {
     private final String replace;
 
     @NamedFunction(NAME)
-    public LiteralReplaceFunction(@MethodParam(PARAM_FIND) @NonNull final String find,
-                                  @MethodParam(PARAM_REPLACE) @NonNull final String replace) {
+    public LiteralReplaceFunction(@ValueParam(PARAM_FIND) @NonNull final String find,
+                                  @ValueParam(PARAM_REPLACE) @NonNull final String replace) {
         this.find = find;
         this.replace = replace;
     }

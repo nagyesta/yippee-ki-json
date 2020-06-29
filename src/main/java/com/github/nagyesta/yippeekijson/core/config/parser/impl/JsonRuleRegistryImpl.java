@@ -16,15 +16,17 @@ import java.lang.reflect.Parameter;
 import java.util.*;
 
 @Slf4j
-public class JsonRuleRegistryImpl implements JsonRuleRegistry {
+public class JsonRuleRegistryImpl extends InjectableBeanSupport implements JsonRuleRegistry {
 
     private final Map<String, Constructor<? extends JsonRule>> namedRules = new HashMap<>();
     private final FunctionRegistry functionRegistry;
+    private final List<Class<? extends JsonRule>> rules;
 
     public JsonRuleRegistryImpl(@NonNull final FunctionRegistry functionRegistry,
                                 @NonNull final List<Class<? extends JsonRule>> rules) {
+        super(log);
         this.functionRegistry = functionRegistry;
-        rules.forEach(this::registerRuleClass);
+        this.rules = rules;
     }
 
     @SuppressWarnings("unchecked")
@@ -49,29 +51,58 @@ public class JsonRuleRegistryImpl implements JsonRuleRegistry {
         final Constructor<? extends JsonRule> constructor = namedRules.get(name);
         try {
             log.debug("Returning instance of class: " + constructor.getDeclaringClass().getName());
-            return constructor.newInstance(functionRegistry, source);
+            final Object[] objects = prepareParams(source, constructor);
+            return constructor.newInstance(objects);
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
-    private void addAnnotatedConstructor(final Constructor<? extends JsonRule> constructor) {
+    @NotNull
+    private Object[] prepareParams(@NotNull final RawJsonRule rawJsonRule,
+                                   @NotNull final Constructor<? extends JsonRule> constructor) {
+        return Arrays.stream(constructor.getParameters()).map(p -> {
+            if (p.getType().equals(RawJsonRule.class)) {
+                return rawJsonRule;
+            } else {
+                return this.validCandidateOf(constructor, p);
+            }
+        }).toArray();
+    }
+
+    private void addAnnotatedConstructor(@NotNull final Constructor<? extends JsonRule> constructor) {
         Assert.notNull(constructor.getAnnotation(NamedRule.class), "Constructor in not annotated.");
         final String name = constructor.getAnnotation(NamedRule.class).value();
         Assert.isTrue(!namedRules.containsKey(name), "Duplicate named rule found: " + name);
 
         final Parameter[] parameters = constructor.getParameters();
         Assert.notNull(parameters, "Annotated constructor must have parameters.");
-        Assert.isTrue(parameters.length == 2, "Annotated constructor must accept FunctionRegistry and RawJsonRule.");
-        Assert.isTrue(FunctionRegistry.class.equals(parameters[0].getType()), "The 1st parameter must be the FunctionRegistry.");
-        Assert.isTrue(RawJsonRule.class.equals(parameters[1].getType()), "The 2nd parameter must be the RawJsonRule.");
-
+        assertAcceptsRawJsonRule(constructor);
+        assertUsesValidAnnotatedTypes(constructor);
         namedRules.put(name, constructor);
+    }
+
+    private void assertUsesValidAnnotatedTypes(@NotNull final Constructor<? extends JsonRule> constructor) {
+        final boolean allMatch = Arrays.stream(constructor.getParameters()).allMatch(p ->
+                this.hasCandidateFor(p.getType()) || p.getType().equals(RawJsonRule.class));
+        Assert.isTrue(allMatch, "Only RawJsonRule parameter can be of non-@injectable type: "
+                + constructor.getDeclaringClass().getName());
+    }
+
+    private void assertAcceptsRawJsonRule(@NotNull final Constructor<? extends JsonRule> constructor) {
+        final long rawRuleCount = Arrays.stream(constructor.getParameters())
+                .filter(p -> p.getType().equals(RawJsonRule.class)).count();
+        Assert.isTrue(rawRuleCount == 1, "Annotated constructor must accept RawJsonRule.");
     }
 
     private Optional<Constructor<?>> findAnnotatedConstructor(@NotNull final Class<? extends JsonRule> rule) {
         return Arrays.stream(rule.getDeclaredConstructors())
                 .filter(c -> c.isAnnotationPresent(NamedRule.class))
                 .findFirst();
+    }
+
+    @Override
+    protected void afterInitialized() {
+        rules.forEach(this::registerRuleClass);
     }
 }

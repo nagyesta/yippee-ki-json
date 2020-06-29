@@ -1,5 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config;
 
+import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
+import com.github.nagyesta.yippeekijson.core.config.entities.HttpConfig;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
@@ -7,11 +9,13 @@ import com.github.nagyesta.yippeekijson.core.config.parser.impl.FunctionRegistry
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonRuleRegistryImpl;
 import com.github.nagyesta.yippeekijson.core.function.*;
+import com.github.nagyesta.yippeekijson.core.http.HttpClient;
+import com.github.nagyesta.yippeekijson.core.http.impl.DefaultHttpClient;
 import com.github.nagyesta.yippeekijson.core.predicate.*;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.impl.*;
-import com.github.nagyesta.yippeekijson.core.supplier.StaticJsonSupplier;
-import com.github.nagyesta.yippeekijson.core.supplier.StaticStringSupplier;
+import com.github.nagyesta.yippeekijson.core.supplier.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,19 +29,29 @@ public class JsonRegistryConfig {
 
     @Bean
     public List<Class<? extends Supplier<?>>> autoRegisterSuppliers() {
-        return List.of(StaticJsonSupplier.class,
+        return List.of(
+                ConvertingSupplier.class,
+                FileContentSupplier.class,
+                HttpResourceContentSupplier.class,
+                JsonSchemaSupplier.class,
+                SchemaStoreSchemaContentSupplier.class,
+                StaticJsonSupplier.class,
                 StaticStringSupplier.class);
     }
 
     @Bean
     public List<Class<? extends Function<?, ?>>> autoRegisterFunctions() {
-        return List.of(ChangeCaseFunction.class,
+        return List.of(
+                ChangeCaseFunction.class,
                 CloneKeyFunction.class,
                 DecimalAddFunction.class,
                 DecimalDivideFunction.class,
                 DecimalMultiplyFunction.class,
                 DecimalSubtractFunction.class,
                 EpochMilliDateAddFunction.class,
+                HttpResourceContentFunction.class,
+                HttpResourceContentMapFunction.class,
+                JsonParseFunction.class,
                 LiteralReplaceFunction.class,
                 RegexReplaceFunction.class,
                 StringDateAddFunction.class);
@@ -45,7 +59,8 @@ public class JsonRegistryConfig {
 
     @Bean
     public List<Class<? extends Predicate<Object>>> autoRegisterPredicates() {
-        return List.of(AllMatchPredicate.class,
+        return List.of(
+                AllMatchPredicate.class,
                 AnyMatchPredicate.class,
                 AnyStringPredicate.class,
                 ContainsKeyPredicate.class,
@@ -58,13 +73,21 @@ public class JsonRegistryConfig {
     }
 
     @Bean
+    @Injectable(forType = JsonMapper.class)
     public JsonMapper yippeeJsonMapper() {
         return new JsonMapperImpl();
     }
 
     @Bean
+    @Injectable(forType = HttpClient.class)
+    public HttpClient httpClient(@Autowired final HttpConfig httpConfig) {
+        return new DefaultHttpClient(httpConfig);
+    }
+
+    @Bean
+    @Injectable(forType = FunctionRegistry.class)
     public FunctionRegistry functionRegistry() {
-        return new FunctionRegistryImpl(yippeeJsonMapper(), autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates());
+        return new FunctionRegistryImpl(autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates());
     }
 
     @Bean
@@ -76,11 +99,13 @@ public class JsonRegistryConfig {
                 JsonDeleteRule.class,
                 JsonRenameRule.class,
                 JsonReplaceMapRule.class,
-                JsonReplaceRule.class);
+                JsonReplaceRule.class,
+                JsonValidationRule.class);
     }
 
     @Bean
     public JsonRuleRegistry jsonRuleRegistry() {
         return new JsonRuleRegistryImpl(functionRegistry(), autoRegisterRules());
     }
+
 }

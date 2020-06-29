@@ -1,0 +1,36 @@
+{
+  "object": {
+    "array-inner": [
+      1
+    ],
+    "$_yippee-schema-violation": [
+      {
+        "path": "$.object",
+        "message": "$.object.object-inner: is missing but it is required"
+      },
+      {
+        "path": "$.object.array-inner[0]",
+        "message": "$.object.array-inner[0]: integer found, object expected"
+      }
+    ]
+  },
+  "array": [
+    {
+      "integer": 1,
+      "float": 2.0,
+      "boolean": true,
+      "$_yippee-schema-violation": [
+        {
+          "path": "$.array[0]",
+          "message": "$.array[0]: object found, integer expected"
+        }
+      ]
+    }
+  ],
+  "$_yippee-schema-violation": [
+    {
+      "path": "$.array",
+      "message": "$.array: there must be a minimum of 2 items in the array"
+    }
+  ]
+}

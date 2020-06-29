@@ -1,11 +1,10 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
+import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
-import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -24,21 +23,23 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Slf4j
-public class FunctionRegistryImpl implements FunctionRegistry {
+@Injectable(forType = FunctionRegistry.class)
+public class FunctionRegistryImpl extends InjectableBeanSupport implements FunctionRegistry {
 
     private final @NotNull Map<String, Constructor<?>> namedSuppliers = new HashMap<>();
     private final @NotNull Map<String, Constructor<?>> namedPredicates = new HashMap<>();
     private final @NotNull Map<String, Constructor<?>> namedFunctions = new HashMap<>();
-    private final JsonMapper jsonMapper;
+    private final List<Class<? extends Supplier<?>>> autoRegisterSuppliers;
+    private final List<Class<? extends Function<?, ?>>> autoRegisterFunctions;
+    private final List<Class<? extends Predicate<Object>>> autoRegisterPredicates;
 
-    public FunctionRegistryImpl(@NonNull final JsonMapper jsonMapper,
-                                @NonNull final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
+    public FunctionRegistryImpl(@NonNull final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
                                 @NonNull final List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
                                 @NonNull final List<Class<? extends Predicate<Object>>> autoRegisterPredicates) {
-        this.jsonMapper = jsonMapper;
-        autoRegisterSuppliers.forEach(this::registerSupplierClass);
-        autoRegisterFunctions.forEach(this::registerFunctionClass);
-        autoRegisterPredicates.forEach(this::registerPredicateClass);
+        super(log);
+        this.autoRegisterSuppliers = autoRegisterSuppliers;
+        this.autoRegisterFunctions = autoRegisterFunctions;
+        this.autoRegisterPredicates = autoRegisterPredicates;
     }
 
     @SuppressWarnings("unchecked")
@@ -69,11 +70,6 @@ public class FunctionRegistryImpl implements FunctionRegistry {
     }
 
     @Override
-    public JsonMapper jsonMapper() {
-        return jsonMapper;
-    }
-
-    @Override
     public void registerSupplierClass(@NonNull final Class<? extends Supplier<?>> supplier) {
         findAnnotatedConstructor(supplier, NamedSupplier.class, NamedSupplier::value, namedSuppliers);
 
@@ -100,27 +96,46 @@ public class FunctionRegistryImpl implements FunctionRegistry {
         return name;
     }
 
+    @Override
+    protected void afterInitialized() {
+        autoRegisterSuppliers.forEach(this::registerSupplierClass);
+        autoRegisterFunctions.forEach(this::registerFunctionClass);
+        autoRegisterPredicates.forEach(this::registerPredicateClass);
+    }
+
     private <T> T instantiate(@NotNull final Map<String, RawConfigParam> map,
                               @NotNull final Constructor<? extends T> constructor) {
         try {
             if (constructor.getParameters().length == 0) {
                 return constructor.newInstance();
             }
-            final Object[] objects = Arrays.stream(constructor.getParameters())
-                    .map(p -> {
-                        if (p.getType().equals(FunctionRegistry.class)) {
-                            return this;
-                        }
-                        final MethodParam param = p.getAnnotation(MethodParam.class);
-                        Assert.isTrue(map.containsKey(param.value()), "Config map has no key: " + param.value());
-                        final RawConfigParam rawConfigParam = map.get(param.value());
-                        return rawConfigParam.suitableFor(param.paramMap(), param.stringMap(), param.repeat());
-                    })
-                    .toArray();
+            final Object[] objects = prepareParams(map, constructor);
             return constructor.newInstance(objects);
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
+    }
+
+    private <T> Object[] prepareParams(@NotNull final Map<String, RawConfigParam> map,
+                                       @NotNull final Constructor<? extends T> constructor) {
+        return Arrays.stream(constructor.getParameters()).map(p -> {
+            if (!ParameterContext.supports(p)) {
+                return this.validCandidateOf(constructor, p);
+            }
+            final ParameterContext context = ParameterContext.forParameter(p);
+            if (isNullableAndMissing(map, context)) {
+                return null;
+            } else {
+                Assert.isTrue(map.containsKey(context.getName()), "Config map has no key: " + context.getName());
+                final RawConfigParam rawConfigParam = map.get(context.getName());
+                return rawConfigParam.suitableFor(context);
+            }
+        }).toArray();
+    }
+
+    private boolean isNullableAndMissing(@NotNull final Map<String, RawConfigParam> map,
+                                         @NotNull final ParameterContext param) {
+        return param.isNullable() && !map.containsKey(param.getName());
     }
 
     private <T extends Annotation> void addAnnotatedConstructor(
@@ -132,10 +147,9 @@ public class FunctionRegistryImpl implements FunctionRegistry {
         final String name = nameExtractorFunction.apply(constructor.getAnnotation(annotation));
 
         final boolean allMatch = Arrays.stream(constructor.getParameters()).allMatch(p ->
-                p.getType().equals(FunctionRegistry.class)
-                        || p.isAnnotationPresent(MethodParam.class));
-        Assert.isTrue(allMatch, "All non-FunctionRegistry parameters must be annotated with @MethodParam on: "
-                + constructor.getClass());
+                this.hasCandidateFor(p.getType()) || ParameterContext.supports(p));
+        Assert.isTrue(allMatch, "All non-@Injectable parameters must be annotated with a param annotation on: "
+                + constructor.getDeclaringClass().getName());
 
         Assert.isTrue(!map.containsKey(name), "Duplicate named function found: " + name);
 
@@ -157,5 +171,4 @@ public class FunctionRegistryImpl implements FunctionRegistry {
                             + annotation.getSimpleName() + ": " + sourceClass.getName());
                 });
     }
-
 }

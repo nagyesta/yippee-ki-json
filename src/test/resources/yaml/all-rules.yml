@@ -1,6 +1,37 @@
 actions:
+  - name: "validate"
+    rules:
+      - name: "validate"
+        path: "$"
+        params:
+          onFailure:
+            transformation: SKIP_REST
+            violation: COMMENT_JSON
+          schema:
+            name: "jsonSchema"
+            source:
+              name: "file"
+              path: "build/test-results/systemTest/example.json"
   - name: "demo"
     rules:
+      - name: "add"
+        path: "$..a"
+        params:
+          key:
+            name: "staticString"
+            value: "key"
+          value:
+            name: "converting"
+            stringSource:
+              name: "httpResource"
+              uri: "http://localhost/"
+              httpMethod: "GET"
+              httpHeaders:
+                Accept: "application/json"
+                User-Agent: "Yippee-Ki-JSON"
+              charset: "UTF-8"
+            converter:
+              name: "jsonParse"
       - name: "add"
         path: "$..a"
         params:
@@ -68,6 +99,17 @@ actions:
             replacement: "${lastName}"
           predicate:
             name: "anyString"
+      - name: "replace"
+        path: "$.accounts..name.jsonref"
+        params:
+          stringFunction:
+            name: "httpResourceByUri"
+            uriFunction:
+              name: regex
+              pattern: ^(?<path>[A-Za-z0-9\-\.]+\.json)$
+              replacement: "http://localhost/${path}"
+          predicate:
+            name: "anyString"
       - name: "replaceMap"
         path: "$.accounts..firstName"
         params:
@@ -78,3 +120,41 @@ actions:
             name: "cloneKey"
             from: "source"
             to: "destination"
+      - name: "validate"
+        path: "$"
+        params:
+          schema:
+            name: "jsonSchema"
+            source:
+              name: "file"
+              path: "./schema.json"
+          onFailure:
+            transformation: "SKIP_REST"
+            violation: "COMMENT_JSON"
+      - name: "validate"
+        path: "$"
+        params:
+          schema:
+            name: "jsonSchema"
+            source:
+              name: "schemaStore"
+              schemaName: "Yippee-Ki-JSON configuration YML"
+          onFailure:
+            transformation: "SKIP_REST"
+            violation: "COMMENT_JSON"
+      - name: "validate"
+        path: "$"
+        params:
+          schema:
+            name: "jsonSchema"
+            source:
+              name: "httpResource"
+              uri: "http://localhost/"
+              httpMethod: "GET"
+              httpHeaders:
+                Accept: "application/json"
+                User-Agent: "Yippee-Ki-JSON"
+              charset: "UTF-8"
+          onFailure:
+            transformation: "SKIP_REST"
+            violation: "COMMENT_JSON"

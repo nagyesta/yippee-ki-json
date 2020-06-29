@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.function.helper.ChronoUnitSupport;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +26,8 @@ public final class EpochMilliDateAddFunction extends ChronoUnitSupport implement
     private final ChronoUnit unit;
 
     @NamedFunction(NAME)
-    public EpochMilliDateAddFunction(@MethodParam(PARAM_AMOUNT) @NonNull final String amount,
-                                     @MethodParam(PARAM_UNIT) @NonNull final String unit) {
+    public EpochMilliDateAddFunction(@ValueParam(PARAM_AMOUNT) @NonNull final String amount,
+                                     @ValueParam(PARAM_UNIT) @NonNull final String unit) {
         this.amount = Integer.parseInt(amount);
         this.unit = toChronoUnit(unit);
     }

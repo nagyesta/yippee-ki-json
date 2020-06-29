@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,7 +22,7 @@ public class JsonPathValidator implements ConstraintValidator<JsonPath, String> 
     }
 
     @Override
-    public boolean isValid(@Nullable final String value, @NonNull final ConstraintValidatorContext context) {
+    public boolean isValid(@Nullable final String value, @NotNull final ConstraintValidatorContext context) {
         boolean result = false;
         if (StringUtils.hasText(value)) {
             try {

@@ -1,4 +1,4 @@
-package com.github.nagyesta.yippeekijson.core.predicate;
+package com.github.nagyesta.yippeekijson.core.predicate.helper;
 
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
-class CombiningPredicateTest {
+class CombiningPredicateSupportTest {
 
     private static Stream<Arguments> nullProvider() {
         return Stream.<Arguments>builder()
@@ -30,7 +30,7 @@ class CombiningPredicateTest {
         //given
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CombiningPredicate(config, functionRegistry) {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CombiningPredicateSupport(config, functionRegistry) {
             @Override
             public boolean test(final Object o) {
                 return false;

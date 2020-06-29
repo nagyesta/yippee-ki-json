@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.entities;
 
+import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidYippeeConfig;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @ValidYippeeConfig
+@Injectable(forType = RunConfig.class)
 @Configuration
 @ConfigurationProperties(prefix = "yippee", ignoreUnknownFields = false)
 public class RunConfig {
@@ -33,6 +37,9 @@ public class RunConfig {
     private String output;
     private String outputDirectory;
     private boolean allowOverwrite;
+    private boolean relaxedYmlSchema;
+    @NotNull
+    private Charset charset;
     @NotNull
     @Size(min = 1)
     private List<String> includes;
@@ -49,6 +56,8 @@ public class RunConfig {
         this.output = builder.output;
         this.outputDirectory = builder.outputDirectory;
         this.allowOverwrite = builder.allowOverwrite;
+        this.relaxedYmlSchema = builder.relaxedYmlSchema;
+        this.charset = builder.charset;
         this.includes = builder.includes;
         this.excludes = builder.excludes;
     }
@@ -130,6 +139,8 @@ public class RunConfig {
         private String output;
         private String outputDirectory;
         private boolean allowOverwrite;
+        private boolean relaxedYmlSchema;
+        private Charset charset = StandardCharsets.UTF_8;
         private List<String> includes = Collections.emptyList();
         private List<String> excludes = Collections.emptyList();
 
@@ -166,6 +177,16 @@ public class RunConfig {
             return this;
         }
 
+        public RunConfigBuilder relaxedYmlSchema(final boolean relaxedYmlSchema) {
+            this.relaxedYmlSchema = relaxedYmlSchema;
+            return this;
+        }
+
+        public RunConfigBuilder charset(final Charset charset) {
+            this.charset = charset;
+            return this;
+        }
+
         public RunConfigBuilder includes(final List<String> includes) {
             this.includes = includes;
             return this;
@@ -178,17 +199,6 @@ public class RunConfig {
 
         public RunConfig build() {
             return new RunConfig(this);
-        }
-
-        @Override
-        public String toString() {
-            return "RunConfig.RunConfigBuilder(config=" + this.config
-                    + ", action=" + this.action
-                    + ", input=" + this.input
-                    + ", output=" + this.output
-                    + ", outputDirectory=" + this.outputDirectory
-                    + ", allowOverwrite=" + this.allowOverwrite
-                    + ", includes=" + this.includes + ", excludes=" + this.excludes + ")";
         }
     }
 }

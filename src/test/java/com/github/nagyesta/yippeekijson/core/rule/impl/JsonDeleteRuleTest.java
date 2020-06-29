@@ -1,6 +1,5 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
-import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
@@ -14,7 +13,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonDeleteRule.RULE_NAME;
-import static org.mockito.Mockito.mock;
 
 class JsonDeleteRuleTest {
 
@@ -47,9 +45,7 @@ class JsonDeleteRuleTest {
                 .order(0)
                 .build();
 
-        final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-
-        final JsonDeleteRule rule = new JsonDeleteRule(functionRegistry, raw);
+        final JsonDeleteRule rule = new JsonDeleteRule(raw);
 
         //when
         rule.accept(document);

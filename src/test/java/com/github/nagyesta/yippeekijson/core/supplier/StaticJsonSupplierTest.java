@@ -1,6 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
-import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
+import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class StaticJsonSupplierTest {
 
@@ -21,13 +20,15 @@ class StaticJsonSupplierTest {
     private static final String VALUE = "value";
     private static final String KEY_VALUE = "{\"key\":\"value\"}";
     private static final Map<String, Object> MAP = Map.of(KEY, VALUE);
+    private static final String INVALID = "{";
 
     private static Stream<Arguments> invalidProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(null, null))
                 .add(Arguments.of(KEY, null))
                 .add(Arguments.of(KEY_VALUE, null))
-                .add(Arguments.of(null, mock(FunctionRegistry.class)))
+                .add(Arguments.of(null, mock(JsonMapper.class)))
+                .add(Arguments.of(INVALID, new JsonMapperImpl()))
                 .build();
     }
 
@@ -40,11 +41,10 @@ class StaticJsonSupplierTest {
 
     @ParameterizedTest
     @MethodSource("jsonProvider")
-    void testGetShouldReturnTheStaticString(final String input, final Object expected) {
+    void testGetShouldReturnTheStaticJson(final String input, final Object expected) {
         //given
-        FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        when(functionRegistry.jsonMapper()).thenReturn(new JsonMapperImpl());
-        final StaticJsonSupplier underTest = new StaticJsonSupplier(input, functionRegistry);
+        JsonMapper jsonMapper = new JsonMapperImpl();
+        final StaticJsonSupplier underTest = new StaticJsonSupplier(input, jsonMapper);
 
         //when
         final Object actual = underTest.get();
@@ -55,17 +55,16 @@ class StaticJsonSupplierTest {
 
     @ParameterizedTest
     @MethodSource("invalidProvider")
-    void testConstructorShouldNotAllowNullsOrNonJsonValues(final String json, final FunctionRegistry functionRegistry) {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new StaticJsonSupplier(json, functionRegistry));
+    void testConstructorShouldNotAllowNullsOrNonJsonValues(final String json, final JsonMapper jsonMapper) {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new StaticJsonSupplier(json, jsonMapper));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {KEY_VALUE, NONE})
     void testToStringShouldContainClassNameAndKey(final String key) {
         //given
-        FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        when(functionRegistry.jsonMapper()).thenReturn(new JsonMapperImpl());
-        final StaticJsonSupplier underTest = new StaticJsonSupplier(key, functionRegistry);
+        JsonMapper jsonMapper = new JsonMapperImpl();
+        final StaticJsonSupplier underTest = new StaticJsonSupplier(key, jsonMapper);
 
         //when
         final String actual = underTest.toString();

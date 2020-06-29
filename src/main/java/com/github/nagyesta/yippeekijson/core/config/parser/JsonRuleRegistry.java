@@ -3,11 +3,13 @@ package com.github.nagyesta.yippeekijson.core.config.parser;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import lombok.NonNull;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Registry for the known {@link JsonRule} implementations we will be able to parse.
  */
-public interface JsonRuleRegistry {
+public interface JsonRuleRegistry extends InitializingBean, ApplicationContextAware {
 
     /**
      * Attempts to find a previously registered rule class by name and instantiates it.

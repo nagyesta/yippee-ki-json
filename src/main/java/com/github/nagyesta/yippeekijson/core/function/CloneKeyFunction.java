@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
+import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,8 +24,8 @@ public final class CloneKeyFunction implements Function<Map<String, Object>, Map
     private final String to;
 
     @NamedFunction(NAME)
-    public CloneKeyFunction(@MethodParam(PARAM_FROM) @NonNull final String from,
-                            @MethodParam(PARAM_TO) @NonNull final String to) {
+    public CloneKeyFunction(@ValueParam(PARAM_FROM) @NonNull final String from,
+                            @ValueParam(PARAM_TO) @NonNull final String to) {
         this.from = from;
         this.to = to;
     }

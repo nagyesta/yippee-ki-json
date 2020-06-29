@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -51,5 +52,32 @@ class RawJsonActionTest {
 
         //then
         Assertions.assertTrue(actual);
+    }
+
+    @SuppressWarnings({"EqualsWithItself", "ConstantConditions"})
+    @Test
+    void testEqualsShouldBeDefaultTrueIfSame() {
+        //given
+        final RawJsonAction first = new RawJsonAction();
+        first.setName(ACTION);
+
+        //when
+        final boolean actual = first.equals(first);
+
+        //then
+        Assertions.assertTrue(actual);
+    }
+
+    @Test
+    void testEqualsShouldBeDefaultFalseIfDifferentClass() {
+        //given
+        final RawJsonAction first = new RawJsonAction();
+        first.setName(ACTION);
+
+        //when
+        final boolean actual = first.equals(new Object());
+
+        //then
+        Assertions.assertFalse(actual);
     }
 }

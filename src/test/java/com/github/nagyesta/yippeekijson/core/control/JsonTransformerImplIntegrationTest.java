@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
@@ -37,18 +38,26 @@ class JsonTransformerImplIntegrationTest {
 
     private static Stream<Arguments> nullStreamProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null))
-                .add(Arguments.of(null, JsonAction.builder().build()))
-                .add(Arguments.of(InputStream.nullInputStream(), null))
+                .add(Arguments.of(null, null, null))
+                .add(Arguments.of(InputStream.nullInputStream(), null, null))
+                .add(Arguments.of(null, StandardCharsets.UTF_8, null))
+                .add(Arguments.of(null, null, JsonAction.builder().build()))
+                .add(Arguments.of(InputStream.nullInputStream(), StandardCharsets.UTF_8, null))
+                .add(Arguments.of(InputStream.nullInputStream(), null, JsonAction.builder().build()))
+                .add(Arguments.of(null, StandardCharsets.UTF_8, JsonAction.builder().build()))
                 .build();
     }
 
 
     private static Stream<Arguments> nullFileProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null))
-                .add(Arguments.of(null, JsonAction.builder().build()))
-                .add(Arguments.of(mock(File.class), null))
+                .add(Arguments.of(null, null, null))
+                .add(Arguments.of(mock(File.class), null, null))
+                .add(Arguments.of(null, StandardCharsets.UTF_8, null))
+                .add(Arguments.of(null, null, JsonAction.builder().build()))
+                .add(Arguments.of(mock(File.class), StandardCharsets.UTF_8, null))
+                .add(Arguments.of(mock(File.class), null, JsonAction.builder().build()))
+                .add(Arguments.of(null, StandardCharsets.UTF_8, JsonAction.builder().build()))
                 .build();
     }
 
@@ -61,29 +70,35 @@ class JsonTransformerImplIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("nullStreamProvider")
-    void testTransformShouldNotAllowNulls(final InputStream inputStream, final JsonAction action) {
+    void testTransformShouldNotAllowNulls(final InputStream inputStream,
+                                          final Charset charset,
+                                          final JsonAction action) {
         //given
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.transform(inputStream, action));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> underTest.transform(inputStream, charset, action));
     }
 
     @ParameterizedTest
     @MethodSource("nullFileProvider")
-    void testTransformShouldNotAllowNulls(final File file, final JsonAction action) {
+    void testTransformShouldNotAllowNulls(final File file,
+                                          final Charset charset,
+                                          final JsonAction action) {
         //given
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.transform(file, action));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> underTest.transform(file, charset, action));
     }
 
     @Test
     void testTransformStreamShouldProcessValidInput() throws ConfigParseException, JsonTransformException, IOException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
-        final JsonActions jsonActions = actionConfigParser.parse(yaml);
+        final JsonActions jsonActions = actionConfigParser.parse(yaml, true);
 
         final JsonAction action = jsonActions.getActions().get(FILTER);
         final InputStream resource = this.getClass().getResourceAsStream(JSON_EXAMPLE_JSON);
@@ -91,7 +106,7 @@ class JsonTransformerImplIntegrationTest {
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when
-        final String actual = underTest.transform(resource, action);
+        final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
         final String expected = IOUtils.resourceToString(JSON_EXAMPLE_FILTERED_JSON, StandardCharsets.UTF_8);
@@ -107,7 +122,7 @@ class JsonTransformerImplIntegrationTest {
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when
-        final String actual = underTest.transform(resource, action);
+        final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
         final String expected = IOUtils.resourceToString(JSON_EXAMPLE_JSON, StandardCharsets.UTF_8);
@@ -118,7 +133,7 @@ class JsonTransformerImplIntegrationTest {
     void testTransformFileShouldProcessValidInput() throws ConfigParseException, JsonTransformException, IOException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
-        final JsonActions jsonActions = actionConfigParser.parse(yaml);
+        final JsonActions jsonActions = actionConfigParser.parse(yaml, true);
 
         final JsonAction action = jsonActions.getActions().get(FILTER);
         final File resource = new File(this.getClass().getResource(JSON_EXAMPLE_JSON).getFile());
@@ -126,7 +141,7 @@ class JsonTransformerImplIntegrationTest {
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when
-        final String actual = underTest.transform(resource, action);
+        final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
         final String expected = IOUtils.resourceToString(JSON_EXAMPLE_FILTERED_JSON, StandardCharsets.UTF_8);
@@ -137,7 +152,7 @@ class JsonTransformerImplIntegrationTest {
     void testTransformFileShouldFailWhenFileIsUnreachable() throws ConfigParseException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
-        final JsonActions jsonActions = actionConfigParser.parse(yaml);
+        final JsonActions jsonActions = actionConfigParser.parse(yaml, false);
 
         final JsonAction action = jsonActions.getActions().get(FILTER);
         final File resource = new File(FILTER);
@@ -145,14 +160,15 @@ class JsonTransformerImplIntegrationTest {
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when + then exception
-        Assertions.assertThrows(JsonTransformException.class, () -> underTest.transform(resource, action));
+        Assertions.assertThrows(JsonTransformException.class,
+                () -> underTest.transform(resource, StandardCharsets.UTF_8, action));
     }
 
     @Test
-    void testTransformStreamShouldFailWhenFileIsNOtJson() throws ConfigParseException {
+    void testTransformStreamShouldFailWhenFileIsNotJson() throws ConfigParseException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
-        final JsonActions jsonActions = actionConfigParser.parse(yaml);
+        final JsonActions jsonActions = actionConfigParser.parse(yaml, false);
 
         final JsonAction action = jsonActions.getActions().get(FILTER);
         final InputStream resource = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
@@ -160,6 +176,7 @@ class JsonTransformerImplIntegrationTest {
         final JsonTransformer underTest = new JsonTransformerImpl(jsonMapper);
 
         //when + then exception
-        Assertions.assertThrows(JsonTransformException.class, () -> underTest.transform(resource, action));
+        Assertions.assertThrows(JsonTransformException.class,
+                () -> underTest.transform(resource, StandardCharsets.UTF_8, action));
     }
 }
