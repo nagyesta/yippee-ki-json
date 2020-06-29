@@ -52,8 +52,12 @@ public class DefaultHttpClient implements HttpClient {
             builder.timeout(Duration.ofSeconds(httpConfig.getTimeoutSeconds()));
         }
         if (httpConfig.isAddDefaultHeaders()) {
-            builder.header(USER_AGENT, httpConfig.getUserAgent());
-            builder.header(ACCEPT, APPLICATION_JSON_VALUE);
+            if (!requestContext.getHeaders().containsKey(USER_AGENT)) {
+                builder.header(USER_AGENT, httpConfig.getUserAgent());
+            }
+            if (!requestContext.getHeaders().containsKey(ACCEPT)) {
+                builder.header(ACCEPT, APPLICATION_JSON_VALUE);
+            }
         }
         return builder.build();
     }

@@ -121,6 +121,7 @@ Prefix: `--additional.http.<option>`
 | `add-default-headers` | Boolean telling the app to add the default HTTP headers automatically. Default: `true`          |
 | `min-success-status`  | The minimum (inclusive) HTTP status code value we should consider as successful. Default: `200` |
 | `max-success-status`  | The maximum (inclusive) HTTP status code value we should consider as successful. Default: `299` |
+| `timeout-seconds`     | The maximum time we want to wait for an HTTP response. Ignored if zero or below. Default: `0`   |
 
 ##### Spring Boot options
 All generic Spring Boot options are supported. Please find a few useful ones below.

@@ -14,10 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
+import org.springframework.util.MimeTypeUtils;
 
 import java.net.URI;
 import java.util.*;
 import java.util.function.Supplier;
+
+import static com.google.common.net.HttpHeaders.ACCEPT;
 
 @Slf4j
 public class SchemaStoreSchemaContentSupplier implements Supplier<String> {
@@ -46,6 +49,7 @@ public class SchemaStoreSchemaContentSupplier implements Supplier<String> {
         Assert.isTrue(uri.isPresent(), "Failed to find URI for SchemaStore schema: '" + schemaName + "'");
         final HttpRequestContext requestContext = HttpRequestContext.builder()
                 .uri(uri.get().toString())
+                .addHeader(ACCEPT, MimeTypeUtils.ALL_VALUE)
                 .build();
         return httpClient.fetch(requestContext);
     }
@@ -53,6 +57,7 @@ public class SchemaStoreSchemaContentSupplier implements Supplier<String> {
     private Map<String, URI> fetchDescriptor() {
         final HttpRequestContext requestContext = HttpRequestContext.builder()
                 .uri(schemaStoreConfig.getCatalogUri())
+                .addHeader(ACCEPT, MimeTypeUtils.ALL_VALUE)
                 .build();
         final String schemaStoreCatalog = httpClient.fetch(requestContext);
         Map<String, URI> schemaCatalog = new HashMap<>();

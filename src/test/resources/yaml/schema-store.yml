@@ -1,0 +1,22 @@
+actions:
+  - name: "fetch"
+    rules:
+      - name: "deleteFrom"
+        path: "$"
+        params:
+          deleteKey:
+            name: "notNull"
+      - name: "add"
+        path: "$"
+        params:
+          key:
+            name: "staticString"
+            value: "yippee"
+          value:
+            name: "converting"
+            stringSource:
+              name: "schemaStore"
+              schemaName: "Yippee-Ki-JSON configuration YML"
+            converter:
+              name: "jsonParse"
+
