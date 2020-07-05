@@ -1,0 +1,11 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "copy"
+        path: "$.accounts[0].name"
+        params:
+          key: # this is the node defining the key supplier
+            name: "staticString"
+            value: "birthName"
+          to: # this is the node for our destination JSON Path
+            value: "$.accounts[0]"

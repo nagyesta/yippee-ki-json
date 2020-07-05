@@ -1,11 +1,13 @@
 package com.github.nagyesta.yippeekijson.core.function.helper;
 
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
+import com.github.nagyesta.yippeekijson.core.http.HttpMethod;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Function;
@@ -22,9 +24,9 @@ public abstract class HttpResourceContentSupport<T> implements Function<T, Strin
 
     public HttpResourceContentSupport(@NonNull final HttpClient httpClient,
                                       @Nullable final String uri,
-                                      @Nullable final String method,
+                                      @Nullable final HttpMethod method,
                                       @Nullable final Map<String, String> headers,
-                                      @Nullable final String charset) {
+                                      @Nullable final Charset charset) {
         this.httpRequestContext = new HttpRequestContext(uri, method, headers, charset);
         this.httpClient = httpClient;
     }

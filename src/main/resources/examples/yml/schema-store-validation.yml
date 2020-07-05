@@ -1,0 +1,16 @@
+actions:
+  - name: "demo"
+    rules: # this is where our rule is defined
+      - name: "validate"
+        path: "$"
+        params:
+          schema: # this is where our schema validation node is
+            name: "jsonSchema"
+            source: # this is where our schema download node is
+              name: "schemaStore"
+              schemaName: "Yippee-Ki-JSON configuration YML"
+          onFailure:
+            # we will continue despite the failure
+            transformation: "CONTINUE"
+            # add violation errors to the document itself
+            violation: "COMMENT_JSON"

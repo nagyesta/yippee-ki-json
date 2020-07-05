@@ -1,0 +1,12 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "calculate"
+        path: "$.accounts..expiresOn"
+        params:
+          numberFunction: # this is the node defining our function
+            name: "epochMillisDateAdd"
+            amount: 1
+            unit: "HOURS"
+          predicate: # we want to match anything
+            name: "notNull"

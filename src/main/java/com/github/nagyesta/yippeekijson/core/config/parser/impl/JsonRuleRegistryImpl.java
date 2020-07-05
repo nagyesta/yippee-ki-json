@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.yippeekijson.core.NamedComponentUtil;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedRule;
-import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
@@ -13,19 +13,19 @@ import org.springframework.util.Assert;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class JsonRuleRegistryImpl extends InjectableBeanSupport implements JsonRuleRegistry {
 
     private final Map<String, Constructor<? extends JsonRule>> namedRules = new HashMap<>();
-    private final FunctionRegistry functionRegistry;
     private final List<Class<? extends JsonRule>> rules;
 
-    public JsonRuleRegistryImpl(@NonNull final FunctionRegistry functionRegistry,
-                                @NonNull final List<Class<? extends JsonRule>> rules) {
+    public JsonRuleRegistryImpl(@NonNull final List<Class<? extends JsonRule>> rules) {
         super(log);
-        this.functionRegistry = functionRegistry;
         this.rules = rules;
     }
 
@@ -33,10 +33,11 @@ public class JsonRuleRegistryImpl extends InjectableBeanSupport implements JsonR
     @Override
     public void registerRuleClass(@NonNull final Class<? extends JsonRule> rule) {
         log.info("Registering rule class: " + rule.getName());
-        findAnnotatedConstructor(rule).ifPresentOrElse(c -> addAnnotatedConstructor((Constructor<? extends JsonRule>) c),
-                () -> {
-                    throw new IllegalArgumentException("Rule is not annotated with @NamedRule: " + rule.getName());
-                });
+        NamedComponentUtil.findAnnotatedConstructorOfNamedComponent(rule, NamedRule.class)
+                .ifPresentOrElse(c -> addAnnotatedConstructor((Constructor<? extends JsonRule>) c),
+                        () -> {
+                            throw new IllegalArgumentException("Rule is not annotated with @NamedRule: " + rule.getName());
+                        });
     }
 
     @Override
@@ -93,12 +94,6 @@ public class JsonRuleRegistryImpl extends InjectableBeanSupport implements JsonR
         final long rawRuleCount = Arrays.stream(constructor.getParameters())
                 .filter(p -> p.getType().equals(RawJsonRule.class)).count();
         Assert.isTrue(rawRuleCount == 1, "Annotated constructor must accept RawJsonRule.");
-    }
-
-    private Optional<Constructor<?>> findAnnotatedConstructor(@NotNull final Class<? extends JsonRule> rule) {
-        return Arrays.stream(rule.getDeclaredConstructors())
-                .filter(c -> c.isAnnotationPresent(NamedRule.class))
-                .findFirst();
     }
 
     @Override

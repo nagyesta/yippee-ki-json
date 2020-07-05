@@ -1,0 +1,48 @@
+{
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "staticJson",
+            "staticString"
+          ],
+          "additionalItems": false
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "const": "staticJson"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/supplierTypes/definitions/supplierStaticJson"
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "const": "staticString"
+          }
+        }
+      },
+      "then": {
+        "$ref": "#/definitions/supplierTypes/definitions/supplierStaticString"
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigValue;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
+import com.github.nagyesta.yippeekijson.core.http.HttpMethod;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -67,7 +68,7 @@ class HttpResourceContentMapFunctionTest {
 
         final Map<String, Object> mapOverride = Map.of(
                 URI, URI,
-                METHOD, HttpRequestContext.HttpMethod.POST.name(),
+                METHOD, HttpMethod.POST.name(),
                 HEADER, Map.of(NAME, HEADER));
 
         //when
@@ -88,12 +89,12 @@ class HttpResourceContentMapFunctionTest {
 
         HttpResourceContentMapFunction underTest = new HttpResourceContentMapFunction(
                 uriMap, methodMap, headerMap,
-                NAME, HttpRequestContext.HttpMethod.GET.name(), null, StandardCharsets.UTF_8.name(),
+                NAME, HttpMethod.GET, null, StandardCharsets.UTF_8,
                 functionRegistry, httpClient);
 
         final Map<String, Object> mapOverride = Map.of(
                 URI, URI,
-                METHOD, HttpRequestContext.HttpMethod.POST.name(),
+                METHOD, HttpMethod.POST.name(),
                 HEADER, Map.of(NAME, HEADER));
 
         //when
@@ -112,18 +113,18 @@ class HttpResourceContentMapFunctionTest {
 
         HttpResourceContentMapFunction underTest = new HttpResourceContentMapFunction(
                 null, null, null,
-                URI, HttpRequestContext.HttpMethod.POST.name(), Map.of(NAME, HEADER), StandardCharsets.UTF_8.name(),
+                URI, HttpMethod.POST, Map.of(NAME, HEADER), StandardCharsets.UTF_8,
                 functionRegistry, httpClient);
 
         final Map<String, Object> mapOverride = Map.of();
         final HttpRequestContext baseContext = HttpRequestContext.builder()
                 .uri(URI)
-                .httpMethod(HttpRequestContext.HttpMethod.POST)
+                .httpMethod(HttpMethod.POST)
                 .addHeader(NAME, HEADER)
                 .charset(StandardCharsets.UTF_8)
                 .build();
         final HttpRequestContext emptyOverrides = HttpRequestContext.builder()
-                .httpMethod((HttpRequestContext.HttpMethod) null)
+                .httpMethod((HttpMethod) null)
                 .build();
         when(httpClient.fetch(eq(baseContext), eq(emptyOverrides))).thenReturn(JSON);
 
@@ -145,7 +146,7 @@ class HttpResourceContentMapFunctionTest {
 
     private void assertValid(final HttpRequestContext actual) {
         Assertions.assertEquals(URI, actual.getUri());
-        Assertions.assertEquals(HttpRequestContext.HttpMethod.POST, actual.getHttpMethod());
+        Assertions.assertEquals(HttpMethod.POST, actual.getHttpMethod());
         Assertions.assertEquals(Map.of(ACCEPT_CHARSET, List.of(StandardCharsets.UTF_8.name()), NAME, List.of(HEADER)), actual.getHeaders());
         Assertions.assertEquals(StandardCharsets.UTF_8, actual.getCharset());
     }

@@ -19,9 +19,9 @@ public abstract class DecimalFunctionSupport implements Function<BigDecimal, Big
     private final BigDecimal operand;
     private final int scale;
 
-    public DecimalFunctionSupport(@NonNull final String operand, @NonNull final String scale) {
-        this.operand = new BigDecimal(operand);
-        this.scale = Integer.parseInt(scale);
+    public DecimalFunctionSupport(@NonNull final BigDecimal operand, @NonNull final Integer scale) {
+        this.operand = operand;
+        this.scale = scale;
     }
 
     @Override

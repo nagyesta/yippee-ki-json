@@ -25,15 +25,15 @@ public final class HttpRequestContext {
     private final Charset charset;
 
     public HttpRequestContext(@Nullable final String uri,
-                              @Nullable final String method,
+                              @Nullable final HttpMethod method,
                               @Nullable final Map<String, String> headers,
-                              @Nullable final String charset) {
+                              @Nullable final Charset charset) {
         this.uri = uri;
-        this.httpMethod = Optional.ofNullable(method).map(HttpMethod::valueOf).orElse(HttpRequestContext.HttpMethod.GET);
+        this.httpMethod = Optional.ofNullable(method).orElse(HttpMethod.GET);
         this.headers = new TreeMap<>();
         Optional.ofNullable(headers).orElse(Collections.emptyMap())
                 .forEach((k, v) -> this.headers.put(k, List.of(v)));
-        this.charset = Optional.ofNullable(charset).map(Charset::forName).orElse(StandardCharsets.UTF_8);
+        this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
         this.headers.putIfAbsent(HttpHeaders.ACCEPT_CHARSET, List.of(this.charset.name()));
     }
 
@@ -112,17 +112,6 @@ public final class HttpRequestContext {
                 .append(headers)
                 .append(charset)
                 .toHashCode();
-    }
-
-    public enum HttpMethod {
-        /**
-         * HTTP GET method.
-         */
-        GET,
-        /**
-         * HTTP POST method.
-         */
-        POST
     }
 
     @SuppressWarnings({"UnusedReturnValue", "checkstyle:HiddenField", "checkstyle:DesignForExtension"})

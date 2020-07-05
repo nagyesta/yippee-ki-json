@@ -1,0 +1,21 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "replace"
+        path: "$.accounts..lastName"
+        params:
+          stringFunction: # this is where we define our regex based replace
+            name: "regex"
+            pattern: (?<firstName>[A-Za-z\-]+) (?<lastName>[A-Za-z\-]+)
+            replacement: "${lastName}"
+          predicate: # doing it for all Strings
+            name: "anyString"
+      - name: "replace"
+        path: "$.accounts..firstName"
+        params:
+          stringFunction: # this is where we define our literal based replace
+            name: "replace"
+            find: " Doe"
+            replace: ""
+          predicate: # we will do it only for non-null values
+            name: "notNull"

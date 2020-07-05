@@ -10,8 +10,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.internal.JsonFormatter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import java.io.File;
@@ -21,12 +19,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 @Slf4j
-@Component
 public class JsonTransformerImpl implements JsonTransformer {
 
     private final JsonMapper mapper;
 
-    @Autowired
     public JsonTransformerImpl(@NonNull final JsonMapper mapper) {
         this.mapper = mapper;
     }

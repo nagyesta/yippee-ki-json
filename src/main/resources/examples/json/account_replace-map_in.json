@@ -1,0 +1,13 @@
+{
+  "accounts": [
+    {
+      "billingAddress": "123 Main street, SomeCity",
+      "id": 1,
+      "name": "John Doe"
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe"
+    }
+  ]
+}

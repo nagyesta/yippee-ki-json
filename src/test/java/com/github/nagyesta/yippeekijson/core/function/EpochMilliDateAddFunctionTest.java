@@ -11,19 +11,19 @@ import java.util.stream.Stream;
 
 class EpochMilliDateAddFunctionTest {
 
-    private static final String INT_42 = "42";
+    private static final int INT_42 = 42;
 
     private static Stream<Arguments> toStringProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(INT_42, ChronoUnit.SECONDS.name()))
-                .add(Arguments.of(INT_42, ChronoUnit.DAYS.name()))
+                .add(Arguments.of(INT_42, ChronoUnit.SECONDS))
+                .add(Arguments.of(INT_42, ChronoUnit.DAYS))
                 .build();
     }
 
     private static Stream<Arguments> validInputProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(INT_42, ChronoUnit.SECONDS.name(), null, null))
-                .add(Arguments.of(INT_42, ChronoUnit.SECONDS.name(), new BigDecimal("10000.2"), new BigDecimal("52000")))
+                .add(Arguments.of(INT_42, ChronoUnit.SECONDS, null, null))
+                .add(Arguments.of(INT_42, ChronoUnit.SECONDS, new BigDecimal("10000.2"), new BigDecimal("52000")))
                 .build();
     }
 
@@ -31,13 +31,13 @@ class EpochMilliDateAddFunctionTest {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(null, null))
                 .add(Arguments.of(INT_42, null))
-                .add(Arguments.of(null, ChronoUnit.DAYS.name()))
+                .add(Arguments.of(null, ChronoUnit.DAYS))
                 .build();
     }
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testApplyShouldWorkForValidInout(final String amount, final String unit,
+    void testApplyShouldWorkForValidInout(final Integer amount, final ChronoUnit unit,
                                           final BigDecimal input, final BigDecimal expected) {
         //given
         EpochMilliDateAddFunction underTest = new EpochMilliDateAddFunction(amount, unit);
@@ -51,7 +51,7 @@ class EpochMilliDateAddFunctionTest {
 
     @ParameterizedTest
     @MethodSource("nullProvider")
-    void testConstructorShouldNotAllowNulls(final String amount, final String unit) {
+    void testConstructorShouldNotAllowNulls(final Integer amount, final ChronoUnit unit) {
         //given;
         //when + then exception
         Assertions.assertThrows(IllegalArgumentException.class, () -> new EpochMilliDateAddFunction(amount, unit));
@@ -59,7 +59,7 @@ class EpochMilliDateAddFunctionTest {
 
     @ParameterizedTest
     @MethodSource("toStringProvider")
-    void testToStringShouldContainClassNameAndParameters(final String amount, final String unit) {
+    void testToStringShouldContainClassNameAndParameters(final Integer amount, final ChronoUnit unit) {
         //given
         final EpochMilliDateAddFunction underTest = new EpochMilliDateAddFunction(amount, unit);
 
@@ -68,7 +68,7 @@ class EpochMilliDateAddFunctionTest {
 
         //then
         Assertions.assertTrue(actual.contains(EpochMilliDateAddFunction.class.getSimpleName()));
-        Assertions.assertTrue(actual.contains(amount));
-        Assertions.assertTrue(actual.contains(unit));
+        Assertions.assertTrue(actual.contains(String.valueOf(amount)));
+        Assertions.assertTrue(actual.contains(unit.name()));
     }
 }

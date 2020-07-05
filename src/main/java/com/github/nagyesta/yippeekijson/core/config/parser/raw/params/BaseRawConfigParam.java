@@ -5,6 +5,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
 import java.util.Collection;
@@ -45,12 +46,25 @@ public abstract class BaseRawConfigParam<T, R> implements RawConfigParam {
 
     @NotNull
     @Override
-    public Object suitableFor(@NotNull final ParameterContext parameterContext) {
+    public Object suitableFor(@NotNull final ParameterContext parameterContext,
+                              @NotNull final ConversionService conversionService) {
         Assert.isTrue(parameterContext.isCollectionTyped() == isRepeated(),
                 "Repeated value requirement needs to match param for: " + configPath);
         Assert.isTrue((parameterContext.getUseCase() == ParameterContext.UseCase.VALUE) == !isMapType(),
                 "Map value requirement needs to match param for: " + configPath);
-        return parameterContext.getUseCase().apply(this, parameterContext.isCollectionTyped());
+        final boolean collectionTyped = parameterContext.isCollectionTyped();
+        if (collectionTyped) {
+            final Collection<?> collectionResult = parameterContext.getUseCase()
+                    .apply(this, true, Collection.class);
+            return collectionResult.stream()
+                    .map(v -> conversionService.convert(v, parameterContext.getRawType()))
+                    .collect(Collectors.toList());
+        } else {
+            final Object result = parameterContext.getUseCase().apply(this, false, Object.class);
+            final Object conversionResult = conversionService.convert(result, parameterContext.getRawType());
+            Assert.notNull(conversionResult, "Converted value cannot be null.");
+            return conversionResult;
+        }
     }
 
     @Override

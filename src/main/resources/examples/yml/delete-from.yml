@@ -1,0 +1,15 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          predicate:
+            name: "containsKey"
+            key: "address"
+          keepKey:
+            name: "regex"
+            pattern: ^[a-z]+$
+          deleteKey:
+            name: "regex"
+            pattern: ^password$

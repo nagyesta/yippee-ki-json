@@ -1,0 +1,16 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[*]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "address"
+          value: # this is the node defining the second supplier
+            name: "converting"
+            stringSource: # we are starting with a static string
+              name: "staticString"
+              value: '{"home":"123 Main street, SomeCity"}'
+            converter: # then we are parsing it as JSON
+              name: "jsonParse"

@@ -1,0 +1,11 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          predicate:
+            name: "containsKey"
+            key: "address"
+          keepKey: # keep fields which have null names
+            name: "isNull"

@@ -4,6 +4,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigValue;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
+import com.github.nagyesta.yippeekijson.core.http.HttpMethod;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import com.google.common.base.Functions;
 import org.jetbrains.annotations.NotNull;
@@ -79,7 +80,7 @@ class HttpResourceContentFunctionTest {
 
         HttpResourceContentFunction underTest = new HttpResourceContentFunction(
                 uriMap,
-                NAME, HttpRequestContext.HttpMethod.GET.name(), Map.of(NAME, HEADER), StandardCharsets.UTF_8.name(),
+                NAME, HttpMethod.GET, Map.of(NAME, HEADER), StandardCharsets.UTF_8,
                 functionRegistry, httpClient);
 
         //when
@@ -98,17 +99,17 @@ class HttpResourceContentFunctionTest {
 
         HttpResourceContentFunction underTest = new HttpResourceContentFunction(
                 null,
-                URI, HttpRequestContext.HttpMethod.POST.name(), Map.of(NAME, HEADER), StandardCharsets.UTF_8.name(),
+                URI, HttpMethod.POST, Map.of(NAME, HEADER), StandardCharsets.UTF_8,
                 functionRegistry, httpClient);
 
         final HttpRequestContext baseContext = HttpRequestContext.builder()
                 .uri(URI)
-                .httpMethod(HttpRequestContext.HttpMethod.POST)
+                .httpMethod(HttpMethod.POST)
                 .addHeader(NAME, HEADER)
                 .charset(StandardCharsets.UTF_8)
                 .build();
         final HttpRequestContext emptyOverrides = HttpRequestContext.builder()
-                .httpMethod((HttpRequestContext.HttpMethod) null)
+                .httpMethod((HttpMethod) null)
                 .uri(null)
                 .charset(null)
                 .build();

@@ -1,0 +1,66 @@
+{
+  "charSet": {
+    "description": "Standard character sets.",
+    "type": "string",
+    "enum": [
+      "ISO-8859-1",
+      "US-ASCII",
+      "UTF-16",
+      "UTF-16BE",
+      "UTF-16LE",
+      "UTF-8"
+    ],
+    "additionalItems": false
+  },
+  "chronoUnit": {
+    "description": "The chrono unit we want to use.",
+    "type": "string",
+    "enum": [
+      "NANOS",
+      "MICROS",
+      "MILLIS",
+      "SECONDS",
+      "MINUTES",
+      "HOURS",
+      "HALF_DAYS",
+      "DAYS",
+      "WEEKS",
+      "MONTHS",
+      "YEARS",
+      "DECADES",
+      "CENTURIES",
+      "MILLENNIA",
+      "ERAS",
+      "FOREVER"
+    ],
+    "additionalItems": false
+  },
+  "httpHeaders": {
+    "type": "object",
+    "description": "HTTP header map.",
+    "additionalProperties": {
+      "type": "string"
+    },
+    "uniqueItems": true
+  },
+  "httpMethod": {
+    "description": "Supported HTTP methods.",
+    "type": "string",
+    "enum": [
+      "GET",
+      "POST"
+    ],
+    "additionalItems": false
+  },
+  "jsonPath": {
+    "$comment": "https://github.com/json-path/JsonPath",
+    "description": "A JSON Path selecting one or more nodes of the parsed JSON document.",
+    "type": "string",
+    "pattern": "^[$@](((\\.|\\.\\.)([$_a-zA-Z]+[$a-zA-Z0-9\\-_]*|\\*))|\\[\\*]|\\[[0-9]+((, [0-9]+)*|:[0-9]+)]|\\['[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*'(, '[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*')*]|\\[\\?\\(.+\\)])*$"
+  },
+  "name": {
+    "description": "A single JSON key name",
+    "type": "string",
+    "pattern": "^[$_a-zA-Z]+[$a-zA-Z0-9\\-_]*$"
+  }
+}

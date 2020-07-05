@@ -3,7 +3,7 @@ package com.github.nagyesta.yippeekijson;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
-import com.github.nagyesta.yippeekijson.core.control.FilePairProcessorController;
+import com.github.nagyesta.yippeekijson.core.control.ApplicationController;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import org.junit.jupiter.api.Assertions;
@@ -44,14 +44,14 @@ class YippeeKiJsonApplicationTests {
         return new Object[][]{
                 {null, null},
                 {new RunConfig(), null},
-                {null, mock(FilePairProcessorController.class)}
+                {null, mock(ApplicationController.class)}
         };
     }
 
     @ParameterizedTest
     @MethodSource("nullProvider")
     void testConstructorShouldThrowExceptionWhenCalledWithNulls(final RunConfig runConfig,
-                                                                final FilePairProcessorController controller) {
+                                                                final ApplicationController controller) {
         //given
 
         //when + then exception
@@ -64,7 +64,7 @@ class YippeeKiJsonApplicationTests {
                                              final boolean helpFails, final int exitCode) throws Exception {
         //given
         final RunConfig runConfig = new RunConfig();
-        final FilePairProcessorController controller = mock(FilePairProcessorController.class);
+        final ApplicationController controller = mock(ApplicationController.class);
         if (exception.isPresent()) {
             doThrow(exception.get()).when(controller).process(any(RunConfig.class));
         }

@@ -31,6 +31,14 @@ class ParameterContextTest {
                 .build();
     }
 
+    private static Stream<Arguments> notAnnotated() {
+        return Stream.<Arguments>builder()
+                .add(Arguments.of(ParameterContext.UseCase.VALUE, NOTHING))
+                .add(Arguments.of(ParameterContext.UseCase.MAP, NOTHING))
+                .add(Arguments.of(ParameterContext.UseCase.EMBEDDED, NOTHING))
+                .build();
+    }
+
     @ParameterizedTest
     @MethodSource("validValueProvider")
     void testConstructorShouldParseValidParams(final ParameterContext.UseCase useCase,
@@ -48,6 +56,16 @@ class ParameterContextTest {
         Assertions.assertEquals(actual.getUseCase(), useCase);
         Assertions.assertEquals(actual.isCollectionTyped(), expectedCollectionType);
         Assertions.assertEquals(actual.isNullable(), expectedNullable);
+    }
+
+    @ParameterizedTest
+    @MethodSource("notAnnotated")
+    void testConstructorShouldParseValidParams(final ParameterContext.UseCase useCase,
+                                               final String paramName) {
+        //given
+
+        //when + then exception
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> getParamContextForUseCaseUnchecked(useCase, paramName));
     }
 
 

@@ -1,0 +1,13 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "replaceMap"
+        path: "$.accounts[*]"
+        params:
+          predicate:
+            name: "containsKey"
+            key: "billingAddress"
+          mapFunction:
+            name: "cloneKey"
+            from: "billingAddress"
+            to: "shippingAddress"

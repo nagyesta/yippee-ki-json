@@ -1,0 +1,17 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[*]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "address"
+          value: # this is the node defining the converting supplier
+            name: "converting"
+            stringSource: # this supplier would return a lowercase value
+              name: "staticString"
+              value: "missing"
+            converter: # then this function will turn it into Capital
+              name: "changeCase"
+              to: "CAPITALIZED"

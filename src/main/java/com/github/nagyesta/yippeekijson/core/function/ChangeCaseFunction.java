@@ -2,12 +2,14 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
+import com.github.nagyesta.yippeekijson.core.function.helper.CaseChange;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
@@ -18,13 +20,28 @@ import java.util.function.Function;
 public final class ChangeCaseFunction implements Function<String, String> {
 
     static final String NAME = "changeCase";
-    static final String PARAM_TO = "to";
 
-    private final Case to;
+    private final CaseChange to;
 
+    @SchemaDefinition(
+            inputType = String.class,
+            outputType = String.class,
+            sinceVersion = WikiConstants.VERSION_1_1_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_FUNCTIONS, section = "Change case"),
+            description = {
+                    "This function takes the input value and changes the case as defined by the \"to\" parameter."
+            },
+            example = @Example(
+                    in = "/examples/json/simple-accounts_in.json",
+                    out = "/examples/json/add-string-capitalized.json",
+                    yml = "/examples/yml/add-string-capitalized.yml",
+                    note = "This example shows that the inserted \"Missing\" value is capitalized with this function."
+            )
+    )
     @NamedFunction(NAME)
-    public ChangeCaseFunction(@ValueParam(PARAM_TO) @NonNull final String to) {
-        this.to = Case.parse(to);
+    public ChangeCaseFunction(@ValueParam(docs = "Defines what is the desired case change operation we want to do.")
+                              @NonNull final CaseChange to) {
+        this.to = to;
     }
 
     @Override
@@ -39,40 +56,4 @@ public final class ChangeCaseFunction implements Function<String, String> {
                 .toString();
     }
 
-    protected enum Case {
-        /**
-         * Capitalizes the input.
-         */
-        CAPITALIZED(StringUtils::capitalize),
-        /**
-         * Un-capitalizes the input.
-         */
-        UNCAPITALIZED(StringUtils::uncapitalize),
-        /**
-         * Switches the input to all lower case.
-         */
-        LOWER_CASE(String::toLowerCase),
-        /**
-         * Switches the input to all upper case.
-         */
-        UPPER_CASE(String::toUpperCase);
-
-        private final Function<String, String> function;
-
-        Case(final Function<String, String> function) {
-            this.function = function;
-        }
-
-        static Case parse(final String s) {
-            return Arrays.stream(Case.values())
-                    .filter(c -> c.name().equalsIgnoreCase(s))
-                    .findFirst().orElseThrow(() -> new IllegalArgumentException("Unknown case option found: " + s));
-        }
-
-        String apply(final String string) {
-            return Optional.ofNullable(string)
-                    .map(function)
-                    .orElse(null);
-        }
-    }
 }

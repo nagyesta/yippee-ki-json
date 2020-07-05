@@ -1,0 +1,20 @@
+actions:
+  - name: "demo"
+    rules: # this is where our rule is defined
+      - name: "add"
+        path: "$"
+        params:
+          key: # we will add the content under the example node
+            name: "staticString"
+            value: "example"
+          value:
+            name: "converting"
+            stringSource:
+              name: "staticString" # this is the supplier defining what to download
+              value: "example.json"
+            converter: # this converter changes the supplied value to have the full URI
+              name: "httpResourceByUri"
+              uriFunction:
+                name: "regex"
+                pattern: (?<value>.+)
+                replacement: "https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/src/test/resources/json/${value}"

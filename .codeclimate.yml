@@ -2,4 +2,7 @@ version: "2"         # required to adjust maintainability checks
 checks:
   similar-code:
     config:
-      threshold: 65
+      threshold: 500
+  identical-code:
+    config:
+      threshold: 500

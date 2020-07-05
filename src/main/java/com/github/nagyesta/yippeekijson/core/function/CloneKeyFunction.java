@@ -2,6 +2,9 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
+import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.StringObjectMap;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,13 +22,33 @@ public final class CloneKeyFunction implements Function<Map<String, Object>, Map
     static final String NAME = "cloneKey";
     static final String PARAM_FROM = "from";
     static final String PARAM_TO = "to";
-
     private final String from;
     private final String to;
 
+    @SchemaDefinition(
+            inputType = StringObjectMap.class,
+            outputType = StringObjectMap.class,
+            properties = @PropertyDefinitions({
+                    @PropertyDefinition(name = PARAM_FROM, commonTypeRef = "#/definitions/commonTypes/definitions/name"),
+                    @PropertyDefinition(name = PARAM_TO, commonTypeRef = "#/definitions/commonTypes/definitions/name")
+            }),
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_FUNCTIONS, section = "Clone key function"),
+            sinceVersion = WikiConstants.VERSION_1_1_0,
+            description = {
+                    "This function takes the input value as a Map and puts the value assigned to the \"from\" key using the \"to\" key."
+            },
+            example = @Example(
+                    in = "/examples/json/account_replace-map_in.json",
+                    out = "/examples/json/account_replace-map_out.json",
+                    yml = "/examples/yml/replace-map.yml",
+                    note = "This example clones \"billingAddress\" to \"shippingAddress\" thanks to this function."
+            )
+    )
     @NamedFunction(NAME)
-    public CloneKeyFunction(@ValueParam(PARAM_FROM) @NonNull final String from,
-                            @ValueParam(PARAM_TO) @NonNull final String to) {
+    public CloneKeyFunction(@ValueParam(docs = "The name of the key we need to duplicate.")
+                            @NonNull final String from,
+                            @ValueParam(docs = "The name of the destination key.")
+                            @NonNull final String to) {
         this.from = from;
         this.to = to;
     }

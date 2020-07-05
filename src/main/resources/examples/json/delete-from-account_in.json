@@ -1,0 +1,18 @@
+{
+  "accounts": [
+    {
+      "address": {
+        "home": "123 Main street, SomeCity"
+      },
+      "id": 1,
+      "name": "John Doe",
+      "password": "21fe12e12ef7f8a123db123",
+      "totalComments": 0
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe",
+      "totalComments": 10
+    }
+  ]
+}

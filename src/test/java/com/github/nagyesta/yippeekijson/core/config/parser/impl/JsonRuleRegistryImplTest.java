@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,14 +33,6 @@ class JsonRuleRegistryImplTest {
     private static final String PATH = "$..a";
     private static final String FAILING = "failing";
     private static final String WRONG = "WRONG";
-
-    private static Stream<Arguments> nullListProvider() {
-        return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null))
-                .add(Arguments.of(mock(FunctionRegistry.class), null))
-                .add(Arguments.of(null, Collections.emptyList()))
-                .build();
-    }
 
     private static Stream<Arguments> invalidRuleProvider() {
         return Stream.<Arguments>builder()
@@ -72,13 +66,12 @@ class JsonRuleRegistryImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("nullListProvider")
-    void testConstructorShouldFailIfNullProvided(final FunctionRegistry functionRegistry,
-                                                 final List<Class<? extends JsonRule>> rules) {
+    @NullSource
+    void testConstructorShouldFailIfNullProvided(final List<Class<? extends JsonRule>> rules) {
         //given
 
         //when + then exception
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonRuleRegistryImpl(functionRegistry, rules));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new JsonRuleRegistryImpl(rules));
     }
 
     @ParameterizedTest
@@ -86,15 +79,16 @@ class JsonRuleRegistryImplTest {
     void testConstructorShouldFailIfWrongClassProvided(final List<Class<? extends JsonRule>> rules,
                                                        final Class<? extends Exception> exception) {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
         final FunctionRegistry functionRegistry = new FunctionRegistryImpl(
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class))
                 .thenReturn(Map.of(FUNCTION_REGISTRY, functionRegistry));
 
         //when + then exception
         Assertions.assertThrows(exception, () -> {
-            final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, rules);
+            final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(rules);
             underTest.setApplicationContext(applicationContext);
             underTest.afterPropertiesSet();
         });
@@ -103,8 +97,7 @@ class JsonRuleRegistryImplTest {
     @Test
     void testNewInstanceFromShouldReturnAnInstanceWhenFound() {
         //given
-        final FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
+        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(Collections.emptyList());
         underTest.registerRuleClass(JsonDeleteRule.class);
 
         final Integer order = 1;
@@ -123,12 +116,13 @@ class JsonRuleRegistryImplTest {
     void testNewInstanceFromShouldFailForInvalidInput(final RawJsonRule source, final Class<? extends Exception> exception)
             throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
         final FunctionRegistry functionRegistry = new FunctionRegistryImpl(
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class))
                 .thenReturn(Map.of(FUNCTION_REGISTRY, functionRegistry));
-        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(functionRegistry, Collections.emptyList());
+        final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(Collections.emptyList());
         underTest.setApplicationContext(applicationContext);
         underTest.afterPropertiesSet();
         underTest.registerRuleClass(JsonDeleteRule.class);

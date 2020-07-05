@@ -113,7 +113,6 @@ public class YamlActionConfigParser implements ActionConfigParser {
         } catch (final IOException e) {
             throw new ConfigParseException(e.getMessage(), e);
         }
-
     }
 
     private void reportViolations(final Set<ValidationMessage> violations, final boolean relaxed) throws ConfigParseException {

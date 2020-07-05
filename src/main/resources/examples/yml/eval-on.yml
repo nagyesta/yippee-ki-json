@@ -1,0 +1,15 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          predicate: # this is our predicate
+            name: "evalOn"
+            predicate:
+              name: "regex"
+              pattern: ^[0-9]+$
+            childPath: "address.billing.zipCode"
+          deleteKey:
+            name: "regex"
+            pattern: ^address$

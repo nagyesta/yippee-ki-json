@@ -20,6 +20,14 @@ project.ext {
     gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String) : ''
     //noinspection GroovyAssignabilityCheck
     gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
+    //noinspection GroovyAssignabilityCheck
+    wikiProjectRoot = project.hasProperty('wikiProjectRoot')
+            ? (project.property('wikiProjectRoot') as String)
+            : "${buildDir}/reports/wiki/"
+    //noinspection GroovyAssignabilityCheck
+    yamlSchemaOutput = project.hasProperty('yamlSchemaOutput')
+            ? (project.property('yamlSchemaOutput') as String)
+            : "${projectDir}/schema/yippee-ki-json_config_schema.json"
 }
 
 versioner {
@@ -63,6 +71,7 @@ dependencies {
     implementation 'org.jetbrains:annotations'
     implementation 'javax.inject:javax.inject'
     implementation 'ch.qos.logback:logback-classic'
+    implementation 'net.steppschuh.markdowngenerator:markdowngenerator'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -82,6 +91,7 @@ dependencyManagement {
             dependency 'javax.inject:javax.inject:1'
             dependency 'commons-io:commons-io:2.6'
             dependency 'com.google.guava:guava:29.0-jre'
+            dependency 'net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1'
         }
     }
 
@@ -141,7 +151,13 @@ jacocoTestCoverageVerification {
                 minimum = 0.7
             }
             excludes = [
-                    'com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper'
+                    'com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper',
+                    'com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants',
+                    'com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam',
+                    'com.github.nagyesta.yippeekijson.core.config.validation.FileConstraintValidator',
+                    'com.github.nagyesta.yippeekijson.core.control.FilePairProcessorController',
+                    'com.github.nagyesta.yippeekijson.metadata.schema.parser.WikiMetadataParser'
+
             ]
         }
     }
@@ -211,6 +227,32 @@ task systemTest {
         }
         file("${buildDir}/test-results/systemTest/result").write("Passed")
     }
+}
+task generateYamlSchema(type: Exec) {
+    inputs.file(file(bootJar.outputs.files.singleFile))
+    outputs.file(file(project.property("yamlSchemaOutput")))
+    dependsOn bootJar
+
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+            "--yippee.export-yml-schema=true",
+            "--yippee.output=${project.property("yamlSchemaOutput")}"
+    logging.captureStandardOutput LogLevel.INFO
+    logging.captureStandardError LogLevel.ERROR
+}
+task generateWikiMarkdown(type: Exec) {
+    inputs.file(file(bootJar.outputs.files.singleFile))
+    outputs.dir(file(project.property("wikiProjectRoot")))
+    dependsOn bootJar
+
+    group = "Execution"
+    description = "Run the output executable jar with ExecTask"
+    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+            "--yippee.export-markdown=true",
+            "--yippee.output-directory=${project.property("wikiProjectRoot")}"
+    logging.captureStandardOutput LogLevel.INFO
+    logging.captureStandardError LogLevel.ERROR
 }
 
 tasks.withType(Checkstyle) {

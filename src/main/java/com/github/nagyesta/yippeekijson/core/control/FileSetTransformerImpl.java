@@ -4,7 +4,6 @@ import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.io.File;
@@ -16,7 +15,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
 public class FileSetTransformerImpl implements FileSetTransformer {
 
     private static final String UNIX_SEPARATOR = "/";

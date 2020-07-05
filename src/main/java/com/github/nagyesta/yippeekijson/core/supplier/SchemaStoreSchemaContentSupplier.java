@@ -6,6 +6,10 @@ import com.github.nagyesta.yippeekijson.core.config.entities.SchemaStoreConfig;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -32,8 +36,23 @@ public class SchemaStoreSchemaContentSupplier implements Supplier<String> {
     private final HttpClient httpClient;
     private final SchemaStoreConfig schemaStoreConfig;
 
+    @SchemaDefinition(
+            outputType = String.class,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_SUPPLIERS, section = "SchemaStore schema supplier"),
+            sinceVersion = WikiConstants.VERSION_1_2_0,
+            description = {
+                    "This supplier returns a JSON schema downloaded from [SchemaStore.org](https://www.schemastore.org/json/) ."
+            },
+            example = @Example(
+                    in = "/examples/json/simple-accounts_in.json",
+                    out = "/examples/json/simple-accounts_invalid_out.json",
+                    yml = "/examples/yml/schema-store-validation.yml",
+                    skipTest = true,
+                    note = "In this example we have validated a clearly incompatible input against our own YML schema.")
+    )
     @NamedSupplier(NAME)
-    public SchemaStoreSchemaContentSupplier(@ValueParam @NonNull final String schemaName,
+    public SchemaStoreSchemaContentSupplier(@ValueParam(docs = "The name of the JSON schema as found in the SchemaStore.org catalog.")
+                                            @NonNull final String schemaName,
                                             @NonNull final HttpClient httpClient,
                                             @NonNull final JsonMapper jsonMapper,
                                             @NonNull final SchemaStoreConfig schemaStoreConfig) {

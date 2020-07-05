@@ -1,0 +1,12 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "rename"
+        path: "$.accounts[*]"
+        params:
+          oldKey: # this is the node defining the first supplier
+            name: "staticString"
+            value: "name"
+          newKey: # this is the node defining the second supplier
+            name: "staticString"
+            value: "fullName"

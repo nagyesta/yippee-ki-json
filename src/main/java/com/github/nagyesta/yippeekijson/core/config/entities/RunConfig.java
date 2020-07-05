@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.entities;
 
 import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
+import com.github.nagyesta.yippeekijson.core.config.validation.ValidFile;
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidYippeeConfig;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,9 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.nio.charset.Charset;
@@ -20,30 +19,54 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.github.nagyesta.yippeekijson.core.config.validation.ValidFile.FileCheck.FALSE;
+import static com.github.nagyesta.yippeekijson.core.config.validation.ValidFile.FileCheck.TRUE;
+
 @Getter
 @Setter
-@ValidYippeeConfig
+@ValidYippeeConfig(groups = RunConfig.Transform.class)
 @Injectable(forType = RunConfig.class)
 @Configuration
 @ConfigurationProperties(prefix = "yippee", ignoreUnknownFields = false)
 public class RunConfig {
 
-    @NotBlank
+    public interface Transform {
+    }
+
+    public interface ExportYaml {
+    }
+
+    public interface ExportMarkdown {
+    }
+
+    @NotBlank(groups = Transform.class)
     private String config;
-    @NotBlank
+    @NotBlank(groups = Transform.class)
     private String action;
-    @NotBlank
+    @NotBlank(groups = Transform.class)
     private String input;
+    @Size(groups = ExportMarkdown.class, max = 0)
+    @NotBlank(groups = ExportYaml.class)
+    @ValidFile(groups = ExportYaml.class, isDirectory = FALSE, canWrite = TRUE)
     private String output;
+    @Size(groups = ExportYaml.class, max = 0)
+    @NotBlank(groups = ExportMarkdown.class)
+    @ValidFile(groups = ExportMarkdown.class, isDirectory = TRUE, canWrite = TRUE)
     private String outputDirectory;
     private boolean allowOverwrite;
     private boolean relaxedYmlSchema;
-    @NotNull
+    @AssertTrue(groups = ExportYaml.class)
+    @AssertFalse(groups = {ExportMarkdown.class, Transform.class})
+    private boolean exportYmlSchema;
+    @AssertTrue(groups = ExportMarkdown.class)
+    @AssertFalse(groups = {ExportYaml.class, Transform.class})
+    private boolean exportMarkdown;
+    @NotNull(groups = {Transform.class, ExportMarkdown.class, ExportYaml.class})
     private Charset charset;
-    @NotNull
-    @Size(min = 1)
+    @NotNull(groups = Transform.class)
+    @Size(min = 1, groups = Transform.class)
     private List<String> includes;
-    @NotNull
+    @NotNull(groups = Transform.class)
     private List<String> excludes;
 
     public RunConfig() {
@@ -57,6 +80,8 @@ public class RunConfig {
         this.outputDirectory = builder.outputDirectory;
         this.allowOverwrite = builder.allowOverwrite;
         this.relaxedYmlSchema = builder.relaxedYmlSchema;
+        this.exportMarkdown = builder.exportMarkdown;
+        this.exportYmlSchema = builder.exportYmlSchema;
         this.charset = builder.charset;
         this.includes = builder.includes;
         this.excludes = builder.excludes;
@@ -140,6 +165,8 @@ public class RunConfig {
         private String outputDirectory;
         private boolean allowOverwrite;
         private boolean relaxedYmlSchema;
+        private boolean exportMarkdown = false;
+        private boolean exportYmlSchema = false;
         private Charset charset = StandardCharsets.UTF_8;
         private List<String> includes = Collections.emptyList();
         private List<String> excludes = Collections.emptyList();
@@ -179,6 +206,16 @@ public class RunConfig {
 
         public RunConfigBuilder relaxedYmlSchema(final boolean relaxedYmlSchema) {
             this.relaxedYmlSchema = relaxedYmlSchema;
+            return this;
+        }
+
+        public RunConfigBuilder exportYmlSchema(final boolean exportYmlSchema) {
+            this.exportYmlSchema = exportYmlSchema;
+            return this;
+        }
+
+        public RunConfigBuilder exportMarkdown(final boolean exportMarkdown) {
+            this.exportMarkdown = exportMarkdown;
             return this;
         }
 
