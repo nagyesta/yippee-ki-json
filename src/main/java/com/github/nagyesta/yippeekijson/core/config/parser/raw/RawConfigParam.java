@@ -2,6 +2,7 @@ package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -91,9 +92,10 @@ public interface RawConfigParam {
     /**
      * Finds the suitable representation based on the input parameters and the existing values.
      *
-     * @param context The context where we want to use the configuration values.
+     * @param context           The context where we want to use the configuration values.
+     * @param conversionService The conversion service instance we will use to convert to the destination type.
      * @return the converted config
      */
     @NotNull
-    Object suitableFor(ParameterContext context);
+    Object suitableFor(ParameterContext context, ConversionService conversionService);
 }

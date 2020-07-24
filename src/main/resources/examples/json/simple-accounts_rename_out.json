@@ -1,0 +1,12 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "fullName": "John Doe"
+    },
+    {
+      "id": 2,
+      "fullName": "Jane Doe"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "http://json-schema.org/draft-07/schema"
+    },
+    "properties": {
+      "type": "object",
+      "properties": {
+        "$schema": {
+          "type": "object"
+        },
+        "properties": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "$schema",
+        "properties"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$_yippee-schema-violation": [
+    {
+      "message": "$.additionalProperties: is not defined in the schema and the schema does not allow additional properties",
+      "path": "$"
+    }
+  ]
+}

@@ -18,6 +18,8 @@ import com.github.nagyesta.yippeekijson.core.supplier.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ConversionServiceFactoryBean;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.List;
 import java.util.function.Function;
@@ -26,6 +28,13 @@ import java.util.function.Supplier;
 
 @Configuration
 public class JsonRegistryConfig {
+
+    @Bean
+    public ConversionService conversionService() {
+        ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
+        bean.afterPropertiesSet();
+        return bean.getObject();
+    }
 
     @Bean
     public List<Class<? extends Supplier<?>>> autoRegisterSuppliers() {
@@ -87,7 +96,7 @@ public class JsonRegistryConfig {
     @Bean
     @Injectable(forType = FunctionRegistry.class)
     public FunctionRegistry functionRegistry() {
-        return new FunctionRegistryImpl(autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates());
+        return new FunctionRegistryImpl(autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates(), conversionService());
     }
 
     @Bean
@@ -105,7 +114,7 @@ public class JsonRegistryConfig {
 
     @Bean
     public JsonRuleRegistry jsonRuleRegistry() {
-        return new JsonRuleRegistryImpl(functionRegistry(), autoRegisterRules());
+        return new JsonRuleRegistryImpl(autoRegisterRules());
     }
 
 }

@@ -12,34 +12,34 @@ class DecimalAddFunctionTest {
 
     private static Stream<Arguments> validInputProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, "1", "0", null))
-                .add(Arguments.of("0", "1", "0", "1"))
-                .add(Arguments.of("0", "1", "2", "1.00"))
-                .add(Arguments.of("3.002", "1.003", "2", "4.01"))
-                .add(Arguments.of("4", "1.5", "0", "6"))
+                .add(Arguments.of(null, "1", 0, null))
+                .add(Arguments.of("0", "1", 0, "1"))
+                .add(Arguments.of("0", "1", 2, "1.00"))
+                .add(Arguments.of("3.002", "1.003", 2, "4.01"))
+                .add(Arguments.of("4", "1.5", 0, "6"))
                 .build();
     }
 
     private static Stream<Arguments> toStringProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of("42.3", "1"))
-                .add(Arguments.of("42", "2"))
+                .add(Arguments.of(new BigDecimal("42.3"), 1))
+                .add(Arguments.of(new BigDecimal("42"), 2))
                 .build();
     }
 
     private static Stream<Arguments> nullProvider() {
         return Stream.<Arguments>builder()
                 .add(Arguments.of(null, null))
-                .add(Arguments.of("42", null))
-                .add(Arguments.of(null, "3"))
+                .add(Arguments.of(BigDecimal.TEN, null))
+                .add(Arguments.of(null, 1))
                 .build();
     }
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testApplyShouldAddNumbersProperly(final String a, final String b, final String scale, final String expected) {
+    void testApplyShouldAddNumbersProperly(final String a, final String b, final Integer scale, final String expected) {
         //given
-        DecimalAddFunction underTest = new DecimalAddFunction(b, scale);
+        DecimalAddFunction underTest = new DecimalAddFunction(new BigDecimal(b), scale);
         final BigDecimal value;
         if (a == null) {
             value = null;
@@ -60,7 +60,7 @@ class DecimalAddFunctionTest {
 
     @ParameterizedTest
     @MethodSource("nullProvider")
-    void testConstructorShouldNotAllowNulls(final String operand, final String scale) {
+    void testConstructorShouldNotAllowNulls(final BigDecimal operand, final Integer scale) {
         //given;
         //when + then exception
         Assertions.assertThrows(IllegalArgumentException.class, () -> new DecimalAddFunction(operand, scale));
@@ -68,7 +68,7 @@ class DecimalAddFunctionTest {
 
     @ParameterizedTest
     @MethodSource("toStringProvider")
-    void testToStringShouldContainClassNameAndParameters(final String operand, final String scale) {
+    void testToStringShouldContainClassNameAndParameters(final BigDecimal operand, final Integer scale) {
         //given
         final DecimalAddFunction underTest = new DecimalAddFunction(operand, scale);
 
@@ -77,7 +77,7 @@ class DecimalAddFunctionTest {
 
         //then
         Assertions.assertTrue(actual.contains(DecimalAddFunction.class.getSimpleName()));
-        Assertions.assertTrue(actual.contains(operand));
-        Assertions.assertTrue(actual.contains(scale));
+        Assertions.assertTrue(actual.contains(operand.toString()));
+        Assertions.assertTrue(actual.contains(String.valueOf(scale)));
     }
 }

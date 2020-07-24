@@ -35,7 +35,7 @@ class FileContentSupplierTest {
     @Test
     void testGetShouldThrowAbortExceptionWhenSourceSupplierFails() {
         //given
-        final FileContentSupplier underTest = new FileContentSupplier(StringUtils.EMPTY, StandardCharsets.UTF_8.name());
+        final FileContentSupplier underTest = new FileContentSupplier(StringUtils.EMPTY, StandardCharsets.UTF_8);
 
         //when + then exception
         Assertions.assertThrows(AbortTransformationException.class, underTest::get);
@@ -50,7 +50,7 @@ class FileContentSupplierTest {
     @ValueSource(strings = {VALIDATION_INPUT_JSON, EXAMPLE_JSON})
     void testToStringShouldContainClassNameAndKey(final String path) {
         //given
-        final FileContentSupplier underTest = new FileContentSupplier(path, StandardCharsets.UTF_8.name());
+        final FileContentSupplier underTest = new FileContentSupplier(path, StandardCharsets.UTF_8);
 
         //when
         final String actual = underTest.toString();

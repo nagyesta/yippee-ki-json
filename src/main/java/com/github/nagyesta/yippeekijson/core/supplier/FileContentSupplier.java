@@ -3,6 +3,10 @@ package com.github.nagyesta.yippeekijson.core.supplier;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -27,12 +31,26 @@ public final class FileContentSupplier implements Supplier<String> {
     private final String path;
     private final Charset charset;
 
+    @SchemaDefinition(
+            outputType = String.class,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_SUPPLIERS, section = "File content supplier"),
+            sinceVersion = WikiConstants.VERSION_1_2_0,
+            description = {
+                    "This supplier returns the contents of a file as text."
+            },
+            example = @Example(
+                    in = "/examples/json/validation-input.json",
+                    out = "/examples/json/validation-output.json",
+                    yml = "/examples/yml/validation.yml",
+                    note = "In this example our file supplier provided the contents of the schema.")
+    )
     @NamedSupplier(NAME)
-    public FileContentSupplier(@ValueParam @NonNull final String path,
-                               @ValueParam @Nullable final String charset) {
+    public FileContentSupplier(@ValueParam(docs = "The path of the file we want to use as input.")
+                               @NonNull final String path,
+                               @ValueParam(docs = "The charset used for reading the contents of the file. Defaults to UTF-8.")
+                               @Nullable final Charset charset) {
         this.path = path;
         this.charset = Optional.ofNullable(charset)
-                .map(Charset::forName)
                 .orElse(StandardCharsets.UTF_8);
     }
 

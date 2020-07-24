@@ -18,7 +18,7 @@
 Yippee-Ki-JSON is the perfect library for die-hard CLI users who need to script JSON document manipulations to eliminate
 slow and error prone operations.
 
- ### Planned feature set
+ ### Primary feature set
  - Filter out certain parts of JSON documents
  - Replace text snippets of matching nodes
     - Supporting conditional replacements

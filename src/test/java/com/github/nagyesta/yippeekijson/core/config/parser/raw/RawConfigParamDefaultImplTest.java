@@ -4,6 +4,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.convert.ConversionService;
 
 class RawConfigParamDefaultImplTest {
 
@@ -24,7 +25,7 @@ class RawConfigParamDefaultImplTest {
         }
 
         @Override
-        public @NotNull Object suitableFor(final ParameterContext parameterContext) {
+        public @NotNull Object suitableFor(final ParameterContext parameterContext, final ConversionService conversionService) {
             return "null";
         }
     };

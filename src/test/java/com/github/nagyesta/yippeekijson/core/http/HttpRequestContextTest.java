@@ -16,7 +16,7 @@ class HttpRequestContextTest {
     private static HttpRequestContext buildPost() {
         return HttpRequestContext.builder()
                 .uri(URI)
-                .httpMethod(HttpRequestContext.HttpMethod.POST)
+                .httpMethod(HttpMethod.POST)
                 .build();
     }
 

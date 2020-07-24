@@ -1,0 +1,16 @@
+actions:
+  - name: "demo"
+    rules: # this is where our rule is defined
+      - name: "validate"
+        path: "$"
+        params:
+          schema: # this is where our schema validation node is
+            name: "jsonSchema"
+            source: # using the input JSON file as the schema to validate itself
+              name: "file"
+              path: "src/main/resources/examples/json/validation-input.json"
+          onFailure:
+            # we will stop the processing but save partial results
+            transformation: "SKIP_REST"
+            # add violation errors to the document itself
+            violation: "COMMENT_JSON"

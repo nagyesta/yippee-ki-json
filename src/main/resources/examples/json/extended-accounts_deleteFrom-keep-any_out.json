@@ -1,0 +1,14 @@
+{
+  "accounts": [
+    {
+      "ID": 1,
+      "email": "john@example.com",
+      "01": true
+    },
+    {
+      "ID": 2,
+      "email": "jane@example.com",
+      "02": true
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "replace"
+        path: "$.accounts..expiresOn"
+        params:
+          stringFunction: # this is the node defining our function
+            name: "stringDateAdd"
+            formatter: "yyyy-MM-dd"
+            amount: 6
+            unit: "MONTHS"
+          predicate: # we want to match any String
+            name: "anyString"

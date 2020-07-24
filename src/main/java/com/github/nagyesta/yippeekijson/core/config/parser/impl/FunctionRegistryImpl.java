@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.yippeekijson.core.NamedComponentUtil;
 import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
@@ -9,6 +10,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.util.Assert;
 
 import java.lang.annotation.Annotation;
@@ -32,14 +34,17 @@ public class FunctionRegistryImpl extends InjectableBeanSupport implements Funct
     private final List<Class<? extends Supplier<?>>> autoRegisterSuppliers;
     private final List<Class<? extends Function<?, ?>>> autoRegisterFunctions;
     private final List<Class<? extends Predicate<Object>>> autoRegisterPredicates;
+    private final ConversionService conversionService;
 
     public FunctionRegistryImpl(@NonNull final List<Class<? extends Supplier<?>>> autoRegisterSuppliers,
                                 @NonNull final List<Class<? extends Function<?, ?>>> autoRegisterFunctions,
-                                @NonNull final List<Class<? extends Predicate<Object>>> autoRegisterPredicates) {
+                                @NonNull final List<Class<? extends Predicate<Object>>> autoRegisterPredicates,
+                                @NonNull final ConversionService conversionService) {
         super(log);
         this.autoRegisterSuppliers = autoRegisterSuppliers;
         this.autoRegisterFunctions = autoRegisterFunctions;
         this.autoRegisterPredicates = autoRegisterPredicates;
+        this.conversionService = conversionService;
     }
 
     @SuppressWarnings("unchecked")
@@ -128,7 +133,7 @@ public class FunctionRegistryImpl extends InjectableBeanSupport implements Funct
             } else {
                 Assert.isTrue(map.containsKey(context.getName()), "Config map has no key: " + context.getName());
                 final RawConfigParam rawConfigParam = map.get(context.getName());
-                return rawConfigParam.suitableFor(context);
+                return rawConfigParam.suitableFor(context, conversionService);
             }
         }).toArray();
     }
@@ -162,13 +167,12 @@ public class FunctionRegistryImpl extends InjectableBeanSupport implements Funct
             @NotNull final Function<T, String> nameExtractorFunction,
             @NotNull final Map<String, Constructor<?>> map) {
         log.info("Registering @" + annotation.getSimpleName() + " annotated class: " + sourceClass.getName());
-        Arrays.stream(sourceClass.getDeclaredConstructors())
-                .filter(c -> c.isAnnotationPresent(annotation))
-                .findFirst()
+        NamedComponentUtil.findAnnotatedConstructorOfNamedComponent(sourceClass, annotation)
                 .ifPresentOrElse(c -> this.addAnnotatedConstructor(map, c,
                         annotation, nameExtractorFunction), () -> {
-                    throw new IllegalArgumentException("Rule is not annotated with @"
+                    throw new IllegalArgumentException("Component is not annotated with @"
                             + annotation.getSimpleName() + ": " + sourceClass.getName());
                 });
     }
+
 }

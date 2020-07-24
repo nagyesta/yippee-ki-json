@@ -33,7 +33,7 @@ class HttpResourceContentSupplierTest {
         final HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.fetch(any(HttpRequestContext.class))).thenReturn(uri);
         final HttpResourceContentSupplier underTest = new HttpResourceContentSupplier(
-                uri, null, null, StandardCharsets.UTF_8.name(), httpClient);
+                uri, null, null, StandardCharsets.UTF_8, httpClient);
 
         //when
         final String actual = underTest.get();
@@ -47,7 +47,7 @@ class HttpResourceContentSupplierTest {
     @MethodSource("nullProvider")
     void testConstructorShouldNotAllowNulls(final String uri, final HttpClient httpClient) {
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> new HttpResourceContentSupplier(uri, null, null, StandardCharsets.UTF_8.name(), httpClient));
+                () -> new HttpResourceContentSupplier(uri, null, null, StandardCharsets.UTF_8, httpClient));
     }
 
     @ParameterizedTest
@@ -55,7 +55,7 @@ class HttpResourceContentSupplierTest {
     void testToStringShouldContainClassNameAndKey(final String uri) {
         //given
         final HttpResourceContentSupplier underTest = new HttpResourceContentSupplier(
-                uri, null, null, StandardCharsets.UTF_8.name(), mock(HttpClient.class));
+                uri, null, null, StandardCharsets.UTF_8, mock(HttpClient.class));
 
         //when
         final String actual = underTest.toString();

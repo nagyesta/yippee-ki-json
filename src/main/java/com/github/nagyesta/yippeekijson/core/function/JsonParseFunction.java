@@ -3,6 +3,10 @@ package com.github.nagyesta.yippeekijson.core.function;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import com.jayway.jsonpath.JsonPath;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,20 @@ public final class JsonParseFunction implements Function<String, Object> {
 
     private final JsonMapper jsonMapper;
 
+    @SchemaDefinition(
+            inputType = String.class,
+            outputType = Object.class,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_FUNCTIONS, section = "JSON parse function"),
+            sinceVersion = WikiConstants.VERSION_1_2_0,
+            description = {
+                    "This function parses the input JSON String and returns an object."
+            },
+            example = @Example(
+                    in = "/examples/json/simple-accounts_in.json",
+                    out = "/examples/json/add-string-json_out.json",
+                    yml = "/examples/yml/add-string-json-parse.yml",
+                    note = "In this example we have parsed the string and inserted an object instead.")
+    )
     @NamedFunction(NAME)
     public JsonParseFunction(@NonNull final JsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;

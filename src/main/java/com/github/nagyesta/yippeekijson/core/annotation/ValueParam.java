@@ -35,4 +35,19 @@ public @interface ValueParam {
      * @return true if the value can be null despite not being annotates as such.
      */
     boolean nullable() default false;
+
+    /**
+     * Provides a short documentation about this parameter.
+     *
+     * @return Description fo the parameter.
+     */
+    String docs() default "";
+
+    /**
+     * Defines what the type will be for the individual {@link java.util.Collection} entries. Mandatory if used for a
+     * {@link java.util.Collection} during injection.
+     *
+     * @return the type of a single item in the {@link java.util.Collection}.
+     */
+    Class<?> itemType() default Void.class;
 }

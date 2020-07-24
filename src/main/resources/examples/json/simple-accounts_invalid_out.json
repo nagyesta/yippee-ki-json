@@ -1,0 +1,22 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "John Doe"
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe"
+    }
+  ],
+  "$_yippee-schema-violation": [
+    {
+      "message": "$.actions: is missing but it is required",
+      "path": "$"
+    },
+    {
+      "message": "$.accounts: is not defined in the schema and the schema does not allow additional properties",
+      "path": "$"
+    }
+  ]
+}

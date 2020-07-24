@@ -5,6 +5,8 @@ NAME
     Yippee-Ki-JSON
 
 SYNOPSIS
+    java -jar yippee-ki-json.jar --yippee.export-markdown=true --yippee.output-directory=directory
+    java -jar yippee-ki-json.jar --yippee.export-yml-schema=true --yippee.output=file
     java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action [--yippee.input=file]
         [--yippee.allow-overwrite={true|false}] --yippee.output=file
     java -jar yippee-ki-json.jar [--yippee.config=file] --yippee.action=action [--yippee.input=file]
@@ -30,7 +32,14 @@ DESCRIPTION
     changes can be made to the JSON nodes located by the JSON Path defined in the rule. In the end, the
     transformed JSON will be pretty-printed to the output file.
 
-EXAMPLES
+    The application has the following main operations it can perform:
+
+      1. Transform JSON files using the rules (primary operation)
+      2. Export the Yaml configuration's JSON schema to allow easy validation
+         The built-in version is also accessible at https://www.schemastore.org/json/
+      3. Export the generated Markdown wiki pages for the built-in named components
+
+EXAMPLES FOR TRANSFORM OPERATION
     java -jar yippee-ki-json.jar --yippee.action=filter --yippee.output=./out.json
         Loads the default configuration file from the working directory, filters the working directory for
         input files using the default include pattern and provided that only one input file was found (as
@@ -52,6 +61,14 @@ EXAMPLES
         --yippee.includes[0]=**/*.json --yippee.excludes[0]=exclude.json
         Same as example (2) but will include all files using '.json' as extension searching recursively
         in the input folder except for the single exclusion: 'exclude.json'.
+
+EXAMPLES FOR THE SECONDARY OPERATIONS
+    java -jar yippee-ki-json.jar --yippee.export-markdown=true --yippee.output-directory=./out
+        Exports the named component documentation under the "./out" folder of the working directory.
+
+    java -jar yippee-ki-json.jar --yippee.export-yml-schema=true --yippee.output=schema.json
+        Exports the JSON schema we can use to validate the YAML configuration and saves it to a file
+        named "schema.json" under the working directory.
 
 OPTIONS
     General options
@@ -92,6 +109,16 @@ OPTIONS
         --yippee.charset
             Default character set used during parsing.
             Default: UTF-8
+
+        --yippee.export-markdown
+            Flag for using the markdown documentation generator.
+            Requires --yippee.output-directory to be specified.
+            Default: false
+
+        --yippee.export-yml-schema
+            Flag for using the JSON schema generator.
+            Requires --yippee.output to be specified.
+            Default: false
 
     Spring Boot options
         All generic Spring Boot options are supported. Please find a few useful ones below.

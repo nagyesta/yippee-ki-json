@@ -2,11 +2,15 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
-import com.github.nagyesta.yippeekijson.core.function.helper.ChronoUnitSupport;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,26 +25,44 @@ import java.util.function.Function;
  * {@link Function} for adding a certain amount of time to a value formatted as {@link String}.
  */
 @Slf4j
-public final class StringDateAddFunction extends ChronoUnitSupport implements Function<String, String> {
+public final class StringDateAddFunction implements Function<String, String> {
 
     static final String NAME = "stringDateAdd";
-    static final String PARAM_FORMATTER = "formatter";
-    static final String PARAM_AMOUNT = "amount";
-    static final String PARAM_UNIT = "unit";
 
     private final DateTimeFormatter dateTimeFormatter;
     private final String formatterPattern;
     private final int amount;
     private final ChronoUnit unit;
 
+    @SchemaDefinition(
+            inputType = String.class,
+            outputType = String.class,
+            sinceVersion = WikiConstants.VERSION_1_1_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_FUNCTIONS, section = "String date add function"),
+            description = {
+                    "This function parses the input value using the \"formatter\" pattern, then adds the necessary",
+                    "\"amount\" of time \"unit\"s before formatting it using the same pattern."
+            },
+            example = @Example(
+                    in = "/examples/json/string-date_in.json",
+                    out = "/examples/json/string-date_out.json",
+                    yml = "/examples/yml/string-date.yml",
+                    note = "In this example we have changed the expiration date of an account by adding 6 months."
+            )
+    )
     @NamedFunction(NAME)
-    public StringDateAddFunction(@ValueParam(PARAM_FORMATTER) @NonNull final String formatter,
-                                 @ValueParam(PARAM_AMOUNT) @NonNull final String amount,
-                                 @ValueParam(PARAM_UNIT) @NonNull final String unit) {
+    public StringDateAddFunction(
+            @ValueParam(docs = "The format String we need to use for date time parsing. "
+                    + "[See](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html)")
+            @NonNull final String formatter,
+            @ValueParam(docs = "The amount of time units we need to add to the date time.")
+            @NonNull final Integer amount,
+            @ValueParam(docs = "The time unit we want to use to interpret the amount.")
+            @NonNull final ChronoUnit unit) {
         this.formatterPattern = formatter;
         this.dateTimeFormatter = DateTimeFormatter.ofPattern(formatter);
-        this.amount = Integer.parseInt(amount);
-        this.unit = toChronoUnit(unit);
+        this.amount = amount;
+        this.unit = unit;
     }
 
     @Override
@@ -52,8 +74,11 @@ public final class StringDateAddFunction extends ChronoUnitSupport implements Fu
         if (parse.isSupported(ChronoField.OFFSET_SECONDS)) {
             return adjustDate(date, OffsetDateTime.class, s -> OffsetDateTime.parse(s, dateTimeFormatter))
                     .format(dateTimeFormatter);
-        } else {
+        } else if (parse.isSupported(ChronoField.HOUR_OF_DAY)) {
             return adjustDate(date, LocalDateTime.class, s -> LocalDateTime.parse(s, dateTimeFormatter))
+                    .format(dateTimeFormatter);
+        } else {
+            return adjustDate(date, LocalDate.class, s -> LocalDate.parse(s, dateTimeFormatter))
                     .format(dateTimeFormatter);
         }
     }

@@ -2,6 +2,10 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,18 +20,41 @@ import java.util.regex.Pattern;
 @Slf4j
 public final class RegexReplaceFunction implements Function<String, String> {
 
-    private static final Pattern NAMED_GROUP_PATTERN = Pattern.compile("(?:\\$\\{(?<groupName>[a-zA-Z0-9]+)})");
-    private static final String GROUP_NAME_KEY = "groupName";
     static final String NAME = "regex";
     static final String PARAM_PATTERN = "pattern";
     static final String PARAM_REPLACEMENT = "replacement";
-
+    private static final Pattern NAMED_GROUP_PATTERN = Pattern.compile("(?:\\$\\{(?<groupName>[a-zA-Z0-9]+)})");
+    private static final String GROUP_NAME_KEY = "groupName";
     private final Pattern pattern;
     private final String replacement;
 
+    @SuppressWarnings("DefaultAnnotationParam")
+    @SchemaDefinition(
+            inputType = String.class,
+            outputType = String.class,
+            sinceVersion = WikiConstants.VERSION_1_0_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_FUNCTIONS, section = "RegEx replace function"),
+            description = {
+                    "This function takes the input value, attempts to match the pre-defined pattern and capture the values of",
+                    "the named capturing groups. Then using the replacement format it tries to resolve all EL-like placeholders",
+                    "using the captured values form the previous step and returns the result."
+            },
+            example = @Example(
+                    in = "/examples/json/account_replace_in.json",
+                    out = "/examples/json/account_replace_out.json",
+                    yml = "/examples/yml/replace.yml",
+                    note = {"In this example, our regex replace function matches against two \"words\" using only letters and",
+                            "dashes, separated by a single space. The replacement format tells the function to keep only the",
+                            "second word and throw away the first. We applied this to both \"lastName\" fields."
+                    }
+            )
+    )
     @NamedFunction(NAME)
-    public RegexReplaceFunction(@ValueParam(PARAM_PATTERN) @NonNull final String pattern,
-                                @ValueParam(PARAM_REPLACEMENT) @NonNull final String replacement) {
+    public RegexReplaceFunction(
+            @ValueParam(docs = "A regex pattern that will be matched against the input, capturing certain named groups for later use.")
+            @NonNull final String pattern,
+            @ValueParam(docs = "Defines how the captured groups should be used to piece together the output value using EL-like syntax.")
+            @NonNull final String replacement) {
         this.pattern = Pattern.compile(pattern);
         this.replacement = replacement;
     }

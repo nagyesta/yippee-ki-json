@@ -5,6 +5,9 @@ import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.impl.helper.JsonMapRuleSupport;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
+import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.StringObjectMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +47,46 @@ public final class JsonDeleteFromMapRule extends JsonMapRuleSupport {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     private final Optional<Predicate<Object>> keepIfValueMatches;
 
+    @SuppressWarnings("checkstyle:MagicNumber")
+    @SchemaDefinition(
+            properties = @PropertyDefinitions(
+                    value = {
+                            @PropertyDefinition(name = PARAM_PREDICATE, required = false,
+                                    type = @TypeDefinition(itemType = Predicate.class, itemTypeParams = StringObjectMap.class),
+                                    docs = "Determines whether any deletion should be performed for the matching node"),
+                            @PropertyDefinition(name = PARAM_KEEP_KEY,
+                                    type = @TypeDefinition(itemType = Predicate.class, itemTypeParams = String.class), required = false,
+                                    docs = "The predicate that will be used to test whether a key should be kept, "
+                                            + "keeping only the matching keys."),
+                            @PropertyDefinition(name = PARAM_DELETE_KEY,
+                                    type = @TypeDefinition(itemType = Predicate.class, itemTypeParams = String.class), required = false,
+                                    docs = "The predicate that will be used to test whether a key should be deleted, "
+                                            + "deleting all the matching keys."),
+                            @PropertyDefinition(name = PARAM_KEEP_VALUE,
+                                    type = @TypeDefinition(itemType = Predicate.class, itemTypeParams = Object.class), required = false,
+                                    docs = "The predicate that will be used to test whether a key should be kept, "
+                                            + "keeping only the matching keys."),
+                            @PropertyDefinition(name = PARAM_DELETE_VALUE,
+                                    type = @TypeDefinition(itemType = Predicate.class, itemTypeParams = Object.class), required = false,
+                                    docs = "The predicate that will be used to test whether an entry should be deleted, "
+                                            + "deleting all of them with matching values."),
+                    },
+                    minProperties = 1,
+                    maxProperties = 5
+            ),
+            sinceVersion = WikiConstants.VERSION_1_1_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_RULES, section = "Delete from"),
+            description = {
+                    "This rule performs a Map operation on the JSON Node matching the JSON Path of the rule, therefore the path",
+                    "must match Objects/Maps to make it work. All parameters are optional, but it is required to fill at least",
+                    "one of them in order to have meaningful rule configuration."
+            },
+            example = @Example(
+                    in = "/examples/json/delete-from-account_in.json",
+                    out = "/examples/json/delete-from-account_out.json",
+                    yml = "/examples/yml/delete-from.yml"
+            )
+    )
     @NamedRule(RULE_NAME)
     public JsonDeleteFromMapRule(@NotNull final FunctionRegistry functionRegistry,
                                  @NotNull final JsonMapper jsonMapper,

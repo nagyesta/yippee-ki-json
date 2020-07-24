@@ -1,0 +1,13 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "expiresOn": 1594405286000
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe"
+    }
+  ]
+}

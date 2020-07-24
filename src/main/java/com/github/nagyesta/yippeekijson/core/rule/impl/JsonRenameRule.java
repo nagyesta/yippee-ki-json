@@ -4,6 +4,8 @@ import com.github.nagyesta.yippeekijson.core.annotation.NamedRule;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -25,6 +27,28 @@ public final class JsonRenameRule extends AbstractJsonRule {
     private final Supplier<String> oldKeySupplier;
     private final Supplier<String> newKeySupplier;
 
+    @SuppressWarnings("DefaultAnnotationParam")
+    @SchemaDefinition(
+            properties = @PropertyDefinitions({
+                    @PropertyDefinition(name = PARAM_OLD_KEY,
+                            type = @TypeDefinition(itemType = Supplier.class, itemTypeParams = String.class),
+                            docs = "Provides the name of the key we want to rename under the node matching the"
+                                    + " `path` parameter at the time of evaluation."),
+                    @PropertyDefinition(name = PARAM_NEW_KEY,
+                            type = @TypeDefinition(itemType = Supplier.class, itemTypeParams = String.class),
+                            docs = "Provides the new name we want to use after the child node was renamed.")
+            }),
+            sinceVersion = WikiConstants.VERSION_1_0_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_RULES, section = "Rename"),
+            description = {
+                    "This rule renames the key of a child node identified by the JSON Path we provide in the path parameter."
+            },
+            example = @Example(
+                    in = "/examples/json/simple-accounts_in.json",
+                    out = "/examples/json/simple-accounts_rename_out.json",
+                    yml = "/examples/yml/rename-string.yml"
+            )
+    )
     @NamedRule(RULE_NAME)
     public JsonRenameRule(@NotNull final FunctionRegistry functionRegistry,
                           @NotNull final RawJsonRule jsonRule) {

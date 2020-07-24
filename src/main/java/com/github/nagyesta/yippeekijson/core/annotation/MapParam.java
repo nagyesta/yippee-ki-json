@@ -36,4 +36,11 @@ public @interface MapParam {
      * @return true if the value can be null despite not being annotates as such.
      */
     boolean nullable() default false;
+
+    /**
+     * Provides a short documentation about this parameter.
+     *
+     * @return Description fo the parameter.
+     */
+    String docs() default "";
 }

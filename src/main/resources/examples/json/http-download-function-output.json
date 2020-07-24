@@ -1,0 +1,5 @@
+{
+  "uri": "example.json",
+  "method": "GET",
+  "example": "{\n  \"accounts\": [\n    {\n      \"id\": 1,\n      \"name\": \"John Doe\",\n      \"email\": \"johndoe@example.com\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"Peter Parker\",\n      \"email\": \"spiderman@example.com\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"Jane Doe\",\n      \"email\": \"jnedoe@example.com\"\n    },\n    {\n      \"id\": 4,\n      \"name\": \"John Smith\",\n      \"email\": \"jsmith@example.com\"\n    }\n  ]\n}"
+}

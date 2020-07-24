@@ -1,0 +1,14 @@
+{
+  "accounts": [
+    {
+      "billingAddress": "123 Main street, SomeCity",
+      "id": 1,
+      "name": "John Doe",
+      "shippingAddress": "123 Main street, SomeCity"
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe"
+    }
+  ]
+}

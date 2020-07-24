@@ -4,6 +4,8 @@ import com.github.nagyesta.yippeekijson.core.annotation.NamedRule;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
+import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
+import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,29 @@ public final class JsonCopyRule extends AbstractJsonRule {
     private final JsonPath destination;
     private final Supplier<String> keySupplier;
 
+    @SuppressWarnings("DefaultAnnotationParam")
+    @SchemaDefinition(
+            properties = @PropertyDefinitions({
+                    @PropertyDefinition(name = PARAM_KEY,
+                            type = @TypeDefinition(itemType = Supplier.class, itemTypeParams = String.class),
+                            docs = "The supplier that will define the key we want to copy."),
+                    @PropertyDefinition(name = {PARAM_TO, PARAM_TO_VALUE},
+                            type = @TypeDefinition(itemType = JsonPath.class),
+                            docs = "The destination path where this rule will attempt to create the copied node.")
+            }),
+            sinceVersion = WikiConstants.VERSION_1_0_0,
+            wikiLink = @WikiLink(file = WikiConstants.BUILT_IN_RULES, section = "Copy"),
+            description = {
+                    "This rule identifies a single object using the JSON Path we provide in the \"path\" parameter and",
+                    "copies it as a child under all of the nodes matching the \"to\" JSON Path parameter with the new",
+                    "key named as the \"key\" Supplier defines."
+            },
+            example = @Example(
+                    in = "/examples/json/simple-accounts_in.json",
+                    out = "/examples/json/copy-name_out.json",
+                    yml = "/examples/yml/copy-json.yml"
+            )
+    )
     @NamedRule(RULE_NAME)
     public JsonCopyRule(@NotNull final FunctionRegistry functionRegistry,
                         @NotNull final RawJsonRule jsonRule) {

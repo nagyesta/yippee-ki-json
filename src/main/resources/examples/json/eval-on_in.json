@@ -1,0 +1,31 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "address": {
+        "shipping": {
+          "city": "Some City",
+          "zipCode": "1300",
+          "address": "Some street 123."
+        },
+        "billing": {
+          "city": "Some City",
+          "zipCode": "1300",
+          "address": "Some street 123."
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe",
+      "address": {
+        "shipping": {
+          "city": "Some City",
+          "zipCode": "1300",
+          "address": "Some street 123."
+        }
+      }
+    }
+  ]
+}

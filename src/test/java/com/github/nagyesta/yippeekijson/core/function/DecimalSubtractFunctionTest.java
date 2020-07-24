@@ -12,18 +12,18 @@ class DecimalSubtractFunctionTest {
 
     private static Stream<Arguments> validInputProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of("0", "1", "0", "-1"))
-                .add(Arguments.of("0", "1", "2", "-1.00"))
-                .add(Arguments.of("3.002", "1.003", "2", "2.00"))
-                .add(Arguments.of("4", "1.5", "0", "3"))
+                .add(Arguments.of("0", "1", 0, "-1"))
+                .add(Arguments.of("0", "1", 2, "-1.00"))
+                .add(Arguments.of("3.002", "1.003", 2, "2.00"))
+                .add(Arguments.of("4", "1.5", 0, "3"))
                 .build();
     }
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testApplyShouldSubtractNumbersProperly(final String a, final String b, final String scale, final String expected) {
+    void testApplyShouldSubtractNumbersProperly(final String a, final String b, final Integer scale, final String expected) {
         //given
-        DecimalSubtractFunction underTest = new DecimalSubtractFunction(b, scale);
+        DecimalSubtractFunction underTest = new DecimalSubtractFunction(new BigDecimal(b), scale);
 
         //when
         final BigDecimal actual = underTest.apply(new BigDecimal(a));

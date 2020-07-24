@@ -1,0 +1,18 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "address": {
+        "home": "123 Main street, SomeCity"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe",
+      "address": {
+        "home": "123 Main street, SomeCity"
+      }
+    }
+  ]
+}

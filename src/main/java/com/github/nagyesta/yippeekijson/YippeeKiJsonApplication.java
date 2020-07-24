@@ -1,7 +1,7 @@
 package com.github.nagyesta.yippeekijson;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
-import com.github.nagyesta.yippeekijson.core.control.FilePairProcessorController;
+import com.github.nagyesta.yippeekijson.core.control.ApplicationController;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import lombok.NonNull;
@@ -23,9 +23,9 @@ public class YippeeKiJsonApplication {
     private static final int EXIT_CODE_CONFIG_PARSE_ERROR = 3;
     private static final int EXIT_CODE_FAILURE = 4;
     private final RunConfig runConfig;
-    private final FilePairProcessorController controller;
+    private final ApplicationController controller;
 
-    protected YippeeKiJsonApplication(@NonNull final RunConfig runConfig, @NonNull final FilePairProcessorController controller) {
+    protected YippeeKiJsonApplication(@NonNull final RunConfig runConfig, @NonNull final ApplicationController controller) {
         this.runConfig = runConfig;
         this.controller = controller;
     }

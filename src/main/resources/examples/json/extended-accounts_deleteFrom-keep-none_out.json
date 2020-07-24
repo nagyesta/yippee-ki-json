@@ -1,0 +1,10 @@
+{
+  "accounts": [
+    {
+      "fullName": "John Doe"
+    },
+    {
+      "fullName": "Jane Doe"
+    }
+  ]
+}

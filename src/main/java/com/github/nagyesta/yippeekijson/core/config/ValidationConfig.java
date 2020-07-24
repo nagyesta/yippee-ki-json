@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config;
 
+import com.github.nagyesta.yippeekijson.core.config.validation.FileConstraintValidator;
 import com.github.nagyesta.yippeekijson.core.config.validation.FileValidator;
 import com.github.nagyesta.yippeekijson.core.config.validation.YippeeConfigValidator;
 import org.springframework.context.annotation.Bean;
@@ -31,5 +32,10 @@ public class ValidationConfig {
     @Bean
     public YippeeConfigValidator yippeeConfigValidator() {
         return new YippeeConfigValidator(configValidator(), inputValidator(), outputFileValidator(), outputDirectoryValidator());
+    }
+
+    @Bean
+    public FileConstraintValidator fileConstraintValidator() {
+        return new FileConstraintValidator();
     }
 }

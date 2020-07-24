@@ -1,0 +1,28 @@
+{
+  "uri": "example.json",
+  "method": "GET",
+  "example": {
+    "accounts": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "email": "johndoe@example.com"
+      },
+      {
+        "id": 2,
+        "name": "Peter Parker",
+        "email": "spiderman@example.com"
+      },
+      {
+        "id": 3,
+        "name": "Jane Doe",
+        "email": "jnedoe@example.com"
+      },
+      {
+        "id": 4,
+        "name": "John Smith",
+        "email": "jsmith@example.com"
+      }
+    ]
+  }
+}

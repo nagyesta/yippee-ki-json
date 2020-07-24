@@ -36,4 +36,25 @@ public @interface EmbedParam {
      * @return true if the value can be null despite not being annotates as such.
      */
     boolean nullable() default false;
+
+    /**
+     * Provides a short documentation about this parameter.
+     *
+     * @return Description fo the parameter.
+     */
+    String docs() default "";
+
+    /**
+     * Defines what the type will be for the component we want to resolve using the embedded parameter Map(s).
+     *
+     * @return Supplier, Function, Predicate
+     */
+    Class<?> itemType() default Void.class;
+
+    /**
+     * Defines the optional type parameters of the type we want to resolve to.
+     *
+     * @return type parameters
+     */
+    Class<?>[] itemTypeParams() default {};
 }

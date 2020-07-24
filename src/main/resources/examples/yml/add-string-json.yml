@@ -1,0 +1,12 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[*]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "address"
+          value: # this is the node defining the second supplier
+            name: "staticJson"
+            value: '{"home":"123 Main street, SomeCity"}'

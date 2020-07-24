@@ -12,18 +12,18 @@ class DecimalMultiplyFunctionTest {
 
     private static Stream<Arguments> validInputProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of("0", "1", "0", "0"))
-                .add(Arguments.of("0", "1", "2", "0.00"))
-                .add(Arguments.of("3.002", "1.003", "2", "3.01"))
-                .add(Arguments.of("4", "1.5", "0", "6"))
+                .add(Arguments.of("0", "1", 0, "0"))
+                .add(Arguments.of("0", "1", 2, "0.00"))
+                .add(Arguments.of("3.002", "1.003", 2, "3.01"))
+                .add(Arguments.of("4", "1.5", 0, "6"))
                 .build();
     }
 
     @ParameterizedTest
     @MethodSource("validInputProvider")
-    void testApplyShouldMultiplyNumbersProperly(final String a, final String b, final String scale, final String expected) {
+    void testApplyShouldMultiplyNumbersProperly(final String a, final String b, final Integer scale, final String expected) {
         //given
-        DecimalMultiplyFunction underTest = new DecimalMultiplyFunction(b, scale);
+        DecimalMultiplyFunction underTest = new DecimalMultiplyFunction(new BigDecimal(b), scale);
 
         //when
         final BigDecimal actual = underTest.apply(new BigDecimal(a));

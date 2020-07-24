@@ -1,0 +1,14 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "deleteFrom"
+        path: "$.accounts[*]"
+        params:
+          keepKey: # this is our predicate
+            name: "allMatch"
+            from:
+              - name: "notNull"
+              - name: "regex"
+                pattern: ^[a-zA-Z0-9]+$
+              - name: "regex"
+                pattern: ^.{3,10}$

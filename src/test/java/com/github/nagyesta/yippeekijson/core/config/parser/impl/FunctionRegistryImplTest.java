@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,13 +60,15 @@ class FunctionRegistryImplTest {
 
     private static Stream<Arguments> nullListProvider() {
         return Stream.<Arguments>builder()
-                .add(Arguments.of(null, null, null))
-                .add(Arguments.of(Collections.emptyList(), null, null))
-                .add(Arguments.of(null, Collections.emptyList(), null))
-                .add(Arguments.of(null, null, Collections.emptyList()))
-                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null))
-                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList()))
-                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList()))
+                .add(Arguments.of(null, null, null, null))
+                .add(Arguments.of(Collections.emptyList(), null, null, null))
+                .add(Arguments.of(null, Collections.emptyList(), null, null))
+                .add(Arguments.of(null, null, Collections.emptyList(), null))
+                .add(Arguments.of(null, null, null, mock(ConversionService.class)))
+                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), null))
+                .add(Arguments.of(Collections.emptyList(), Collections.emptyList(), null, mock(ConversionService.class)))
+                .add(Arguments.of(Collections.emptyList(), null, Collections.emptyList(), mock(ConversionService.class)))
+                .add(Arguments.of(null, Collections.emptyList(), Collections.emptyList(), mock(ConversionService.class)))
                 .build();
     }
 
@@ -72,18 +76,22 @@ class FunctionRegistryImplTest {
     @MethodSource("nullListProvider")
     void testConstructorShouldFailIfNullProvided(final List<Class<? extends Supplier<?>>> suppliers,
                                                  final List<Class<? extends Function<?, ?>>> functions,
-                                                 final List<Class<? extends Predicate<Object>>> predicates) {
+                                                 final List<Class<? extends Predicate<Object>>> predicates,
+                                                 final ConversionService conversionService) {
         //given
         //when + then exception
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> new FunctionRegistryImpl(suppliers, functions, predicates));
+                () -> new FunctionRegistryImpl(suppliers, functions, predicates, conversionService));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testLookupSupplierShouldReturnAnInstanceWhenFound() throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).then(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(List.of(StaticStringSupplier.class),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -97,13 +105,16 @@ class FunctionRegistryImplTest {
         Assertions.assertEquals(StaticStringSupplier.class, actual.getClass());
     }
 
+    @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupSupplierShouldThrowExceptionWhenSupplierNotFound(final Map<String, RawConfigParam> map,
                                                                     final Class<? extends Exception> exception) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).thenAnswer(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -114,11 +125,14 @@ class FunctionRegistryImplTest {
         Assertions.assertThrows(exception, () -> underTest.lookupSupplier(map));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testLookupFunctionShouldReturnAnInstanceWhenFound() throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).then(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                List.of(RegexReplaceFunction.class), Collections.emptyList());
+                List.of(RegexReplaceFunction.class), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -133,13 +147,16 @@ class FunctionRegistryImplTest {
         Assertions.assertEquals(RegexReplaceFunction.class, actual.getClass());
     }
 
+    @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupFunctionShouldThrowExceptionWhenFunctionNotFound(final Map<String, RawConfigParam> map,
                                                                     final Class<? extends Exception> exception) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).thenAnswer(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -150,11 +167,14 @@ class FunctionRegistryImplTest {
         Assertions.assertThrows(exception, () -> underTest.lookupFunction(map));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testLookupPredicateShouldReturnAnInstanceWhenFound() throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).thenAnswer(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), List.of(AnyStringPredicate.class));
+                Collections.emptyList(), List.of(AnyStringPredicate.class), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -169,13 +189,16 @@ class FunctionRegistryImplTest {
         Assertions.assertEquals(AnyStringPredicate.class, actual.getClass());
     }
 
+    @SuppressWarnings("unchecked")
     @ParameterizedTest
     @MethodSource("invalidMapProvider")
     void testLookupPredicateShouldThrowExceptionWhenPredicateNotFound(final Map<String, RawConfigParam> map,
                                                                       final Class<? extends Exception> exception) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
+        when(conversionService.convert(any(), any(Class.class))).thenAnswer(a -> a.getArgument(0));
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -191,8 +214,9 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongSupplier.class, FailingSupplier.class})
     void testRegisterSupplierClassShouldThrowExceptionForInvalidInput(final Class<? extends Supplier<?>> clazz) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -208,8 +232,9 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongFunction.class, FailingFunction.class})
     void testRegisterFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Function<?, ?>> clazz) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);
@@ -225,8 +250,9 @@ class FunctionRegistryImplTest {
     @ValueSource(classes = {WrongPredicate.class, FailingPredicate.class})
     void testPredicateFunctionClassShouldThrowExceptionForInvalidInput(final Class<? extends Predicate<?>> clazz) throws Exception {
         //given
+        final ConversionService conversionService = mock(ConversionService.class);
         final FunctionRegistry underTest = new FunctionRegistryImpl(Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
+                Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
         when(applicationContext.getBeansWithAnnotation(Injectable.class)).thenReturn(Map.of());
         underTest.setApplicationContext(applicationContext);

@@ -1,8 +1,8 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.yippeekijson.core.NamedComponentUtil;
 import com.github.nagyesta.yippeekijson.core.annotation.EmbedParam;
 import com.github.nagyesta.yippeekijson.core.annotation.MapParam;
-import com.github.nagyesta.yippeekijson.core.annotation.MethodParam;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import lombok.Getter;
@@ -11,12 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.util.Assert;
 
 import javax.inject.Named;
+import javax.validation.constraints.Pattern;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -31,49 +33,82 @@ public final class ParameterContext {
     private final boolean nullable;
     private final boolean collectionTyped;
     private final UseCase useCase;
+    private final String docs;
+    private final Class<?> rawType;
+    private final String pattern;
+    private final Type resolvedType;
 
-    private ParameterContext(final UseCase useCase, final String name, final boolean nullable, final boolean collectionTyped) {
-        this.useCase = useCase;
-        this.name = name;
-        this.nullable = nullable;
-        this.collectionTyped = collectionTyped;
+    private ParameterContext(final ParameterContextBuilder builder) {
+        this.useCase = builder.useCase;
+        this.name = builder.name;
+        this.nullable = builder.nullable;
+        this.collectionTyped = builder.collectionTyped;
+        this.docs = builder.docs;
+        this.rawType = builder.rawType;
+        this.pattern = builder.pattern;
+        this.resolvedType = builder.resolvedType;
     }
 
-    @SuppressWarnings("deprecation")
     public static ParameterContext forParameter(@NotNull final Parameter parameter) {
-        ParameterContext result;
+
+        ParameterContextBuilder builder = ParameterContext.builder()
+                .collectionTyped(NamedComponentUtil.isCollectionTyped(parameter.getType()));
         if (parameter.isAnnotationPresent(EmbedParam.class)) {
             final EmbedParam annotation = parameter.getAnnotation(EmbedParam.class);
-            result = process(parameter, UseCase.forAnnotation(annotation), annotation.value(), annotation.nullable());
+            convertEmbedParam(parameter, builder, annotation);
         } else if (parameter.isAnnotationPresent(MapParam.class)) {
             final MapParam annotation = parameter.getAnnotation(MapParam.class);
-            result = process(parameter, UseCase.forAnnotation(annotation), annotation.value(), annotation.nullable());
+            convertMapParam(parameter, builder, annotation);
         } else if (parameter.isAnnotationPresent(ValueParam.class)) {
             final ValueParam annotation = parameter.getAnnotation(ValueParam.class);
-            result = process(parameter, UseCase.forAnnotation(annotation), annotation.value(), annotation.nullable());
+            convertValueParam(parameter, builder, annotation);
         } else {
-            final MethodParam annotation = parameter.getAnnotation(MethodParam.class);
-            result = new ParameterContext(UseCase.forAnnotation(annotation),
-                    annotation.value(), annotation.nullable(), annotation.repeat());
+            throw new UnsupportedOperationException("Parameter is not annotated.");
         }
-        return result;
+        return builder.build();
     }
 
-    @NotNull
-    private static ParameterContext process(@NotNull final Parameter parameter,
-                                            @NotNull final UseCase useCase,
-                                            @NotNull final String value,
-                                            final boolean nullable) {
-        return new ParameterContext(useCase,
-                findName(parameter, value),
-                isNullable(parameter, nullable),
-                Collection.class.isAssignableFrom(parameter.getType()));
+    private static void convertValueParam(@NotNull final Parameter parameter,
+                                          final ParameterContextBuilder builder,
+                                          final ValueParam annotation) {
+        String pattern = null;
+        if (parameter.isAnnotationPresent(Pattern.class)) {
+            pattern = parameter.getAnnotation(Pattern.class).regexp();
+        }
+        builder.name(findName(parameter, annotation.value()))
+                .nullable(isNullable(parameter, annotation.nullable()))
+                .rawType(NamedComponentUtil.resolveRawParamItemType(parameter, annotation.itemType()))
+                .resolvedType(NamedComponentUtil.resolveParamType(parameter, annotation.itemType(), new Class[0]))
+                .useCase(UseCase.forAnnotation(annotation))
+                .pattern(pattern)
+                .docs(annotation.docs());
     }
 
-    @SuppressWarnings("deprecation")
+    private static void convertMapParam(@NotNull final Parameter parameter,
+                                        final ParameterContextBuilder builder,
+                                        final MapParam annotation) {
+        builder.name(findName(parameter, annotation.value()))
+                .nullable(isNullable(parameter, annotation.nullable()))
+                .resolvedType(NamedComponentUtil.resolveParamType(parameter, Map.class, new Class[]{String.class, String.class}))
+                .rawType(Map.class)
+                .useCase(UseCase.forAnnotation(annotation))
+                .docs(annotation.docs());
+    }
+
+    private static void convertEmbedParam(@NotNull final Parameter parameter,
+                                          final ParameterContextBuilder builder,
+                                          final EmbedParam annotation) {
+        builder.name(findName(parameter, annotation.value()))
+                .nullable(isNullable(parameter, annotation.nullable()))
+                .resolvedType(NamedComponentUtil.resolveParamType(parameter, annotation.itemType(), annotation.itemTypeParams()))
+                .rawType(NamedComponentUtil.resolveRawParamItemType(parameter, annotation.itemType()))
+                .useCase(UseCase.forAnnotation(annotation))
+                .docs(annotation.docs());
+    }
+
+
     public static boolean supports(@NotNull final Parameter parameter) {
-        return parameter.isAnnotationPresent(MethodParam.class)
-                || parameter.isAnnotationPresent(ValueParam.class)
+        return parameter.isAnnotationPresent(ValueParam.class)
                 || parameter.isAnnotationPresent(MapParam.class)
                 || parameter.isAnnotationPresent(EmbedParam.class);
     }
@@ -108,6 +143,10 @@ public final class ParameterContext {
         return paramName;
     }
 
+    private static ParameterContextBuilder builder() {
+        return new ParameterContextBuilder();
+    }
+
     public enum UseCase {
         /**
          * Represents the use case of {@link String} valued parameter(s).
@@ -131,18 +170,6 @@ public final class ParameterContext {
             this.collectionFunction = collectionFunction;
         }
 
-        @SuppressWarnings("deprecation")
-        static UseCase forAnnotation(final MethodParam methodParam) {
-            if (methodParam.stringMap() && methodParam.paramMap()) {
-                return EMBEDDED;
-            } else if (methodParam.stringMap()) {
-                return MAP;
-            } else {
-                Assert.isTrue(!methodParam.paramMap(), "Param map cannot be active if string map isn't.");
-                return VALUE;
-            }
-        }
-
         @SuppressWarnings("unused")
         static UseCase forAnnotation(final MapParam methodParam) {
             return MAP;
@@ -158,12 +185,71 @@ public final class ParameterContext {
             return VALUE;
         }
 
-        public Object apply(@NotNull final RawConfigParam param, final boolean collectionNeeded) {
+        public <T> T apply(@NotNull final RawConfigParam param, final boolean collectionNeeded, final Class<T> targetType) {
             if (collectionNeeded) {
-                return collectionFunction.apply(param);
+                return targetType.cast(collectionFunction.apply(param));
             } else {
-                return singularFunction.apply(param);
+                return targetType.cast(singularFunction.apply(param));
             }
+        }
+    }
+
+    @SuppressWarnings({"UnusedReturnValue", "checkstyle:HiddenField", "checkstyle:DesignForExtension"})
+    public static final class ParameterContextBuilder {
+        private String name;
+        private boolean nullable;
+        private boolean collectionTyped;
+        private UseCase useCase;
+        private String docs;
+        private String pattern;
+        private Class<?> rawType;
+        private Type resolvedType;
+
+        private ParameterContextBuilder() {
+        }
+
+        public ParameterContextBuilder name(final String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ParameterContextBuilder nullable(final boolean nullable) {
+            this.nullable = nullable;
+            return this;
+        }
+
+        public ParameterContextBuilder collectionTyped(final boolean collectionTyped) {
+            this.collectionTyped = collectionTyped;
+            return this;
+        }
+
+        public ParameterContextBuilder useCase(final UseCase useCase) {
+            this.useCase = useCase;
+            return this;
+        }
+
+        public ParameterContextBuilder docs(final String docs) {
+            this.docs = docs;
+            return this;
+        }
+
+        public ParameterContextBuilder pattern(final String pattern) {
+            this.pattern = pattern;
+            return this;
+        }
+
+        public ParameterContextBuilder rawType(final Class<?> rawType) {
+            this.rawType = rawType;
+            return this;
+        }
+
+        public ParameterContextBuilder resolvedType(final Type resolvedType) {
+            this.resolvedType = resolvedType;
+            return this;
+        }
+
+        public ParameterContext build() {
+            return new ParameterContext(this);
         }
     }
 }

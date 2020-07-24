@@ -24,7 +24,7 @@ public class FileValidator {
 
     private final Boolean isDirectory;
 
-    public FileValidator(@NonNull final String propertyPath,
+    public FileValidator(@Nullable final String propertyPath,
                          @Nullable final Boolean exists,
                          @Nullable final Boolean canRead,
                          @Nullable final Boolean canWrite,
@@ -81,7 +81,11 @@ public class FileValidator {
                                 final String template) {
         if (!isTrue) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(template).addPropertyNode(property).addConstraintViolation();
+            if (property != null) {
+                context.buildConstraintViolationWithTemplate(template).addPropertyNode(property).addConstraintViolation();
+            } else {
+                context.buildConstraintViolationWithTemplate(template).addConstraintViolation();
+            }
             return false;
         }
         return true;

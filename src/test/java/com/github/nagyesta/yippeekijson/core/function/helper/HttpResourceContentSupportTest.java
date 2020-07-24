@@ -6,10 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static com.github.nagyesta.yippeekijson.core.http.HttpRequestContext.HttpMethod.GET;
+import static com.github.nagyesta.yippeekijson.core.http.HttpMethod.GET;
 import static com.google.common.net.HttpHeaders.USER_AGENT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
@@ -26,7 +27,7 @@ class HttpResourceContentSupportTest {
     void testApplyShouldExecuteStepsInOrderWhenCalledWithValidData() {
         //given
         final Map<String, String> headers = Map.of(USER_AGENT, USER_AGENT);
-        final String charset = StandardCharsets.UTF_8.name();
+        final Charset charset = StandardCharsets.UTF_8;
 
         final HttpRequestContext overrideContext = HttpRequestContext.builder()
                 .uri(OVERRIDE_URI)
@@ -35,7 +36,7 @@ class HttpResourceContentSupportTest {
         HttpClient httpClient = mock(HttpClient.class);
         when(httpClient.fetch(any(HttpRequestContext.class), same(overrideContext))).thenReturn(SUCCESS);
         HttpResourceContentSupport<Object> underTest = new HttpResourceContentSupport<>(
-                httpClient, DEFAULT_URI, GET.name(), headers, charset) {
+                httpClient, DEFAULT_URI, GET, headers, charset) {
 
             @Override
             protected @NotNull HttpRequestContext buildOverrideContext(final Object override) {
@@ -51,15 +52,14 @@ class HttpResourceContentSupportTest {
         Assertions.assertEquals(SUCCESS, actual);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Test
     void testConstructorShouldThrowExceptionWhenHttpClientMissing() {
         //given
 
         //when + then exception
+        //noinspection CodeBlock2Expr
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            new HttpResourceContentSupport<>(
-                    null, null, null, null, null) {
+            new HttpResourceContentSupport<>(null, null, null, null, null) {
 
                 @Override
                 protected @NotNull HttpRequestContext buildOverrideContext(final Object override) {
