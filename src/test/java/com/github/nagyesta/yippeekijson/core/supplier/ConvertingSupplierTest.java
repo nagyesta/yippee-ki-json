@@ -2,7 +2,6 @@ package com.github.nagyesta.yippeekijson.core.supplier;
 
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,11 +9,12 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.JSON_VALIDATION_TEST_SCHEMA;
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -22,7 +22,6 @@ import static org.mockito.Mockito.when;
 class ConvertingSupplierTest {
 
     private static final String EMPTY_JSON = "{}";
-    private static final String TEST_SCHEMA_JSON = "/validation/test-schema.json";
 
     private static Stream<Arguments> nullProvider() {
         return Stream.<Arguments>builder()
@@ -65,22 +64,16 @@ class ConvertingSupplierTest {
     @Test
     void testGetShouldReturnConvertedValueOfSourceWhenSourceSupplierReturnsValidInput() throws IOException {
         //given
-        String expected = IOUtils.resourceToString(TEST_SCHEMA_JSON, StandardCharsets.UTF_8);
         FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
-        when(functionRegistry.<String>lookupSupplier(anyMap())).thenReturn(() -> TEST_SCHEMA_JSON);
-        when(functionRegistry.<String, String>lookupFunction(anyMap())).thenReturn(value -> {
-            try {
-                return IOUtils.resourceToString(value, StandardCharsets.UTF_8);
-            } catch (final IOException e) {
-                throw new IllegalArgumentException(e.getMessage(), e);
-            }
-        });
+        when(functionRegistry.<String>lookupSupplier(anyMap())).thenReturn(() -> JSON_VALIDATION_TEST_SCHEMA);
+        when(functionRegistry.<String, String>lookupFunction(anyMap())).thenReturn(value -> resource().asString(value));
         final ConvertingSupplier underTest = new ConvertingSupplier(Map.of(), Map.of(), functionRegistry);
 
         //when
         final Object actual = underTest.get();
 
         //then
+        String expected = resource().asString(JSON_VALIDATION_TEST_SCHEMA);
         Assertions.assertEquals(expected, actual);
     }
 

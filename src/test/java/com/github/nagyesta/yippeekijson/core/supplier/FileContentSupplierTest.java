@@ -1,7 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,23 +11,22 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.*;
+
 class FileContentSupplierTest {
 
-    private static final String VALIDATION_INPUT_JSON = "/validation/validation-input.json";
-    private static final String EXAMPLE_JSON = "/json/example.json";
-
     @ParameterizedTest
-    @ValueSource(strings = {EXAMPLE_JSON, VALIDATION_INPUT_JSON})
+    @ValueSource(strings = {JSON_EXAMPLE, JSON_VALIDATION_INPUT})
     void testGetShouldReturnTheStaticString(final String input) throws IOException {
         //given
-        final File file = new File(this.getClass().getResource(input).getFile());
-        String expected = IOUtils.resourceToString(input, StandardCharsets.UTF_8);
+        final File file = resource().asFile(input);
         final FileContentSupplier underTest = new FileContentSupplier(file.getAbsolutePath(), null);
 
         //when
         final String actual = underTest.get();
 
         //then
+        String expected = resource().asString(input);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -47,7 +45,7 @@ class FileContentSupplierTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {VALIDATION_INPUT_JSON, EXAMPLE_JSON})
+    @ValueSource(strings = {JSON_EXAMPLE, JSON_VALIDATION_INPUT})
     void testToStringShouldContainClassNameAndKey(final String path) {
         //given
         final FileContentSupplier underTest = new FileContentSupplier(path, StandardCharsets.UTF_8);

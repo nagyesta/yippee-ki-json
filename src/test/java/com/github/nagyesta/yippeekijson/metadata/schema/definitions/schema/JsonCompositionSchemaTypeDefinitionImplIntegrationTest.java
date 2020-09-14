@@ -1,25 +1,25 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonCompositionSchemaTypeDefinition;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaObject;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.common.CommonStringValuesType;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import static com.github.nagyesta.yippeekijson.metadata.schema.definitions.converter.NamedComponentConverter.PROPERTY_NAME;
 import static com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema.CompositionType.*;
 import static com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema.JsonRefSchemaTypeDefinition.ref;
+import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil;
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.JSON_SCHEMA_ANY_SUPPLIER;
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 
 @SpringBootTest
 class JsonCompositionSchemaTypeDefinitionImplIntegrationTest {
@@ -30,9 +30,7 @@ class JsonCompositionSchemaTypeDefinitionImplIntegrationTest {
     @Test
     void testCompositionOfSimpleAnyTypeWorksAsExpected() throws IOException {
         //given
-        final ObjectMapper objectMapper = jsonMapper.objectMapper();
-        final String schemaString = IOUtils.resourceToString("/schema/any-supplier.json", StandardCharsets.UTF_8);
-        final JsonNode expected = objectMapper.readTree(schemaString);
+        final JsonNode expected = resource().asJson(JSON_SCHEMA_ANY_SUPPLIER);
 
         //when
         final JsonCompositionSchemaTypeDefinition actual = JsonCompositionSchemaTypeDefinitionImpl.builder()
@@ -62,8 +60,7 @@ class JsonCompositionSchemaTypeDefinitionImplIntegrationTest {
                 .build();
 
         //then
-        final String jsonActual = objectMapper.writeValueAsString(actual);
-        final JsonNode actualTree = objectMapper.readTree(jsonActual);
+        final JsonNode actualTree = jsonUtil().asNormalizedTree(actual);
         Assertions.assertEquals(expected, actualTree);
     }
 

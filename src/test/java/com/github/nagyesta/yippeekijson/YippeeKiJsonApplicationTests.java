@@ -7,6 +7,7 @@ import com.github.nagyesta.yippeekijson.core.control.ApplicationController;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -48,8 +49,9 @@ class YippeeKiJsonApplicationTests {
         };
     }
 
-    @ParameterizedTest
-    @MethodSource("nullProvider")
+    @ParameterizedTest(name = "runConfig: {0}, controller: {1}")
+    @DisplayName("Constructor should throw exception when called with nulls")
+    @MethodSource({"nullProvider"})
     void testConstructorShouldThrowExceptionWhenCalledWithNulls(final RunConfig runConfig,
                                                                 final ApplicationController controller) {
         //given
