@@ -6,8 +6,8 @@ import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
+import com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider;
 import com.networknt.schema.JsonSchema;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -26,7 +25,6 @@ import static org.mockito.Mockito.when;
 class JsonSchemaSupplierTest {
 
     private static final String EMPTY_JSON = "{}";
-    private static final String TEST_SCHEMA_JSON = "/validation/test-schema.json";
     private static final String PROPERTIES = "properties";
     private static final String OBJECT = "object";
     private static final String ARRAY = "array";
@@ -74,7 +72,7 @@ class JsonSchemaSupplierTest {
     @Test
     void testGetShouldReturnSchemaWhenSourceSupplierReturnsValidInput() throws IOException {
         //given
-        String schemaSource = IOUtils.resourceToString(TEST_SCHEMA_JSON, StandardCharsets.UTF_8);
+        String schemaSource = TestResourceProvider.resource().asString(TestResourceProvider.JSON_VALIDATION_TEST_SCHEMA);
         JsonMapper jsonMapper = new JsonMapperImpl();
         FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         when(functionRegistry.lookupSupplier(anyMap())).thenReturn(() -> schemaSource);

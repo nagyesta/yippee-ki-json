@@ -6,7 +6,6 @@ import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
@@ -109,7 +109,7 @@ class JsonTransformerImplIntegrationTest {
         final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
-        final String expected = IOUtils.resourceToString(JSON_EXAMPLE_FILTERED_JSON, StandardCharsets.UTF_8);
+        final String expected = resource().asString(JSON_EXAMPLE_FILTERED_JSON);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -125,7 +125,7 @@ class JsonTransformerImplIntegrationTest {
         final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
-        final String expected = IOUtils.resourceToString(JSON_EXAMPLE_JSON, StandardCharsets.UTF_8);
+        final String expected = resource().asString(JSON_EXAMPLE_JSON);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -144,7 +144,7 @@ class JsonTransformerImplIntegrationTest {
         final String actual = underTest.transform(resource, StandardCharsets.UTF_8, action);
 
         //then
-        final String expected = IOUtils.resourceToString(JSON_EXAMPLE_FILTERED_JSON, StandardCharsets.UTF_8);
+        final String expected = resource().asString(JSON_EXAMPLE_FILTERED_JSON);
         Assertions.assertEquals(expected, actual);
     }
 

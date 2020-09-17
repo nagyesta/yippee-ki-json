@@ -1,22 +1,15 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
-import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
 import com.github.nagyesta.yippeekijson.core.exception.StopRuleProcessingException;
 import com.github.nagyesta.yippeekijson.core.rule.strategy.TransformationControlStrategy;
 import com.github.nagyesta.yippeekijson.core.rule.strategy.ViolationStrategy;
 import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.mapper.MappingException;
 import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,21 +18,18 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonValidationRule.*;
+import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil;
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class JsonValidationRuleTest {
 
     private static final String ROOT_NOT_EXISTING_CHILD = "$.something";
-    private static final String TEST_SCHEMA_JSON = "/validation/test-schema.json";
-    private static final String INPUT_JSON = "/validation/validation-input.json";
-    private static final String OUTPUT_JSON = "/validation/validation-output.json";
 
     private static Stream<Arguments> strategyProvider() {
         return Stream.<Arguments>builder()
@@ -52,15 +42,9 @@ class JsonValidationRuleTest {
     @ParameterizedTest
     @MethodSource("strategyProvider")
     void testAcceptShouldHandleValidationIssuesAndIgnorePath(final TransformationControlStrategy strategy,
-                                                             final Class<Exception> expectedException) throws JsonProcessingException {
+                                                             final Class<Exception> expectedException) {
         //given
-        final JsonMapperImpl jsonMapper = new JsonMapperImpl();
-        final ObjectMapper objectMapper = jsonMapper.objectMapper();
-        JsonSchemaFactory factory = JsonSchemaFactory
-                .builder(JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7))
-                .objectMapper(objectMapper)
-                .build();
-        final JsonSchema jsonSchema = factory.getSchema(getResource(TEST_SCHEMA_JSON));
+        final JsonSchema jsonSchema = resource().asJsonSchema(JSON_VALIDATION_TEST_SCHEMA);
 
         FunctionRegistry functionRegistry = mock(FunctionRegistry.class);
         RawJsonRule jsonRule = RawJsonRule.builder()
@@ -76,7 +60,7 @@ class JsonValidationRuleTest {
         when(functionRegistry.lookupSupplier(anyMap())).thenReturn(() -> jsonSchema);
 
         JsonValidationRule underTest = new JsonValidationRule(functionRegistry, jsonRule);
-        DocumentContext documentContext = JsonPath.parse(getResource(INPUT_JSON), jsonMapper.parserConfiguration());
+        DocumentContext documentContext = resource().asDocumentContext(JSON_VALIDATION_INPUT);
 
         //when
         if (expectedException == null) {
@@ -87,20 +71,11 @@ class JsonValidationRuleTest {
 
         //then
         final String actualJson = documentContext.jsonString();
-        final String expectedJson = getResource(OUTPUT_JSON);
 
-        final JsonNode actual = objectMapper.readTree(actualJson);
-        final JsonNode expected = objectMapper.readTree(expectedJson);
+        final JsonNode actual = jsonUtil().readAsTree(actualJson);
+        final JsonNode expected = resource().asJson(JSON_VALIDATION_OUTPUT);
 
         Assertions.assertEquals(expected, actual);
-    }
-
-    private String getResource(final String resourcePath) {
-        try {
-            return IOUtils.resourceToString(resourcePath, StandardCharsets.UTF_8);
-        } catch (final IOException e) {
-            throw new IllegalArgumentException(e.getMessage(), e);
-        }
     }
 
     @Test

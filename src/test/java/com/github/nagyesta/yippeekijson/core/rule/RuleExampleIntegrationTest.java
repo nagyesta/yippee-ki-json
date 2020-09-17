@@ -6,7 +6,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.github.nagyesta.yippeekijson.core.config.JsonRegistryConfig;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
-import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.YamlActionConfigParser;
 import com.github.nagyesta.yippeekijson.core.control.JsonTransformer;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
@@ -41,6 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.metadata.schema.markdown.impl.BaseMarkdownGenerator.*;
+import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil;
 import static net.steppschuh.markdowngenerator.Markdown.bold;
 
 @SpringBootTest
@@ -70,8 +70,6 @@ public class RuleExampleIntegrationTest {
     private YamlActionConfigParser actionConfigParser;
     @Autowired
     private JsonTransformer jsonTransformer;
-    @Autowired
-    private JsonMapper jsonMapper;
     @Autowired
     private DocumentationExporter documentationExporter;
     @Autowired
@@ -114,8 +112,8 @@ public class RuleExampleIntegrationTest {
         final String result = jsonTransformer.transform(inputResource.getInputStream(), StandardCharsets.UTF_8, action);
 
         //then
-        final JsonNode expected = jsonMapper.objectMapper().readTree(output);
-        final JsonNode actual = jsonMapper.objectMapper().readTree(result);
+        final JsonNode expected = jsonUtil().readAsTree(output);
+        final JsonNode actual = jsonUtil().readAsTree(result);
         Assertions.assertEquals(expected, actual);
         log.info("Completed test of: " + componentClass.getName());
     }

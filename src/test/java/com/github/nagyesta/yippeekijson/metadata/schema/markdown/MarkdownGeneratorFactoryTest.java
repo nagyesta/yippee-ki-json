@@ -20,16 +20,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-class MarkdownGeneratorFactoryTest {
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.MD_MINIMAL_DOCS;
+import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 
-    private static final String EXPECTED_MINIMAL_DOCS = "### test\n\n**Name:** `test`\n\n**Class:** [`TestPredicate`]"
-            + "(https://github.com/nagyesta/yippee-ki-json/blob/main/src/main/java/com/github/nagyesta/yippeekijson/"
-            + "metadata/schema/markdown/MarkdownGeneratorFactoryTest$TestPredicate.java)\n\n**Since version:** 1.0.0\n"
-            + "\n**Input type:** [`Object`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html)\n"
-            + "\n**Parameters**\n\n| Name  | Type                                                                              "
-            + "       | Description               |\n| ----- | ----------------------------------------------------------------"
-            + "------------------------ | ------------------------- |\n| `map` | [`Map`](https://docs.oracle.com/en/java/javase/"
-            + "11/docs/api/java.base/java/util/Map.html) | < Missing documentation > |\n\n**Description**\n\n\n";
+class MarkdownGeneratorFactoryTest {
 
     @Test
     void testRenderComponentThrowsExceptionIfSupportsCallFails() {
@@ -82,7 +76,7 @@ class MarkdownGeneratorFactoryTest {
         final String actual = underTest.renderComponent(context);
 
         //then
-        Assertions.assertEquals(StringUtils.trimToEmpty(EXPECTED_MINIMAL_DOCS), StringUtils.trimToEmpty(actual));
+        Assertions.assertEquals(StringUtils.trimToEmpty(resource().asString(MD_MINIMAL_DOCS)), StringUtils.trimToEmpty(actual));
 
     }
 
