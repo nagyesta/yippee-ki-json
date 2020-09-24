@@ -255,6 +255,7 @@ task generateWikiMarkdown(type: Exec) {
 }
 
 tasks.withType(Checkstyle) {
+    configProperties = [base_dir: rootDir.toString(), cache_file: file("${buildDir}/checkstyle/cacheFile")]
     reports {
         xml.enabled false
         html.enabled true
