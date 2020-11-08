@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonCompositionSchemaTypeDefinition;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaObject;
@@ -21,6 +22,7 @@ import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.JSON_SCHEMA_ANY_SUPPLIER;
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 
+@LaunchAbortArmed
 @SpringBootTest
 class JsonCompositionSchemaTypeDefinitionImplIntegrationTest {
     static final String REF = "ref";

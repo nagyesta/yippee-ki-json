@@ -4,8 +4,6 @@
 name: JavaCI-PR
 
 on:
-  push:
-    branches: [ feature/*, bugfix/* ]
   pull_request:
     branches: [ main ]
 
@@ -24,13 +22,12 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-wrapper-
       - name: Build with Gradle
-        run: ./gradlew build systemTest
+        run: ./gradlew build systemTest -PgithubToken=${{ secrets.READ_ONLY_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

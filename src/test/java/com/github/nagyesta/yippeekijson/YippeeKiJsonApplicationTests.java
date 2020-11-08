@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
@@ -22,11 +23,13 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 @SpringBootTest
 class YippeeKiJsonApplicationTests {
 
     private static final String MESSAGE = "message";
     private static final IllegalArgumentException CAUSE = new IllegalArgumentException();
+
     @Autowired
     private ActionConfigParser actionConfigParser;
 

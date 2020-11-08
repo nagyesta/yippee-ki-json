@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
 import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+@LaunchAbortArmed
 @SpringBootTest
 @TestPropertySource(properties = "logging.level.root=DEBUG")
 class YamlActionConfigParserIntegrationTests {

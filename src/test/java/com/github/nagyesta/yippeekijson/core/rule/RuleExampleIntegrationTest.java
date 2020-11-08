@@ -3,6 +3,7 @@ package com.github.nagyesta.yippeekijson.core.rule;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.JsonRegistryConfig;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
@@ -43,6 +44,7 @@ import static com.github.nagyesta.yippeekijson.metadata.schema.markdown.impl.Bas
 import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil;
 import static net.steppschuh.markdowngenerator.Markdown.bold;
 
+@LaunchAbortArmed
 @SpringBootTest
 @Slf4j
 public class RuleExampleIntegrationTest {
@@ -120,7 +122,7 @@ public class RuleExampleIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("namedComponentProvider")
-    void testComponentExampleYmlIsValid(final Class<?> componentClass) throws ConfigParseException, IOException, JsonTransformException {
+    void testComponentExampleYmlIsValid(final Class<?> componentClass) throws ConfigParseException, IOException {
         //given
         log.info("Starting test of: " + componentClass.getName());
         final ComponentContext context = metadataParser.parse(componentClass.getDeclaredConstructors()[0]);

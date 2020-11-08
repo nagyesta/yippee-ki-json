@@ -53,6 +53,14 @@ versioner {
 }
 
 repositories {
+    maven {
+        name = "GitHubPackagesAbortMission"
+        url = uri("https://maven.pkg.github.com/nagyesta/abort-mission")
+        credentials {
+            username = project.ext.gitUser
+            password = project.ext.gitToken
+        }
+    }
     mavenCentral()
 }
 
@@ -78,6 +86,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'com.github.tomakehurst:wiremock'
+    testImplementation 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter'
 }
 
 dependencyManagement {
@@ -98,6 +107,7 @@ dependencyManagement {
     testImplementation {
         dependencies {
             dependency 'com.github.tomakehurst:wiremock:2.26.3'
+            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:1.1.1'
         }
     }
 }
@@ -180,6 +190,7 @@ task systemTestRunConvert(type: Exec) {
     dependsOn bootJar
 
     group = "Execution"
+    //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.config=${buildDir}/resources/test/yaml/example.yml",
@@ -198,6 +209,7 @@ task systemTestRunValidate(type: Exec) {
     dependsOn bootJar
 
     group = "Execution"
+    //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.config=${buildDir}/resources/test/yaml/all-rules.yml",
@@ -233,6 +245,7 @@ task generateYamlSchema(type: Exec) {
     dependsOn bootJar
 
     group = "Execution"
+    //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.export-yml-schema=true",
@@ -246,6 +259,7 @@ task generateWikiMarkdown(type: Exec) {
     dependsOn bootJar
 
     group = "Execution"
+    //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.export-markdown=true",

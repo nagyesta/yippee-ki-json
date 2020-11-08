@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 @SpringBootTest
 class MarkdownExportControllerIntegrationTest {
 
@@ -61,9 +63,7 @@ class MarkdownExportControllerIntegrationTest {
         //given
 
         //when + then exception
-        Assertions.assertThrows(ConfigValidationException.class, () -> {
-            underTest.process(runConfig);
-        });
+        Assertions.assertThrows(ConfigValidationException.class, () -> underTest.process(runConfig));
     }
 
 

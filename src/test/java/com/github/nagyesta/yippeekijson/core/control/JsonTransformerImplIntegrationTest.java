@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
 import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 @SpringBootTest
 class JsonTransformerImplIntegrationTest {
 
@@ -95,7 +96,7 @@ class JsonTransformerImplIntegrationTest {
     }
 
     @Test
-    void testTransformStreamShouldProcessValidInput() throws ConfigParseException, JsonTransformException, IOException {
+    void testTransformStreamShouldProcessValidInput() throws ConfigParseException, JsonTransformException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
         final JsonActions jsonActions = actionConfigParser.parse(yaml, true);
@@ -114,7 +115,7 @@ class JsonTransformerImplIntegrationTest {
     }
 
     @Test
-    void testTransformStreamShouldHandleEmptyRuleSet() throws JsonTransformException, IOException {
+    void testTransformStreamShouldHandleEmptyRuleSet() throws JsonTransformException {
         //given
         final JsonAction action = JsonAction.builder().name(FILTER).build();
         final InputStream resource = this.getClass().getResourceAsStream(JSON_EXAMPLE_JSON);
@@ -130,7 +131,7 @@ class JsonTransformerImplIntegrationTest {
     }
 
     @Test
-    void testTransformFileShouldProcessValidInput() throws ConfigParseException, JsonTransformException, IOException {
+    void testTransformFileShouldProcessValidInput() throws ConfigParseException, JsonTransformException {
         //given
         final InputStream yaml = this.getClass().getResourceAsStream(YAML_EXAMPLE_YML);
         final JsonActions jsonActions = actionConfigParser.parse(yaml, true);

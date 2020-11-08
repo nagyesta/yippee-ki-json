@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.definitions.registry;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.converter.NamedComponentConverter;
 import com.github.nagyesta.yippeekijson.metadata.schema.parser.ComponentContextMetadataParser;
 import org.junit.jupiter.api.Assertions;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+@LaunchAbortArmed
 @SpringBootTest
 class AbstractComponentTypeDefinitionRegistryIntegrationTest {
 
@@ -23,8 +25,6 @@ class AbstractComponentTypeDefinitionRegistryIntegrationTest {
                 componentContextMetadataParser, namedFunctionalComponentConverter);
 
         //when
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            underTest.parseAndRegister(input);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> underTest.parseAndRegister(input));
     }
 }

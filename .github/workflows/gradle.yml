@@ -22,11 +22,10 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-wrapper-
       - name: Build with Gradle and publish
         run: ./gradlew build systemTest tagVersion publish -PgithubToken=${{ secrets.PUBLISH_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
       - name: Upload coverage to Codecov
