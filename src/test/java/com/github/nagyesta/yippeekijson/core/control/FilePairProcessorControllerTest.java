@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonAction;
 import com.github.nagyesta.yippeekijson.core.config.entities.JsonActions;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test of {@link ApplicationController}.
  */
+@LaunchAbortArmed
 @SpringBootTest
 class FilePairProcessorControllerTest {
 

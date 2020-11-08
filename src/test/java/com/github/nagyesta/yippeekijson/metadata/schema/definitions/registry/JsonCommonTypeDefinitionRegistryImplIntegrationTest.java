@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.definitions.registry;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonCommonTypeDefinitionRegistry;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaTypeDefinition;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +16,7 @@ import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.JSON_SCHEMA_COMMON_TYPES;
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 
+@LaunchAbortArmed
 @SpringBootTest
 class JsonCommonTypeDefinitionRegistryImplIntegrationTest {
 
