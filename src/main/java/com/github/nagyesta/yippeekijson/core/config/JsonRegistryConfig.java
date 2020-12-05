@@ -34,7 +34,7 @@ public class JsonRegistryConfig {
     public ConversionService conversionService() {
         ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
         bean.afterPropertiesSet();
-        return bean.getObject();
+        return null;
     }
 
     @Bean
