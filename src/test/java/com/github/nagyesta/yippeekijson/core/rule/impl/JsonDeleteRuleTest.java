@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.core.rule.impl.JsonDeleteRule.RULE_NAME;
 
+@LaunchAbortArmed
 class JsonDeleteRuleTest {
 
     private static final String A_C_FOO = "{\"a\":{\"c\":\"foo\"}}";

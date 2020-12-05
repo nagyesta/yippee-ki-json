@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.config.validation.YippeeConfigValidator.FailureReasonCode;
 import org.junit.jupiter.api.Assertions;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.*;
 @ValidYippeeConfig(messages = {
         @MessageCode(reason = FailureReasonCode.FILE_CAN_BE_READ, message = "Message")
 })
+@LaunchAbortArmed
 class YippeeConfigValidatorTest {
 
     private static final String CONFIG = "config";

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.markdown;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.NamedComponentUtil;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
 import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
@@ -23,6 +24,7 @@ import java.util.function.Predicate;
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.MD_MINIMAL_DOCS;
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.resource;
 
+@LaunchAbortArmed
 class MarkdownGeneratorFactoryTest {
 
     @Test

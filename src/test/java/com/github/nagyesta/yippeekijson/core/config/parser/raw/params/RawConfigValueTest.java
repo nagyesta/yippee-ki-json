@@ -1,11 +1,13 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw.params;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
 
+@LaunchAbortArmed
 class RawConfigValueTest {
 
     private static final String CONFIG_PATH = "config";

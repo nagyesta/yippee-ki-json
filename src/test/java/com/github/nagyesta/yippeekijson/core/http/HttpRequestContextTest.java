@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.http;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -8,6 +9,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class HttpRequestContextTest {
 
     private static final HttpRequestContext EMPTY = HttpRequestContext.builder().build();

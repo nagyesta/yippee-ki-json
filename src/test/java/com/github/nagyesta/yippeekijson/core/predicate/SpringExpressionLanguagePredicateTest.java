@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,6 +16,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class SpringExpressionLanguagePredicateTest {
     private static final String IS_FORTY_TWO = "(#root instanceof T(Integer)) && (#root < 43) && (#root > 41)";
     private static final String MAP_ENTRY_WITH_KEY_HAS_VALUE_FORTY_TWO = "(#root instanceof T(java.util.Map)) && #root['key'] == 42";

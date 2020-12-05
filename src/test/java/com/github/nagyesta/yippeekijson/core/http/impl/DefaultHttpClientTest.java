@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.http.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.HttpConfig;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
@@ -29,6 +30,7 @@ import static com.google.common.net.HttpHeaders.*;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Slf4j
+@LaunchAbortArmed
 class DefaultHttpClientTest {
 
     private static final String SUCCESS = "success";

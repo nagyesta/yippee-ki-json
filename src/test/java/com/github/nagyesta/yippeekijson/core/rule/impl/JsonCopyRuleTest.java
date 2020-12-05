@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
@@ -19,6 +20,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class JsonCopyRuleTest {
 
     private static final String A_C_FOO = "{\"a\":{\"c\":\"foo\"}}";

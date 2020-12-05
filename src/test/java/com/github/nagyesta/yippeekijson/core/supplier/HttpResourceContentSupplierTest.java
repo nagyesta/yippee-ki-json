@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import org.junit.jupiter.api.Assertions;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 class HttpResourceContentSupplierTest {
     private static final String VALIDATION_INPUT_JSON = "http://localhost/validation/validation-input.json";
     private static final String EXAMPLE_JSON = "http://localhost/json/example.json";

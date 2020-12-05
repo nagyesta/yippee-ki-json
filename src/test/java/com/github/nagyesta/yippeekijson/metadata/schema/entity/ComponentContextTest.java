@@ -1,11 +1,13 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.entity;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.StringObjectMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
+@LaunchAbortArmed
 class ComponentContextTest {
 
     private static final String LEVEL_1 = "level1";

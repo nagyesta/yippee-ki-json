@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw.params;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+@LaunchAbortArmed
 class RawConfigMapTest {
 
     private static final String CONFIG_PATH = "config";

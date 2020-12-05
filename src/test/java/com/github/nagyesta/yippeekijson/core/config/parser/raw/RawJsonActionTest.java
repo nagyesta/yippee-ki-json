@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@LaunchAbortArmed
 class RawJsonActionTest {
 
     private static final String ACTION = "action";

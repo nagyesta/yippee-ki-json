@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,7 @@ import java.util.stream.Stream;
 
 import static com.github.nagyesta.yippeekijson.core.test.params.ParamAnnotationHolder.*;
 
+@LaunchAbortArmed
 class ParameterContextTest {
 
     private static Stream<Arguments> validValueProvider() {

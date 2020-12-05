@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.test.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.jayway.jsonpath.DocumentContext;
 import com.networknt.schema.JsonSchema;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil;
 
+@LaunchAbortArmed
 @SuppressWarnings("checkstyle:JavadocVariable")
 public final class TestResourceProvider {
     public static final String YIPPEE_KI_JSON_CONFIG_SCHEMA_JSON = "/yippee-ki-json_config_schema.json";

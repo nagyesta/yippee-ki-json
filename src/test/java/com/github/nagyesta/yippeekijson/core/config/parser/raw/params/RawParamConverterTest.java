@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw.params;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class RawParamConverterTest {
 
     private static final String CONFIG_PATH = "config";

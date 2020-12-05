@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import com.github.nagyesta.yippeekijson.core.test.params.ParamAnnotationHolder;
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class NamedComponentUtilTest {
 
     private static Stream<Arguments> paramTypeProvider() {

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.jayway.jsonpath.TypeRef;
 import com.jayway.jsonpath.spi.mapper.MappingException;
@@ -12,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class JsonMapperImplTest {
 
     private static final String KEY = "key";

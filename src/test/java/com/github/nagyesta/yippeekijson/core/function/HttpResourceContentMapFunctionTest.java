@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigValue;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class HttpResourceContentMapFunctionTest {
 
     private static final String JSON = "{}";

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.*;
 
+@LaunchAbortArmed
 class FileContentSupplierTest {
 
     @ParameterizedTest

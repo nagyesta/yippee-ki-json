@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.rule;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class AbstractJsonRuleTest {
 
     private static final JsonPath ROOT = JsonPath.compile("$");

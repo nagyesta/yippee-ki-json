@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class EvalOnPredicateTest {
 
     static final Predicate<Object> IS_NULL = Objects::isNull;
