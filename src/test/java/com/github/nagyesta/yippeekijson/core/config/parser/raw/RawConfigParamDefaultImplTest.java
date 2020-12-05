@@ -1,11 +1,13 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.ConversionService;
 
+@LaunchAbortArmed
 class RawConfigParamDefaultImplTest {
 
     private final RawConfigParam underTest = new RawConfigParam() {

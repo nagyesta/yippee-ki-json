@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 class DispatcherApplicationControllerTest {
 
     private static Stream<Arguments> validInputProvider() {

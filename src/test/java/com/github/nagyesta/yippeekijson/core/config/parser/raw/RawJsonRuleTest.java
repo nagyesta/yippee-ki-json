@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class RawJsonRuleTest {
 
     private static final String NAME = "name";

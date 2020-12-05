@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.rule.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawJsonRule;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
@@ -27,6 +28,7 @@ import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 class JsonValidationRuleTest {
 
     private static final String ROOT_NOT_EXISTING_CHILD = "$.something";

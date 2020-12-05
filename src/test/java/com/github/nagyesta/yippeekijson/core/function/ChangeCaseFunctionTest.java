@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.function.helper.CaseChange;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.provider.NullSource;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class ChangeCaseFunctionTest {
 
     private static final String FOO_BAR_CAPITAL = "Foo bar";

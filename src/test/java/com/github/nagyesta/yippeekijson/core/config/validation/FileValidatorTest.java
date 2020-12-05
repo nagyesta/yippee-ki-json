@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.validation.YippeeConfigValidator.FailureReasonCode;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 class FileValidatorTest {
 
     private static final String PROPERTY = "property";

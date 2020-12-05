@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.rule.strategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -22,6 +23,7 @@ import static com.github.nagyesta.yippeekijson.test.helper.JsonTestUtil.jsonUtil
 import static com.github.nagyesta.yippeekijson.test.helper.TestResourceProvider.*;
 import static org.mockito.Mockito.*;
 
+@LaunchAbortArmed
 class ViolationStrategyTest {
 
     private static final String TRIPLE_DOT_IN_KEY = "{\"object...array\":false}";

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.markdown.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentContext;
 import net.steppschuh.markdowngenerator.MarkdownBuilder;
 import net.steppschuh.markdowngenerator.text.TextBuilder;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 import static net.steppschuh.markdowngenerator.Markdown.code;
 
+@LaunchAbortArmed
 class BaseMarkdownGeneratorTest {
 
     public static final String WILDCARD_MAP = "[`Map`]"

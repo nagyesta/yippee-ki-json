@@ -3,6 +3,7 @@ package com.github.nagyesta.yippeekijson.test.helper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Assertions;
 import java.io.IOException;
 import java.io.InputStream;
 
+@LaunchAbortArmed
 public final class JsonTestUtil {
     private final JsonMapperImpl jsonMapper = new JsonMapperImpl();
     private final ObjectMapper objectMapper = jsonMapper.objectMapper();

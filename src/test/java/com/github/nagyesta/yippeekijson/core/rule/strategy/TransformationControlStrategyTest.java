@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.rule.strategy;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
 import com.github.nagyesta.yippeekijson.core.exception.StopRuleProcessingException;
 import com.networknt.schema.ValidationMessage;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 class TransformationControlStrategyTest {
 
     private static Stream<Arguments> inputSupplier() {

@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 class StaticJsonSupplierTest {
 
     private static final String NONE = "{}";

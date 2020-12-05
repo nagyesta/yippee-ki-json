@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  */
 @LaunchAbortArmed
 @SpringBootTest
-class FilePairProcessorControllerTest {
+class FilePairProcessorControllerIntegrationTest {
 
     private static final String ACTION = "action";
     private static final String CONFIG = "config";

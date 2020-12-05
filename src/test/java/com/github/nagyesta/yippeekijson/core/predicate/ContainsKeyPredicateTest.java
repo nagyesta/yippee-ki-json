@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class ContainsKeyPredicateTest {
 
     private static final String KEY = "key";

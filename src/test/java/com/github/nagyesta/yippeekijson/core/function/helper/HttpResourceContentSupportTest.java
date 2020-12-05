@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.function.helper;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class HttpResourceContentSupportTest {
 
     private static final String DEFAULT_URI = "http://localhost/default";

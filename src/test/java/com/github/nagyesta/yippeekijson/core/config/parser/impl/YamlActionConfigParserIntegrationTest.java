@@ -23,7 +23,7 @@ import java.util.Map;
 @LaunchAbortArmed
 @SpringBootTest
 @TestPropertySource(properties = "logging.level.root=DEBUG")
-class YamlActionConfigParserIntegrationTests {
+class YamlActionConfigParserIntegrationTest {
 
     private static final String ALL_RULES_YML = "/yaml/all-rules.yml";
     private static final String EXAMPLE_YML = "/yaml/example.yml";

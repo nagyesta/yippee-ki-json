@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.control;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 
+@LaunchAbortArmed
 class FileSetTransformerImplIntegrationTest {
 
     private static final String OUT = "out";

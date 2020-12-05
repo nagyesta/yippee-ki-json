@@ -1,10 +1,12 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@LaunchAbortArmed
 class RegexReplaceFunctionTest {
 
     private static final String FIRST_LAST = "^(?<firstName>[A-Za-z\\-]+) (?<lastName>[A-Za-z\\-]+)$";

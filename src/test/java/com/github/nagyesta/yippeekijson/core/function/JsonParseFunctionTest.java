@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.function;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.exception.AbortTransformationException;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 class JsonParseFunctionTest {
 
     private static final String EMPTY = "{}";

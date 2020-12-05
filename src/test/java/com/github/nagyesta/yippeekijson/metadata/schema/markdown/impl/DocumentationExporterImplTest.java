@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.markdown.impl;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.metadata.schema.markdown.MarkdownGenerator;
 import com.github.nagyesta.yippeekijson.metadata.schema.parser.ComponentContextMetadataParser;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 class DocumentationExporterImplTest {
 
     private static Stream<Arguments> nullProvider() {

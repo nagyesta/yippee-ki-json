@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.predicate.helper;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
+@LaunchAbortArmed
 class CombiningPredicateSupportTest {
 
     private static Stream<Arguments> nullProvider() {

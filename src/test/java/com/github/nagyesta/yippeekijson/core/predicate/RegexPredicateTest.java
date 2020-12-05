@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.predicate;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -9,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
+@LaunchAbortArmed
 class RegexPredicateTest {
 
     private static final String BOOLEAN = "^(true|True|TRUE|yes|YES|Yes|false|False|FALSE|no|NO|No)$";

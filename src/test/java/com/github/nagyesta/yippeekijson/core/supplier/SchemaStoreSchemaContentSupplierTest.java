@@ -1,5 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.supplier;
 
+import com.github.nagyesta.abortmission.booster.jupiter.annotation.LaunchAbortArmed;
 import com.github.nagyesta.yippeekijson.core.config.entities.SchemaStoreConfig;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@LaunchAbortArmed
 class SchemaStoreSchemaContentSupplierTest {
 
     static final String YIPPEE_SCHEMA_NAME = "Yippee-Ki-JSON configuration YML";
