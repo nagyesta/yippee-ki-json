@@ -9,6 +9,7 @@ plugins {
     id "io.freefair.lombok" version "5.3.0"
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
+    id "com.github.nagyesta.abort-mission-gradle-plugin" version "0.6.0.1"
 }
 
 group = 'com.github.nagyesta'
@@ -54,18 +55,10 @@ versioner {
 
 repositories {
     maven {
-        name = "GitHubPackagesAbortMission"
-        url = uri("https://maven.pkg.github.com/nagyesta/abort-mission")
-        credentials {
-            username = project.ext.gitUser
-            password = project.ext.gitToken
-        }
+        name = "BintrayNagyEstaMaven"
+        url = uri("https://dl.bintray.com/nagyesta/releases-maven")
     }
     mavenCentral()
-}
-
-configurations {
-    missionReport
 }
 
 dependencies {
@@ -85,7 +78,6 @@ dependencies {
     implementation 'ch.qos.logback:logback-classic'
     implementation 'net.steppschuh.markdowngenerator:markdowngenerator'
     annotationProcessor 'org.projectlombok:lombok'
-    missionReport 'com.github.nagyesta.abort-mission.reports:abort.flight-evaluation-report'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -112,28 +104,10 @@ dependencyManagement {
     testImplementation {
         dependencies {
             dependency 'com.github.tomakehurst:wiremock:2.26.3'
-            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:2.1.0'
+            //use 2.1.0
+            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:2.3.0'
         }
     }
-
-    missionReport {
-        dependencies {
-            dependency 'com.github.nagyesta.abort-mission.reports:abort.flight-evaluation-report:2.1.0'
-        }
-    }
-}
-
-task generateMissionReport(type: JavaExec) {
-    inputs.file(file("${buildDir}/reports/abort-mission/abort-mission-report.json"))
-    outputs.file(file("${buildDir}/reports/abort-mission/abort-mission-report.html"))
-
-    //noinspection GroovyAccessibility
-    main = "org.springframework.boot.loader.JarLauncher"
-    classpath configurations.missionReport
-    args = ["--report.input=${buildDir}/reports/abort-mission/abort-mission-report.json",
-            "--report.output=${buildDir}/reports/abort-mission/abort-mission-report.html"]
-    logging.captureStandardOutput LogLevel.INFO
-    logging.captureStandardError LogLevel.ERROR
 }
 
 jacocoTestReport {
@@ -145,13 +119,12 @@ jacocoTestReport {
     }
 }
 
+abortMission.toolVersion "2.3.0"
+
 test {
-    useJUnitPlatform {
-        systemProperty("abort-mission.report.directory", file("${buildDir}/reports/abort-mission/"))
-    }
+    useJUnitPlatform()
 }
-test.finalizedBy generateMissionReport
-generateMissionReport.finalizedBy jacocoTestReport
+test.finalizedBy jacocoTestReport
 jacocoTestReport.finalizedBy jacocoTestCoverageVerification
 
 jacoco {
