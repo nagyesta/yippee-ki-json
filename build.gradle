@@ -178,6 +178,11 @@ bootJar.dependsOn check
 
 versioner.apply()
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 bootJar {
     archiveVersion.value(project.version as String)
 }
@@ -302,7 +307,9 @@ publishing {
     }
     publications {
         //noinspection GroovyAssignabilityCheck
-        bootJava(MavenPublication) {
+        mavenJava(MavenPublication) {
+            //noinspection GroovyAssignabilityCheck
+            from components.java
             //noinspection GroovyAssignabilityCheck
             artifact bootJar
             pom {
@@ -331,4 +338,10 @@ publishing {
             }
         }
     }
+}
+
+//Disable metadata publishing and rely on Maven only
+//noinspection GroovyAssignabilityCheck
+tasks.withType(GenerateModuleMetadata) {
+    enabled = false
 }
