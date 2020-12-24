@@ -6,6 +6,8 @@ name: JavaCI-PR
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ feature/* ]
 
 jobs:
   build:
@@ -29,7 +31,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-wrapper-
       - name: Build with Gradle
-        run: ./gradlew build systemTest -PgithubToken=${{ secrets.READ_ONLY_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
+        run: ./gradlew build systemTest publishToMavenLocal
+      - name: Simplify Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?.jar build/libs/yippee-ki-json-upload.jar
+      - name: Simplify Source Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?-sources.jar build/libs/yippee-ki-json-upload-sources.jar
+      - name: Simplify Javadoc Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?-javadoc.jar build/libs/yippee-ki-json-upload-javadoc.jar
+      - name: Publish to Bintray
+        uses: nagyesta/bintray-maven-publisher-action@v1.0.2
+        with:
+          DRY_RUN: "true"
+          POM_FILE_NAME: "build/publications/mavenJava/pom-default.xml"
+          JAR_FILE_NAME: "build/libs/yippee-ki-json-upload.jar"
+          SOURCE_JAR_FILE_NAME: "build/libs/yippee-ki-json-upload-sources.jar"
+          JAVADOC_JAR_FILE_NAME: "build/libs/yippee-ki-json-upload-javadoc.jar"
+          ARTIFACT_GROUP_ID: "com.github.nagyesta"
+          ARTIFACT_ARTIFACT_ID: "yippee-ki-json"
+          ARTIFACT_VERSION: "1.0.0"
+          API_USER: "nagyesta"
+          API_KEY: "${{ secrets.BINTRAY_TOKEN }}"
+          SUBJECT: "nagyesta"
+          REPO: "sandbox"
+          PACKAGE_NAME: "yippee-ki-json"
+          BINTRAY_VERSION_PREFIX: "v"
+          BASE_URL: "https://api.bintray.com/"
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@7d5dfa54903bd909319c580a00535b483d1efcf3
         with:
