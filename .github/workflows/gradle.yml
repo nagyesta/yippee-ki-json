@@ -30,6 +30,28 @@ jobs:
             ${{ runner.os }}-gradle-wrapper-
       - name: Build with Gradle and publish
         run: ./gradlew build systemTest tagVersion publish -PgithubToken=${{ secrets.PUBLISH_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
+      - name: Simplify Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?.jar build/libs/yippee-ki-json-upload.jar
+      - name: Simplify Source Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?-sources.jar build/libs/yippee-ki-json-upload-sources.jar
+      - name: Simplify Javadoc Jar name
+        run: cp build/libs/yippee-ki-json-?.?.?-javadoc.jar build/libs/yippee-ki-json-upload-javadoc.jar
+      - name: Publish to Bintray
+        uses: nagyesta/bintray-maven-publisher-action@v1.0.2
+        with:
+          POM_FILE_NAME: "build/publications/mavenJava/pom-default.xml"
+          JAR_FILE_NAME: "build/libs/yippee-ki-json-upload.jar"
+          SOURCE_JAR_FILE_NAME: "build/libs/yippee-ki-json-upload-sources.jar"
+          JAVADOC_JAR_FILE_NAME: "build/libs/yippee-ki-json-upload-javadoc.jar"
+          ARTIFACT_GROUP_ID: "com.github.nagyesta"
+          ARTIFACT_ARTIFACT_ID: "yippee-ki-json"
+          API_USER: "nagyesta"
+          API_KEY: "${{ secrets.BINTRAY_TOKEN }}"
+          SUBJECT: "nagyesta"
+          REPO: "releases-maven"
+          PACKAGE_NAME: "yippee-ki-json"
+          BINTRAY_VERSION_PREFIX: "v"
+          BASE_URL: "https://api.bintray.com/"
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@7d5dfa54903bd909319c580a00535b483d1efcf3
         with:

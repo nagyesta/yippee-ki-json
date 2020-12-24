@@ -105,7 +105,7 @@ dependencyManagement {
         dependencies {
             dependency 'com.github.tomakehurst:wiremock:2.26.3'
             //use 2.1.0
-            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:2.3.0'
+            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:2.4.0'
         }
     }
 }
@@ -119,7 +119,7 @@ jacocoTestReport {
     }
 }
 
-abortMission.toolVersion "2.3.0"
+abortMission.toolVersion "2.4.0"
 
 test {
     useJUnitPlatform()
@@ -319,6 +319,7 @@ publishing {
                 description = 'A minimal JSON manipulation app built on Spring Boot and JSON Path.'
                 //noinspection GroovyAssignabilityCheck
                 url = 'https://github.com/nagyesta/yippee-ki-json'
+                packaging = 'jar'
                 licenses {
                     license {
                         //noinspection GroovyAssignabilityCheck
@@ -333,6 +334,16 @@ publishing {
                         id = 'nagyesta'
                         //noinspection GroovyAssignabilityCheck
                         name = 'Istvan Zoltan Nagy'
+                    }
+                }
+                withXml {
+                    asNode().dependencies.findAll() {
+                        final def parent = it.parent()
+                        parent.remove(it)
+                    }
+                    asNode().dependencyManagement.findAll() {
+                        final def parent = it.parent()
+                        parent.remove(it)
                     }
                 }
             }

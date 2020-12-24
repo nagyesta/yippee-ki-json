@@ -5,8 +5,8 @@
 [![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE)
 [![Java version](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)
 [![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
-[![jar](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=spring&label=latest%20jar&sort=semver)](https://github.com/nagyesta/yippee-ki-json/packages/248363/versions)
 [![JavaCI](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)
+[![badge-abort-mission-armed-green](https://raw.githubusercontent.com/nagyesta/abort-mission/wiki_assets/.github/assets/badge-abort-mission-armed-green.svg)](https://github.com/nagyesta/abort-mission)
 
 [![codecov](https://img.shields.io/codecov/c/github/nagyesta/yippee-ki-json?logo=codecov&token=HHSXCEQIDA)](https://codecov.io/gh/nagyesta/yippee-ki-json)
 [![code-climate-maintainability](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)
