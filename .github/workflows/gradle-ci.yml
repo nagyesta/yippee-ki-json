@@ -6,8 +6,6 @@ name: JavaCI-PR
 on:
   pull_request:
     branches: [ main ]
-  push:
-    branches: [ feature/* ]
 
 jobs:
   build:
@@ -33,11 +31,11 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build systemTest publishToMavenLocal
       - name: Simplify Jar name
-        run: cp build/libs/yippee-ki-json-?.?.?.jar build/libs/yippee-ki-json-upload.jar
+        run: cp build/libs/yippee-ki-json-*.?.jar build/libs/yippee-ki-json-upload.jar
       - name: Simplify Source Jar name
-        run: cp build/libs/yippee-ki-json-?.?.?-sources.jar build/libs/yippee-ki-json-upload-sources.jar
+        run: cp build/libs/yippee-ki-json-*.?-sources.jar build/libs/yippee-ki-json-upload-sources.jar
       - name: Simplify Javadoc Jar name
-        run: cp build/libs/yippee-ki-json-?.?.?-javadoc.jar build/libs/yippee-ki-json-upload-javadoc.jar
+        run: cp build/libs/yippee-ki-json-*.?-javadoc.jar build/libs/yippee-ki-json-upload-javadoc.jar
       - name: Publish to Bintray
         uses: nagyesta/bintray-maven-publisher-action@v1.0.2
         with:
