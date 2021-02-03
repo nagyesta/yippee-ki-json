@@ -1,0 +1,13 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "registeredSince": 3600000
+    },
+    {
+      "id": 2,
+      "name": "Jane Doe"
+    }
+  ]
+}

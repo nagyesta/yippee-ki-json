@@ -13,13 +13,15 @@ import static com.github.nagyesta.abortmission.core.MissionControl.*;
 
 public class MissionOutlineDefinition extends MissionOutline {
 
+    private static final int ABORT_THRESHOLD = 25;
+
     @Override
     protected Map<String, Consumer<AbortMissionCommandOps>> defineOutline() {
         MissionHealthCheckMatcher integrationTestMatcher = matcher()
                 .classNamePattern(".+IntegrationTest")
                 .build();
         PercentageBasedMissionHealthCheckEvaluator evaluator = percentageBasedEvaluator(integrationTestMatcher)
-                .abortThreshold(0).build();
+                .abortThreshold(ABORT_THRESHOLD).build();
         ReportOnlyMissionHealthCheckEvaluator noop = reportOnlyEvaluator(matcher().anyClass().build())
                 .build();
         return Map.of(MissionOutline.SHARED_CONTEXT, ops -> {

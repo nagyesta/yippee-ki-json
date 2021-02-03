@@ -2,22 +2,16 @@ package com.github.nagyesta.yippeekijson.core.function;
 
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
+import com.github.nagyesta.yippeekijson.core.helper.DateFormatHelper;
 import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalAccessor;
 import java.util.StringJoiner;
 import java.util.function.Function;
 
@@ -29,7 +23,7 @@ public final class StringDateAddFunction implements Function<String, String> {
 
     static final String NAME = "stringDateAdd";
 
-    private final DateTimeFormatter dateTimeFormatter;
+    private final DateFormatHelper helper;
     private final String formatterPattern;
     private final int amount;
     private final ChronoUnit unit;
@@ -60,33 +54,14 @@ public final class StringDateAddFunction implements Function<String, String> {
             @ValueParam(docs = "The time unit we want to use to interpret the amount.")
             @NonNull final ChronoUnit unit) {
         this.formatterPattern = formatter;
-        this.dateTimeFormatter = DateTimeFormatter.ofPattern(formatter);
         this.amount = amount;
         this.unit = unit;
+        this.helper = new DateFormatHelper(DateTimeFormatter.ofPattern(formatter));
     }
 
     @Override
     public String apply(final String date) {
-        if (date == null) {
-            return null;
-        }
-        final TemporalAccessor parse = dateTimeFormatter.parse(date);
-        if (parse.isSupported(ChronoField.OFFSET_SECONDS)) {
-            return adjustDate(date, OffsetDateTime.class, s -> OffsetDateTime.parse(s, dateTimeFormatter))
-                    .format(dateTimeFormatter);
-        } else if (parse.isSupported(ChronoField.HOUR_OF_DAY)) {
-            return adjustDate(date, LocalDateTime.class, s -> LocalDateTime.parse(s, dateTimeFormatter))
-                    .format(dateTimeFormatter);
-        } else {
-            return adjustDate(date, LocalDate.class, s -> LocalDate.parse(s, dateTimeFormatter))
-                    .format(dateTimeFormatter);
-        }
-    }
-
-    @NotNull
-    private <T extends Temporal> T adjustDate(final String date, final Class<T> type, final Function<String, T> parse) {
-        final T offsetDateTime = parse.apply(date);
-        return type.cast(offsetDateTime.plus(amount, unit));
+        return helper.parseAneAdjust(date, amount, unit);
     }
 
     @Override

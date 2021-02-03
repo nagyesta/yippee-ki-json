@@ -1,0 +1,12 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "calculate"
+        path: "$.posts[0].likes"
+        params:
+          predicate: # this is the node defining the predicate
+            name: "notNull"
+          numberFunction: # this is the node defining the numerical calculation
+            name: "dividend"
+            operand: 600
+            scale: 2

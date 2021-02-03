@@ -57,4 +57,8 @@ public abstract class WikiConstants {
      * v1.3.0.
      */
     public static final String VERSION_1_3_0 = "1.3.0";
+    /**
+     * v1.4.0.
+     */
+    public static final String VERSION_1_4_0 = "1.4.0";
 }

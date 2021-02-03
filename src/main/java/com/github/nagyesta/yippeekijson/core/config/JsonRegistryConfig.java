@@ -45,7 +45,12 @@ public class JsonRegistryConfig {
                 JsonSchemaSupplier.class,
                 SchemaStoreSchemaContentSupplier.class,
                 StaticJsonSupplier.class,
-                StaticStringSupplier.class);
+                StaticStringSupplier.class,
+                StaticIntegerSupplier.class,
+                StaticDecimalSupplier.class,
+                StaticBooleanSupplier.class,
+                EpocMillisRelativeDateSupplier.class,
+                RelativeStringDateSupplier.class);
     }
 
     @Bean
@@ -54,9 +59,13 @@ public class JsonRegistryConfig {
                 ChangeCaseFunction.class,
                 CloneKeyFunction.class,
                 DecimalAddFunction.class,
+                AbsoluteValueFunction.class,
                 DecimalDivideFunction.class,
+                DecimalDividendFunction.class,
                 DecimalMultiplyFunction.class,
                 DecimalSubtractFunction.class,
+                DecimalSubtractFromFunction.class,
+                RoundDecimalFunction.class,
                 EpochMilliDateAddFunction.class,
                 HttpResourceContentFunction.class,
                 HttpResourceContentMapFunction.class,

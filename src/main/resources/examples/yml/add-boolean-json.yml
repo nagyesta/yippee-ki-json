@@ -1,0 +1,12 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[1]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "signInAllowed"
+          value: # this is the node defining the second supplier
+            name: "staticBoolean"
+            value: false

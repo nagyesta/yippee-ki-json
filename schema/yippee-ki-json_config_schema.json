@@ -75,6 +75,27 @@
       "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions",
       "description": "Definition of known function types",
       "definitions": {
+        "functionAbsoluteValue": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#absolute-value-function",
+          "description": "Absolute value function",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "absoluteValue",
+              "description": "The name of the component."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The number of digits we want to keep right of the decimal point."
+            }
+          },
+          "required": [
+            "name",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
         "functionAdd": {
           "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-add-function",
           "description": "Decimal add function",
@@ -180,6 +201,32 @@
             "operand": {
               "type": "number",
               "description": "Second operand of the calculation."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The number of digits we want to keep right of the decimal point."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionDividend": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-dividend-function",
+          "description": "Decimal dividend function",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "dividend",
+              "description": "The name of the component."
+            },
+            "operand": {
+              "type": "number",
+              "description": "First operand of the calculation."
             },
             "scale": {
               "type": "integer",
@@ -461,6 +508,27 @@
           ],
           "additionalProperties": false
         },
+        "functionRoundDecimal": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#round-decimal-function",
+          "description": "Round decimal function",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "roundDecimal",
+              "description": "The name of the component."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The number of digits we want to keep right of the decimal point."
+            }
+          },
+          "required": [
+            "name",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
         "functionStringDateAdd": {
           "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#string-date-add-function",
           "description": "String date add function",
@@ -511,6 +579,32 @@
             "operand": {
               "type": "number",
               "description": "Second operand of the calculation."
+            },
+            "scale": {
+              "type": "integer",
+              "description": "The number of digits we want to keep right of the decimal point."
+            }
+          },
+          "required": [
+            "name",
+            "operand",
+            "scale"
+          ],
+          "additionalProperties": false
+        },
+        "functionSubtractFrom": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-functions#decimal-subtract-from-function",
+          "description": "Decimal subtract from function",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "subtractFrom",
+              "description": "The name of the component."
+            },
+            "operand": {
+              "type": "number",
+              "description": "First operand of the calculation."
             },
             "scale": {
               "type": "integer",
@@ -733,11 +827,15 @@
                 "name": {
                   "type": "string",
                   "enum": [
+                    "absoluteValue",
                     "add",
                     "divide",
+                    "dividend",
                     "epochMillisDateAdd",
                     "multiply",
-                    "subtract"
+                    "roundDecimal",
+                    "subtract",
+                    "subtractFrom"
                   ],
                   "additionalItems": false
                 }
@@ -745,6 +843,20 @@
               "required": [
                 "name"
               ]
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "absoluteValue"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionAbsoluteValue"
+              }
             },
             {
               "if": {
@@ -772,6 +884,20 @@
               },
               "then": {
                 "$ref": "#/definitions/functionTypes/definitions/functionDivide"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "dividend"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionDividend"
               }
             },
             {
@@ -808,12 +934,40 @@
                 "properties": {
                   "name": {
                     "type": "string",
+                    "const": "roundDecimal"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionRoundDecimal"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
                     "const": "subtract"
                   }
                 }
               },
               "then": {
                 "$ref": "#/definitions/functionTypes/definitions/functionSubtract"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "subtractFrom"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionSubtractFrom"
               }
             }
           ]
@@ -892,10 +1046,12 @@
                 "name": {
                   "type": "string",
                   "enum": [
+                    "absoluteValue",
                     "add",
                     "changeCase",
                     "cloneKey",
                     "divide",
+                    "dividend",
                     "epochMillisDateAdd",
                     "httpResource",
                     "httpResourceByUri",
@@ -903,8 +1059,10 @@
                     "multiply",
                     "regex",
                     "replace",
+                    "roundDecimal",
                     "stringDateAdd",
-                    "subtract"
+                    "subtract",
+                    "subtractFrom"
                   ],
                   "additionalItems": false
                 }
@@ -912,6 +1070,20 @@
               "required": [
                 "name"
               ]
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "absoluteValue"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionAbsoluteValue"
+              }
             },
             {
               "if": {
@@ -967,6 +1139,20 @@
               },
               "then": {
                 "$ref": "#/definitions/functionTypes/definitions/functionDivide"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "dividend"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionDividend"
               }
             },
             {
@@ -1073,6 +1259,20 @@
                 "properties": {
                   "name": {
                     "type": "string",
+                    "const": "roundDecimal"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionRoundDecimal"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
                     "const": "stringDateAdd"
                   }
                 }
@@ -1093,6 +1293,20 @@
               },
               "then": {
                 "$ref": "#/definitions/functionTypes/definitions/functionSubtract"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "subtractFrom"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/functionTypes/definitions/functionSubtractFrom"
               }
             }
           ]
@@ -1816,6 +2030,42 @@
           ],
           "additionalProperties": false
         },
+        "supplierEpochMillisRelativeDate": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#epoch-millis-relative-date-supplier",
+          "description": "Epoch Millis Relative Date supplier",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "epochMillisRelativeDate",
+              "description": "The name of the component."
+            },
+            "amount": {
+              "type": "integer",
+              "description": "The amount of time units we need to add to the current date time."
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/commonTypes/definitions/chronoUnit"
+                },
+                {
+                  "description": "The time unit we want to use to interpret the amount."
+                }
+              ]
+            },
+            "relativeTo": {
+              "type": "integer",
+              "description": "The value we want to be relative to (in case it is not the current time)."
+            }
+          },
+          "required": [
+            "amount",
+            "name",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
         "supplierFile": {
           "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#file-content-supplier",
           "description": "File content supplier",
@@ -1925,6 +2175,47 @@
           ],
           "additionalProperties": false
         },
+        "supplierRelativeStringDate": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#relative-string-date-supplier",
+          "description": "Relative String Date supplier",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "relativeStringDate",
+              "description": "The name of the component."
+            },
+            "formatter": {
+              "type": "string",
+              "description": "The format String we need to use for date time parsing. [See](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/format/DateTimeFormatter.html)"
+            },
+            "amount": {
+              "type": "integer",
+              "description": "The amount of time units we need to add to the current date time."
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/commonTypes/definitions/chronoUnit"
+                },
+                {
+                  "description": "The time unit we want to use to interpret the amount."
+                }
+              ]
+            },
+            "relativeTo": {
+              "type": "string",
+              "description": "The value we want to be relative to (in case it is not the current time)."
+            }
+          },
+          "required": [
+            "amount",
+            "formatter",
+            "name",
+            "unit"
+          ],
+          "additionalProperties": false
+        },
         "supplierSchemaStore": {
           "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#schemastore-schema-supplier",
           "description": "SchemaStore schema supplier",
@@ -1943,6 +2234,69 @@
           "required": [
             "name",
             "schemaName"
+          ],
+          "additionalProperties": false
+        },
+        "supplierStaticBoolean": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-boolean-supplier",
+          "description": "Static Boolean supplier",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "staticBoolean",
+              "description": "The name of the component."
+            },
+            "value": {
+              "type": "boolean",
+              "description": "The static value that must be returned each time the supplier is called."
+            }
+          },
+          "required": [
+            "name",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "supplierStaticDecimal": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-bigdecimal-supplier",
+          "description": "Static BigDecimal supplier",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "staticDecimal",
+              "description": "The name of the component."
+            },
+            "value": {
+              "type": "number",
+              "description": "The static value that must be returned each time the supplier is called."
+            }
+          },
+          "required": [
+            "name",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "supplierStaticInteger": {
+          "$comment": "https://github.com/nagyesta/yippee-ki-json/wiki/Built-in-suppliers#static-biginteger-supplier",
+          "description": "Static BigInteger supplier",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "const": "staticInteger",
+              "description": "The name of the component."
+            },
+            "value": {
+              "type": "integer",
+              "description": "The static value that must be returned each time the supplier is called."
+            }
+          },
+          "required": [
+            "name",
+            "value"
           ],
           "additionalProperties": false
         },
@@ -2031,6 +2385,7 @@
                   "enum": [
                     "file",
                     "httpResource",
+                    "relativeStringDate",
                     "schemaStore",
                     "staticString"
                   ],
@@ -2075,6 +2430,20 @@
                 "properties": {
                   "name": {
                     "type": "string",
+                    "const": "relativeStringDate"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierRelativeStringDate"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
                     "const": "schemaStore"
                   }
                 }
@@ -2099,6 +2468,39 @@
             }
           ]
         },
+        "bigDecimalSupplierType": {
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "enum": [
+                    "staticDecimal"
+                  ],
+                  "additionalItems": false
+                }
+              },
+              "required": [
+                "name"
+              ]
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "staticDecimal"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticDecimal"
+              }
+            }
+          ]
+        },
         "anySupplierType": {
           "allOf": [
             {
@@ -2108,10 +2510,15 @@
                   "type": "string",
                   "enum": [
                     "converting",
+                    "epochMillisRelativeDate",
                     "file",
                     "httpResource",
                     "jsonSchema",
+                    "relativeStringDate",
                     "schemaStore",
+                    "staticBoolean",
+                    "staticDecimal",
+                    "staticInteger",
                     "staticJson",
                     "staticString"
                   ],
@@ -2134,6 +2541,20 @@
               },
               "then": {
                 "$ref": "#/definitions/supplierTypes/definitions/supplierConverting"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "epochMillisRelativeDate"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierEpochMillisRelativeDate"
               }
             },
             {
@@ -2184,12 +2605,68 @@
                 "properties": {
                   "name": {
                     "type": "string",
+                    "const": "relativeStringDate"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierRelativeStringDate"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
                     "const": "schemaStore"
                   }
                 }
               },
               "then": {
                 "$ref": "#/definitions/supplierTypes/definitions/supplierSchemaStore"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "staticBoolean"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticBoolean"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "staticDecimal"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticDecimal"
+              }
+            },
+            {
+              "if": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "const": "staticInteger"
+                  }
+                }
+              },
+              "then": {
+                "$ref": "#/definitions/supplierTypes/definitions/supplierStaticInteger"
               }
             },
             {
