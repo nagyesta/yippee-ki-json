@@ -1,0 +1,14 @@
+{
+  "pointPairs": [
+    {
+      "distance": 6.5,
+      "point_1": 10,
+      "point_2": 3.5
+    },
+    {
+      "distance": 5.9,
+      "point_1": "10.00",
+      "point_2": "15.91"
+    }
+  ]
+}

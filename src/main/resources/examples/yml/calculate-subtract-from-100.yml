@@ -1,0 +1,13 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "calculate"
+        path: "$.posts[*].likes"
+        params:
+          predicate: # this is the node defining the predicate
+            name: "SpEL"
+            expression: "(#root instanceof T(java.math.BigDecimal)) && #root.longValue() > 0"
+          numberFunction: # this is the node defining the numerical calculation
+            name: "subtractFrom"
+            operand: 100
+            scale: 0

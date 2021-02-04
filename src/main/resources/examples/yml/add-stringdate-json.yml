@@ -1,0 +1,15 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[0]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "updatedOn"
+          value: # this is the node defining the second supplier
+            name: "relativeStringDate"
+            formatter: "yyyy-MM-dd"
+            amount: 1
+            unit: "DAYS"
+            relativeTo: "2020-01-01"

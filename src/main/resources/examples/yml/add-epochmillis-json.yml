@@ -1,0 +1,14 @@
+actions:
+  - name: "demo"
+    rules:
+      - name: "add"
+        path: "$.accounts[0]"
+        params:
+          key: # this is the node defining the first supplier
+            name: "staticString"
+            value: "registeredSince"
+          value: # this is the node defining the second supplier
+            name: "epochMillisRelativeDate"
+            amount: 1
+            unit: "HOURS"
+            relativeTo: 0
