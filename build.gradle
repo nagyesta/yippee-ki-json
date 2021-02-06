@@ -1,15 +1,17 @@
 plugins {
-    id 'org.springframework.boot' version '2.3.5.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'org.springframework.boot' version '2.4.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'checkstyle'
     id 'jacoco'
     id 'java'
     id 'maven-publish'
+    id 'signing'
     //noinspection SpellCheckingInspection
     id "io.freefair.lombok" version "5.3.0"
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
     id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.0.0"
+    id "org.sonatype.gradle.plugins.scan" version "1.0.0"
 }
 
 group = 'com.github.nagyesta'
@@ -17,18 +19,34 @@ group = 'com.github.nagyesta'
 sourceCompatibility = '11'
 
 project.ext {
-    //noinspection GroovyAssignabilityCheck
     gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String) : ''
-    //noinspection GroovyAssignabilityCheck
     gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
-    //noinspection GroovyAssignabilityCheck
+    ossrhUser = project.hasProperty('ossrhUsername') ? (project.property('ossrhUsername') as String) : ''
+    ossrhPass = project.hasProperty('ossrhPassword') ? (project.property('ossrhPassword') as String) : ''
     wikiProjectRoot = project.hasProperty('wikiProjectRoot')
             ? (project.property('wikiProjectRoot') as String)
             : "${buildDir}/reports/wiki/"
-    //noinspection GroovyAssignabilityCheck
     yamlSchemaOutput = project.hasProperty('yamlSchemaOutput')
             ? (project.property('yamlSchemaOutput') as String)
             : "${projectDir}/schema/yippee-ki-json_config_schema.json"
+
+    // dependency versions
+    // implementation
+    commonsIoVersion = '2.8.0'
+    guavaVersion = '30.1-jre'
+    javaxElVersion = '3.0.0'
+    javaxInjectVersion = '1'
+    jetbrainsAnnotationsVersion = '20.1.0'
+    jsonPathVersion = '2.5.0'
+    jsonSchemaValidatorVersion = '1.0.48'
+    markdownGeneratorVersion = '1.3.1.1'
+
+    // test
+    wireMockVersion = '2.27.2'
+    abortMissionVersion = '2.5.0'
+
+    // tool
+    jacocoVersion = '0.8.2'
 }
 
 versioner {
@@ -54,10 +72,6 @@ versioner {
 }
 
 repositories {
-    maven {
-        name = "BintrayNagyEstaMaven"
-        url = uri("https://dl.bintray.com/nagyesta/releases-maven")
-    }
     mavenCentral()
 }
 
@@ -89,23 +103,22 @@ dependencies {
 dependencyManagement {
     implementation {
         dependencies {
-            dependency 'javax.el:javax.el-api:3.0.0'
-            dependency 'org.glassfish:javax.el:3.0.0'
-            dependency 'com.jayway.jsonpath:json-path:2.4.0'
-            dependency 'com.networknt:json-schema-validator:1.0.43'
-            dependency 'org.jetbrains:annotations:20.1.0'
-            dependency 'javax.inject:javax.inject:1'
-            dependency 'commons-io:commons-io:2.7'
-            dependency 'com.google.guava:guava:29.0-jre'
-            dependency 'net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1'
+            dependency "javax.el:javax.el-api:${project.ext.javaxElVersion}"
+            dependency "org.glassfish:javax.el:${project.ext.javaxElVersion}"
+            dependency "com.jayway.jsonpath:json-path:${project.ext.jsonPathVersion}"
+            dependency "com.networknt:json-schema-validator:${project.ext.jsonSchemaValidatorVersion}"
+            dependency "org.jetbrains:annotations:${project.ext.jetbrainsAnnotationsVersion}"
+            dependency "javax.inject:javax.inject:${project.ext.javaxInjectVersion}"
+            dependency "commons-io:commons-io:${project.ext.commonsIoVersion}"
+            dependency "com.google.guava:guava:${project.ext.guavaVersion}"
+            dependency "net.steppschuh.markdowngenerator:markdowngenerator:${project.ext.markdownGeneratorVersion}"
         }
     }
 
     testImplementation {
         dependencies {
-            dependency 'com.github.tomakehurst:wiremock:2.26.3'
-            //use 2.1.0
-            dependency 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:2.4.0'
+            dependency "com.github.tomakehurst:wiremock:${project.ext.wireMockVersion}"
+            dependency "com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:${project.ext.abortMissionVersion}"
         }
     }
 }
@@ -119,7 +132,7 @@ jacocoTestReport {
     }
 }
 
-abortMission.toolVersion "2.4.0"
+abortMission.toolVersion project.ext.abortMissionVersion
 
 test {
     useJUnitPlatform()
@@ -128,7 +141,7 @@ test.finalizedBy jacocoTestReport
 jacocoTestReport.finalizedBy jacocoTestCoverageVerification
 
 jacoco {
-    toolVersion = "0.8.2"
+    toolVersion = project.ext.jacocoVersion
 }
 
 jacocoTestCoverageVerification {
@@ -304,37 +317,42 @@ publishing {
                 password = project.ext.gitToken
             }
         }
+        maven {
+            name = "ossrh"
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
+            credentials {
+                username = project.ext.ossrhUser
+                password = project.ext.ossrhPass
+            }
+        }
     }
     publications {
-        //noinspection GroovyAssignabilityCheck
         mavenJava(MavenPublication) {
-            //noinspection GroovyAssignabilityCheck
             from components.java
-            //noinspection GroovyAssignabilityCheck
             artifact bootJar
             pom {
-                //noinspection GroovyAssignabilityCheck
                 name = 'Yippee-Ki-JSON'
-                //noinspection GroovyAssignabilityCheck
                 description = 'A minimal JSON manipulation app built on Spring Boot and JSON Path.'
-                //noinspection GroovyAssignabilityCheck
                 url = 'https://github.com/nagyesta/yippee-ki-json'
                 packaging = 'jar'
                 licenses {
                     license {
-                        //noinspection GroovyAssignabilityCheck
                         name = 'MIT License'
-                        //noinspection GroovyAssignabilityCheck
                         url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE'
                     }
                 }
                 developers {
                     developer {
-                        //noinspection GroovyAssignabilityCheck
                         id = 'nagyesta'
-                        //noinspection GroovyAssignabilityCheck
                         name = 'Istvan Zoltan Nagy'
+                        url = 'https://github.com/nagyesta/'
                     }
+                }
+                scm {
+
+                    connection = 'scm:git:https://github.com/nagyesta/yippee-ki-json.git'
+                    developerConnection = 'scm:git:https://github.com/nagyesta/yippee-ki-json.git'
+                    url = 'https://github.com/nagyesta/yippee-ki-json/'
                 }
                 withXml {
                     asNode().dependencies.findAll() {
@@ -355,4 +373,8 @@ publishing {
 //noinspection GroovyAssignabilityCheck
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
