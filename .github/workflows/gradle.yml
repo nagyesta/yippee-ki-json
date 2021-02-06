@@ -34,24 +34,20 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-wrapper-
+      - name: Decode key
+        run: |
+          mkdir -p ~/.gnupg/
+          echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}" | base64 --decode > ~/.gnupg/secring.gpg
       - name: Build with Gradle and publish
-        run: ./gradlew build systemTest tagVersion publish -PgithubToken=${{ secrets.PUBLISH_KEY }} -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
-      - name: Publish to Bintray
-        uses: nagyesta/bintray-maven-publisher-action@v1.1.0
-        with:
-          POM_FILE_NAME: "build/publications/mavenJava/pom-default.xml"
-          JAR_FILE_NAME: "build/libs/yippee-ki-json-*.?.jar"
-          SOURCE_JAR_FILE_NAME: "build/libs/yippee-ki-json-*.?-sources.jar"
-          JAVADOC_JAR_FILE_NAME: "build/libs/yippee-ki-json-*.?-javadoc.jar"
-          ARTIFACT_GROUP_ID: "com.github.nagyesta"
-          ARTIFACT_ARTIFACT_ID: "yippee-ki-json"
-          API_USER: "nagyesta"
-          API_KEY: "${{ secrets.BINTRAY_TOKEN }}"
-          BINTRAY_VERSION_PREFIX: "v"
-          BASE_URL: "https://api.bintray.com/"
-          PACKAGE_NAME: "yippee-ki-json"
-          SUBJECT: "nagyesta"
-          REPO: "releases-maven"
+        run: >
+          ./gradlew build systemTest tagVersion publish
+          -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
+          -PgithubToken=${{ secrets.PUBLISH_KEY }}
+          -PossrhUsername=${{ secrets.OSSRH_USER }}
+          -PossrhPassword=${{ secrets.OSSRH_PASS }}
+          -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }}
+          -Psigning.password=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          -Psigning.secretKeyRingFile=$(echo ~/.gnupg/secring.gpg)
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@7d5dfa54903bd909319c580a00535b483d1efcf3
         with:
