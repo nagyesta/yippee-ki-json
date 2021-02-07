@@ -5,6 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE)
 [![Java version](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)
 [![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.nagyesta/yippee-ki-json?logo=apache-maven)](https://search.maven.org/artifact/com.github.nagyesta/yippee-ki-json)
 [![JavaCI](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)
 [![badge-abort-mission-armed-green](https://raw.githubusercontent.com/nagyesta/abort-mission/wiki_assets/.github/assets/badge-abort-mission-armed-green.svg)](https://github.com/nagyesta/abort-mission)
 
@@ -12,6 +13,7 @@
 [![code-climate-maintainability](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)](https://img.shields.io/codeclimate/maintainability/nagyesta/yippee-ki-json?logo=code%20climate)
 [![code-climate-tech-debt](https://img.shields.io/codeclimate/tech-debt/nagyesta/yippee-ki-json?logo=code%20climate)](https://img.shields.io/codeclimate/tech-debt/nagyesta/yippee-ki-json?logo=code%20climate)
 [![last_commit](https://img.shields.io/github/last-commit/nagyesta/yippee-ki-json?logo=git)](https://img.shields.io/github/last-commit/nagyesta/yippee-ki-json?logo=git)
+[![wiki](https://img.shields.io/badge/See-Wiki-informational)](https://github.com/nagyesta/yippee-ki-json/wiki)
 
 --- 
 
