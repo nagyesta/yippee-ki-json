@@ -11,7 +11,7 @@ plugins {
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
     id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.0.0"
-    id "org.sonatype.gradle.plugins.scan" version "1.0.0"
+    id "org.sonatype.gradle.plugins.scan" version "1.2.0"
 }
 
 group = 'com.github.nagyesta'
@@ -43,7 +43,7 @@ project.ext {
 
     // test
     wireMockVersion = '2.27.2'
-    abortMissionVersion = '2.5.0'
+    abortMissionVersion = '2.5.1'
 
     // tool
     jacocoVersion = '0.8.2'
