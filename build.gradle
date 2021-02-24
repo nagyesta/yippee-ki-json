@@ -15,7 +15,6 @@ plugins {
 }
 
 group = 'com.github.nagyesta'
-//noinspection GroovyUnusedAssignment
 sourceCompatibility = '11'
 
 project.ext {
