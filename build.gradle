@@ -10,8 +10,8 @@ plugins {
     id "io.freefair.lombok" version "5.3.0"
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
-    id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.0.0"
-    id "org.sonatype.gradle.plugins.scan" version "1.2.0"
+    id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.2.0"
+    id "org.sonatype.gradle.plugins.scan" version "2.0.4"
 }
 
 group = 'com.github.nagyesta'
