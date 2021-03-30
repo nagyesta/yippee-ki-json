@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 
 @LaunchAbortArmed
 @SpringBootTest
-class YippeeKiJsonApplicationIntegrationTest {
+public class YippeeKiJsonApplicationIntegrationTest {
 
     private static final String MESSAGE = "message";
     private static final IllegalArgumentException CAUSE = new IllegalArgumentException();

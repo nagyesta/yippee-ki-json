@@ -10,7 +10,7 @@ plugins {
     id "io.freefair.lombok" version "5.3.0"
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
-    id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.2.0"
+    id "com.github.nagyesta.abort-mission-gradle-plugin" version "2.0.1"
     id "org.sonatype.gradle.plugins.scan" version "2.0.4"
 }
 
@@ -42,7 +42,7 @@ project.ext {
 
     // test
     wireMockVersion = '2.27.2'
-    abortMissionVersion = '2.5.1'
+    abortMissionVersion = '2.6.1'
 
     // tool
     jacocoVersion = '0.8.2'
@@ -71,6 +71,7 @@ versioner {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -97,6 +98,7 @@ dependencies {
     }
     testImplementation 'com.github.tomakehurst:wiremock'
     testImplementation 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter'
+    testImplementation 'com.github.nagyesta.abort-mission.strongback:abort.strongback-rmi-supplier'
 }
 
 dependencyManagement {
@@ -118,6 +120,7 @@ dependencyManagement {
         dependencies {
             dependency "com.github.tomakehurst:wiremock:${project.ext.wireMockVersion}"
             dependency "com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:${project.ext.abortMissionVersion}"
+            dependency "com.github.nagyesta.abort-mission.strongback:abort.strongback-rmi-supplier:${project.ext.abortMissionVersion}"
         }
     }
 }
@@ -131,10 +134,17 @@ jacocoTestReport {
     }
 }
 
-abortMission.toolVersion project.ext.abortMissionVersion
+abortMission {
+    toolVersion project.ext.abortMissionVersion
+    strongbackCoordinates "com.github.nagyesta.abort-mission.strongback:abort.strongback-rmi-supplier"
+    strongbackDelay 10L
+}
 
 test {
+    systemProperties['junit.jupiter.execution.parallel.enabled'] = true
     useJUnitPlatform()
+    maxParallelForks = 4
+    forkEvery = 1
 }
 test.finalizedBy jacocoTestReport
 jacocoTestReport.finalizedBy jacocoTestCoverageVerification

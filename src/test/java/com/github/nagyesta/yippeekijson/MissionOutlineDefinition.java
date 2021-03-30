@@ -1,10 +1,14 @@
 package com.github.nagyesta.yippeekijson;
 
 import com.github.nagyesta.abortmission.core.AbortMissionCommandOps;
+import com.github.nagyesta.abortmission.core.healthcheck.StageStatisticsCollectorFactory;
 import com.github.nagyesta.abortmission.core.healthcheck.impl.PercentageBasedMissionHealthCheckEvaluator;
 import com.github.nagyesta.abortmission.core.healthcheck.impl.ReportOnlyMissionHealthCheckEvaluator;
 import com.github.nagyesta.abortmission.core.matcher.MissionHealthCheckMatcher;
 import com.github.nagyesta.abortmission.core.outline.MissionOutline;
+import com.github.nagyesta.abortmission.strongback.rmi.server.RmiServerConstants;
+import com.github.nagyesta.abortmission.strongback.rmi.server.RmiServiceProvider;
+import com.github.nagyesta.abortmission.strongback.rmi.stats.RmiBackedStageStatisticsCollectorFactory;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -20,9 +24,12 @@ public class MissionOutlineDefinition extends MissionOutline {
         MissionHealthCheckMatcher integrationTestMatcher = matcher()
                 .classNamePattern(".+IntegrationTest")
                 .build();
-        PercentageBasedMissionHealthCheckEvaluator evaluator = percentageBasedEvaluator(integrationTestMatcher)
+        final MissionHealthCheckMatcher allClassesMatcher = matcher().anyClass().build();
+        final StageStatisticsCollectorFactory factory = new RmiBackedStageStatisticsCollectorFactory(
+                SHARED_CONTEXT, RmiServiceProvider.lookupRegistry(RmiServerConstants.DEFAULT_RMI_PORT));
+        PercentageBasedMissionHealthCheckEvaluator evaluator = percentageBasedEvaluator(integrationTestMatcher, factory)
                 .abortThreshold(ABORT_THRESHOLD).build();
-        ReportOnlyMissionHealthCheckEvaluator noop = reportOnlyEvaluator(matcher().anyClass().build())
+        ReportOnlyMissionHealthCheckEvaluator noop = reportOnlyEvaluator(allClassesMatcher, factory)
                 .build();
         return Map.of(MissionOutline.SHARED_CONTEXT, ops -> {
             ops.registerHealthCheck(evaluator);
