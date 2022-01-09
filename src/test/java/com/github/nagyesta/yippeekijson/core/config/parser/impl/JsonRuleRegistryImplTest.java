@@ -122,8 +122,10 @@ class JsonRuleRegistryImplTest {
         final FunctionRegistry functionRegistry = new FunctionRegistryImpl(
                 Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), conversionService);
         final ApplicationContext applicationContext = mock(ApplicationContext.class);
+        final FunctionRegistryWrapper wrapper = new FunctionRegistryWrapper();
+        wrapper.setWrapped(functionRegistry);
         when(applicationContext.getBeansWithAnnotation(Injectable.class))
-                .thenReturn(Map.of(FUNCTION_REGISTRY, functionRegistry));
+                .thenReturn(Map.of(FUNCTION_REGISTRY, wrapper));
         final JsonRuleRegistryImpl underTest = new JsonRuleRegistryImpl(Collections.emptyList());
         underTest.setApplicationContext(applicationContext);
         underTest.afterPropertiesSet();

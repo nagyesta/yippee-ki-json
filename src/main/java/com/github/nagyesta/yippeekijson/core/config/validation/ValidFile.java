@@ -55,8 +55,17 @@ public @interface ValidFile {
     FileCheck isDirectory() default FileCheck.ANY;
 
     enum FileCheck {
+        /**
+         * The value can be anything, validation is not enforced for the property.
+         */
         ANY(null),
+        /**
+         * The value must be true.
+         */
         TRUE(true),
+        /**
+         * The value must be false.
+         */
         FALSE(false);
 
         private final Boolean check;

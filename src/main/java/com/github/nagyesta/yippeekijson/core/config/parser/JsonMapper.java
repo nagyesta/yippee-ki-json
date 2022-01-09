@@ -42,6 +42,9 @@ public interface JsonMapper {
      * {@link TypeRef} implementation for {@link String} to {@link Object} {@link Map} type.
      */
     class MapTypeRef extends TypeRef<Map<String, Object>> {
+        /**
+         * The singleton instance.
+         */
         public static final MapTypeRef INSTANCE = new MapTypeRef();
     }
 }
