@@ -306,6 +306,7 @@ task includeSchema(type: Copy) {
     into file("${buildDir}/resources/main")
 }
 bootJarMainClassName.dependsOn includeSchema
+javadoc.dependsOn includeSchema
 checkstyleMain.dependsOn includeSchema
 compileTestJava.dependsOn includeSchema
 checkstyleTest.dependsOn includeSchema
@@ -382,6 +383,10 @@ publishing {
 //Disable metadata publishing and rely on Maven only
 //noinspection GroovyAssignabilityCheck
 tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+}
+
+jar {
     enabled = false
 }
 
