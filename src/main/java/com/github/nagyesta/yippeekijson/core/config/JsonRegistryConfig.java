@@ -6,6 +6,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.FunctionRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.JsonRuleRegistry;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.FunctionRegistryImpl;
+import com.github.nagyesta.yippeekijson.core.config.parser.impl.FunctionRegistryWrapper;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonMapperImpl;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.JsonRuleRegistryImpl;
 import com.github.nagyesta.yippeekijson.core.function.*;
@@ -103,9 +104,17 @@ public class JsonRegistryConfig {
     }
 
     @Bean
-    @Injectable(forType = FunctionRegistry.class)
     public FunctionRegistry functionRegistry() {
-        return new FunctionRegistryImpl(autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates(), conversionService());
+        final FunctionRegistryImpl functionRegistry = new FunctionRegistryImpl(
+                autoRegisterSuppliers(), autoRegisterFunctions(), autoRegisterPredicates(), conversionService());
+        functionRegistryWrapper().setWrapped(functionRegistry);
+        return functionRegistry;
+    }
+
+    @Bean
+    @Injectable(forType = FunctionRegistry.class)
+    public FunctionRegistryWrapper functionRegistryWrapper() {
+        return new FunctionRegistryWrapper();
     }
 
     @Bean

@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.2'
+    id 'org.springframework.boot' version '2.6.2'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'checkstyle'
     id 'jacoco'
@@ -7,11 +7,13 @@ plugins {
     id 'maven-publish'
     id 'signing'
     //noinspection SpellCheckingInspection
-    id "io.freefair.lombok" version "5.3.0"
+    id "io.freefair.lombok" version "6.2.0"
     //noinspection SpellCheckingInspection
     id "io.toolebox.git-versioner" version "1.6.5"
-    id "com.github.nagyesta.abort-mission-gradle-plugin" version "1.2.0"
-    id "org.sonatype.gradle.plugins.scan" version "2.0.4"
+    id 'com.github.nagyesta.abort-mission-gradle-plugin' version '2.1.0'
+    id "org.sonatype.gradle.plugins.scan" version "2.2.2"
+    //noinspection SpellCheckingInspection
+    id "org.owasp.dependencycheck" version "6.5.2"
 }
 
 group = 'com.github.nagyesta'
@@ -22,6 +24,8 @@ project.ext {
     gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
     ossrhUser = project.hasProperty('ossrhUsername') ? (project.property('ossrhUsername') as String) : ''
     ossrhPass = project.hasProperty('ossrhPassword') ? (project.property('ossrhPassword') as String) : ''
+    ossIndexUser = project.hasProperty('ossIndexUsername') ? (project.property('ossIndexUsername') as String) : ''
+    ossIndexPass = project.hasProperty('ossIndexPassword') ? (project.property('ossIndexPassword') as String) : ''
     wikiProjectRoot = project.hasProperty('wikiProjectRoot')
             ? (project.property('wikiProjectRoot') as String)
             : "${buildDir}/reports/wiki/"
@@ -42,7 +46,7 @@ project.ext {
 
     // test
     wireMockVersion = '2.27.2'
-    abortMissionVersion = '2.5.1'
+    abortMissionVersion = '2.8.4'
 
     // tool
     jacocoVersion = '0.8.2'
@@ -124,10 +128,11 @@ dependencyManagement {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.required.set(true)
         xml.destination file("$buildDir/reports/jacoco/report.xml")
-        csv.enabled false
-        html.enabled true
+        csv.required.set(false)
+        html.required.set(true)
+        html.destination file("$buildDir/reports/jacoco/html")
     }
 }
 
@@ -288,16 +293,22 @@ task generateWikiMarkdown(type: Exec) {
 tasks.withType(Checkstyle) {
     configProperties = [base_dir: rootDir.toString(), cache_file: file("${buildDir}/checkstyle/cacheFile")]
     reports {
-        xml.enabled false
-        html.enabled true
-        html.stylesheet resources.text.fromFile(rootProject.file('config/checkstyle/checkstyle-stylesheet.xsl'))
+        xml.required.set(false)
+        html.required.set(true)
+        html.stylesheet resources.text
+                .fromFile(rootProject.file('config/checkstyle/checkstyle-stylesheet.xsl') as String)
     }
 }
+checkstyle.toolVersion = '9.2.1'
 
 task includeSchema(type: Copy) {
     from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
     into file("${buildDir}/resources/main")
 }
+bootJarMainClassName.dependsOn includeSchema
+checkstyleMain.dependsOn includeSchema
+compileTestJava.dependsOn includeSchema
+checkstyleTest.dependsOn includeSchema
 
 processResources {
     filesMatching('application.properties') {
@@ -372,6 +383,15 @@ publishing {
 //noinspection GroovyAssignabilityCheck
 tasks.withType(GenerateModuleMetadata) {
     enabled = false
+}
+
+ossIndexAudit {
+    username = rootProject.ext.ossIndexUser
+    password = rootProject.ext.ossIndexPass
+    printBanner = false
+    colorEnabled = true
+    showAll = false
+    dependencyGraph = true
 }
 
 signing {

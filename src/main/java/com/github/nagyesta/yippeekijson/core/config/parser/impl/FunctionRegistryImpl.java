@@ -1,7 +1,6 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
 import com.github.nagyesta.yippeekijson.core.NamedComponentUtil;
-import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedFunction;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedPredicate;
 import com.github.nagyesta.yippeekijson.core.annotation.NamedSupplier;
@@ -25,7 +24,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Slf4j
-@Injectable(forType = FunctionRegistry.class)
 public class FunctionRegistryImpl extends InjectableBeanSupport implements FunctionRegistry {
 
     private final @NotNull Map<String, Constructor<?>> namedSuppliers = new HashMap<>();
