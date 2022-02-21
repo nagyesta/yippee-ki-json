@@ -7,6 +7,7 @@ import com.github.nagyesta.yippeekijson.core.predicate.NotNullPredicate;
 import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.spi.mapper.MappingException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -43,13 +44,17 @@ public abstract class JsonMapRuleSupport extends AbstractJsonRule {
     @Override
     public void accept(@NotNull final DocumentContext documentContext) {
         if (isRoot()) {
-            log.info("Map rule used on root node, replacing ann children manually.");
+            log.info("Map rule used on root node, replacing all children manually.");
             final Object currentValue = documentContext.read(getJsonPath());
             final Map<String, Object> result = this.doTransformMap(currentValue);
             documentContext.delete(ALL_CHILDREN_OF_ROOT);
             result.forEach((k, v) -> documentContext.put(getJsonPath(), k, v));
         } else {
-            documentContext.map(getJsonPath(), (currentValue, configuration) -> doTransformMap(currentValue));
+            try {
+                documentContext.map(getJsonPath(), (currentValue, configuration) -> doTransformMap(currentValue));
+            } catch (final PathNotFoundException e) {
+                log.info("Path not found {}, ignoring.", getJsonPath().getPath());
+            }
         }
     }
 
@@ -57,6 +62,7 @@ public abstract class JsonMapRuleSupport extends AbstractJsonRule {
 
     /**
      * Returns the predicate used by this rule.
+     *
      * @return the predicate used for root object evaluation.
      */
     protected Predicate<Object> predicate() {
