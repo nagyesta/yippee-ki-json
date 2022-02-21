@@ -1,19 +1,16 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.2'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    alias(libs.plugins.spring.boot)
+    //id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'checkstyle'
     id 'jacoco'
     id 'java'
     id 'maven-publish'
     id 'signing'
-    //noinspection SpellCheckingInspection
-    id "io.freefair.lombok" version "6.2.0"
-    //noinspection SpellCheckingInspection
-    id "io.toolebox.git-versioner" version "1.6.5"
-    id 'com.github.nagyesta.abort-mission-gradle-plugin' version '2.1.0'
-    id "org.sonatype.gradle.plugins.scan" version "2.2.2"
-    //noinspection SpellCheckingInspection
-    id "org.owasp.dependencycheck" version "6.5.2"
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.abort.mission)
+    alias(libs.plugins.versioner)
+    alias(libs.plugins.index.scan)
+    alias(libs.plugins.owasp.dependencycheck)
 }
 
 group = 'com.github.nagyesta'
@@ -32,24 +29,6 @@ project.ext {
     yamlSchemaOutput = project.hasProperty('yamlSchemaOutput')
             ? (project.property('yamlSchemaOutput') as String)
             : "${projectDir}/schema/yippee-ki-json_config_schema.json"
-
-    // dependency versions
-    // implementation
-    commonsIoVersion = '2.8.0'
-    guavaVersion = '30.1-jre'
-    javaxElVersion = '3.0.0'
-    javaxInjectVersion = '1'
-    jetbrainsAnnotationsVersion = '20.1.0'
-    jsonPathVersion = '2.5.0'
-    jsonSchemaValidatorVersion = '1.0.48'
-    markdownGeneratorVersion = '1.3.1.1'
-
-    // test
-    wireMockVersion = '2.27.2'
-    abortMissionVersion = '2.8.4'
-
-    // tool
-    jacocoVersion = '0.8.2'
 }
 
 versioner {
@@ -79,51 +58,23 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.jayway.jsonpath:json-path'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
-    implementation 'com.networknt:json-schema-validator'
-    implementation 'org.hibernate.validator:hibernate-validator'
-    implementation 'org.glassfish:javax.el'
-    implementation 'javax.el:javax.el-api'
-    implementation 'commons-io:commons-io'
-    implementation 'com.google.guava:guava'
-    implementation 'org.jetbrains:annotations'
-    implementation 'javax.inject:javax.inject'
-    implementation 'ch.qos.logback:logback-classic'
-    implementation 'net.steppschuh.markdowngenerator:markdowngenerator'
-    annotationProcessor 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+    implementation libs.bundles.spring.boot
+    implementation libs.bundles.json
+    implementation libs.bundles.logback
+    implementation libs.bundles.validation
+    implementation libs.commons.io
+    implementation libs.commons.lang3
+    implementation libs.guava
+    implementation libs.jetbrains.annotations
+    implementation libs.javax.inject
+    implementation libs.markdowngenerator
+    annotationProcessor libs.lombok
+    developmentOnly libs.spring.boot.devtools
+    testImplementation(libs.spring.boot.starter.test) {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation 'com.github.tomakehurst:wiremock'
-    testImplementation 'com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter'
-}
-
-dependencyManagement {
-    implementation {
-        dependencies {
-            dependency "javax.el:javax.el-api:${project.ext.javaxElVersion}"
-            dependency "org.glassfish:javax.el:${project.ext.javaxElVersion}"
-            dependency "com.jayway.jsonpath:json-path:${project.ext.jsonPathVersion}"
-            dependency "com.networknt:json-schema-validator:${project.ext.jsonSchemaValidatorVersion}"
-            dependency "org.jetbrains:annotations:${project.ext.jetbrainsAnnotationsVersion}"
-            dependency "javax.inject:javax.inject:${project.ext.javaxInjectVersion}"
-            dependency "commons-io:commons-io:${project.ext.commonsIoVersion}"
-            dependency "com.google.guava:guava:${project.ext.guavaVersion}"
-            dependency "net.steppschuh.markdowngenerator:markdowngenerator:${project.ext.markdownGeneratorVersion}"
-        }
-    }
-
-    testImplementation {
-        dependencies {
-            dependency "com.github.tomakehurst:wiremock:${project.ext.wireMockVersion}"
-            dependency "com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter:${project.ext.abortMissionVersion}"
-        }
-    }
+    testImplementation libs.wiremock
+    testImplementation libs.abort.mission.jupiter
 }
 
 jacocoTestReport {
@@ -136,16 +87,19 @@ jacocoTestReport {
     }
 }
 
-abortMission.toolVersion project.ext.abortMissionVersion
+abortMission.toolVersion libs.versions.abortMission.get()
 
 test {
     useJUnitPlatform()
+    systemProperty("junit.jupiter.execution.parallel.enabled", true)
+    systemProperty("junit.jupiter.execution.parallel.mode.default", "concurrent")
+    systemProperty("junit.jupiter.execution.parallel.mode.classes.default", "same_thread")
 }
 test.finalizedBy jacocoTestReport
 jacocoTestReport.finalizedBy jacocoTestCoverageVerification
 
 jacoco {
-    toolVersion = project.ext.jacocoVersion
+    toolVersion = libs.versions.jacoco.get()
 }
 
 jacocoTestCoverageVerification {
@@ -299,7 +253,7 @@ tasks.withType(Checkstyle) {
                 .fromFile(rootProject.file('config/checkstyle/checkstyle-stylesheet.xsl') as String)
     }
 }
-checkstyle.toolVersion = '9.2.1'
+checkstyle.toolVersion = libs.versions.checkstyle.get()
 
 task includeSchema(type: Copy) {
     from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
