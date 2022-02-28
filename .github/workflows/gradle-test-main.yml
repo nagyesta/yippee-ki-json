@@ -1,20 +1,12 @@
 # This workflow will build a Java project with Gradle
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: JavaCI
+name: JavaTestMain
 
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - 'README.md'
-      - '.lift/.toml'
-      - 'SECURITY.md'
-      - 'LICENSE'
-      - '.github/ISSUE_TEMPLATE/**'
-      - '.github/assets/**'
-      - '.github/workflows/**'
-      - 'renovate.json'
+    paths:
       - 'gradle/libs.versions.toml'
 
 permissions: read-all
@@ -41,20 +33,8 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-wrapper-
-      - name: Decode key
-        run: |
-          mkdir -p ~/.gnupg/
-          echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}" | base64 --decode > ~/.gnupg/secring.gpg
-      - name: Build with Gradle and publish
-        run: >
-          ./gradlew build systemTest tagVersion publish
-          -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
-          -PgithubToken=${{ secrets.PUBLISH_KEY }}
-          -PossrhUsername=${{ secrets.OSSRH_USER }}
-          -PossrhPassword=${{ secrets.OSSRH_PASS }}
-          -Psigning.keyId=${{ secrets.SIGNING_KEY_ID }}
-          -Psigning.password=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-          -Psigning.secretKeyRingFile=$(echo ~/.gnupg/secring.gpg)
+      - name: Build with Gradle
+        run: ./gradlew build systemTest
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@11d69070bf0bb19a473235e011c7890707db52de # tag=v2.1
         with:
