@@ -9,6 +9,9 @@ on:
     paths-ignore:
       - 'README.md'
       - '.lift/.toml'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'pull_request_template.md'
       - 'SECURITY.md'
       - 'LICENSE'
       - '.github/ISSUE_TEMPLATE/**'

@@ -17,6 +17,9 @@ on:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'pull_request_template.md'
       - 'SECURITY.md'
       - 'LICENSE'
       - '.github/ISSUE_TEMPLATE/**'
@@ -29,6 +32,9 @@ on:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'CONTRIBUTING.md'
+      - 'pull_request_template.md'
       - 'SECURITY.md'
       - 'LICENSE'
       - '.github/ISSUE_TEMPLATE/**'
