@@ -52,7 +52,7 @@ jobs:
           script: |
             github.rest.pulls.create({
               owner: "${{ github.repository_owner }}",
-              repo: "yippe-ki-json",
+              repo: "yippee-ki-json",
               head: "release/run-${{ github.run_number }}",
               base: "main",
               title: "Triggering a release [patch]"
