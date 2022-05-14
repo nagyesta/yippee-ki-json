@@ -7,8 +7,7 @@ lombok = "1.18.24"
 wireMock = "2.27.2"
 hibernateValidator = "6.2.3.Final"
 javaxEl = "3.0.0"
-jackson = "2.13.2"
-jacksonDatabind = "2.13.3"
+jackson = "2.13.3"
 commonsCodec = "1.15"
 commonsIo = "2.11.0"
 commonsLang3 = "3.12.0"
@@ -37,7 +36,7 @@ spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter",
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springBoot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
-jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jacksonDatabind" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 json-path = { module = "com.jayway.jsonpath:json-path", version.ref = "jsonPath" }
 json-schema-validator = { module = "com.networknt:json-schema-validator", version.ref = "jsonSchemaValidator" }
