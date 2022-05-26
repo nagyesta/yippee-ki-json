@@ -66,10 +66,10 @@ dependencies {
     implementation libs.commons.lang3
     implementation libs.jetbrains.annotations
     implementation libs.javax.inject
+    implementation libs.findbugs.jsr305
     implementation libs.markdowngenerator
     annotationProcessor libs.lombok
     developmentOnly libs.spring.boot.devtools
-    checkstyle libs.guava
     testImplementation libs.guava
     testImplementation(libs.spring.boot.starter.test) {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

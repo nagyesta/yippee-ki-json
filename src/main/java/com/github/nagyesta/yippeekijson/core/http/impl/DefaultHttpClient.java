@@ -13,14 +13,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
-import static com.google.common.net.HttpHeaders.ACCEPT;
-import static com.google.common.net.HttpHeaders.USER_AGENT;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @Injectable(forType = HttpClient.class)
 public class DefaultHttpClient implements HttpClient {
 
+    private static final String ACCEPT = "Accept";
+    private static final String USER_AGENT = "User-Agent";
     private final HttpConfig httpConfig;
 
     public DefaultHttpClient(final HttpConfig httpConfig) {

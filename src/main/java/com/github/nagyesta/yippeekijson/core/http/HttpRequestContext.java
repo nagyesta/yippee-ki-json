@@ -1,6 +1,5 @@
 package com.github.nagyesta.yippeekijson.core.http;
 
-import com.google.common.net.HttpHeaders;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -19,6 +18,7 @@ import java.util.*;
 @Getter
 public final class HttpRequestContext {
 
+    private static final String ACCEPT_CHARSET = "Accept-Charset";
     private final String uri;
     private final HttpMethod httpMethod;
     private final Map<String, List<String>> headers;
@@ -34,7 +34,7 @@ public final class HttpRequestContext {
         Optional.ofNullable(headers).orElse(Collections.emptyMap())
                 .forEach((k, v) -> this.headers.put(k, List.of(v)));
         this.charset = Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8);
-        this.headers.putIfAbsent(HttpHeaders.ACCEPT_CHARSET, List.of(this.charset.name()));
+        this.headers.putIfAbsent(ACCEPT_CHARSET, List.of(this.charset.name()));
     }
 
     private HttpRequestContext(final HttpRequestContextBuilder builder) {
@@ -44,7 +44,7 @@ public final class HttpRequestContext {
         builder.headers.forEach((k, v) -> headers.put(k, List.copyOf(v)));
         this.charset = builder.charset;
         if (charset != null) {
-            this.headers.putIfAbsent(HttpHeaders.ACCEPT_CHARSET, List.of(this.charset.name()));
+            this.headers.putIfAbsent(ACCEPT_CHARSET, List.of(this.charset.name()));
         }
     }
 
