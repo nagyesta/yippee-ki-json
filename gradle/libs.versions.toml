@@ -2,7 +2,7 @@
 springBoot = "2.7.0"
 logback = "1.2.11"
 jupiter = "5.8.2"
-abortMission = "3.0.0"
+abortMission = "3.0.5"
 lombok = "1.18.24"
 wireMock = "2.27.2"
 hibernateValidator = "6.2.3.Final"
