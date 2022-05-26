@@ -24,12 +24,11 @@ import java.net.URI;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static com.google.common.net.HttpHeaders.ACCEPT;
-
 @Slf4j
 public class SchemaStoreSchemaContentSupplier implements Supplier<String> {
 
     private static final String NAME = "schemaStore";
+    private static final String ACCEPT = "Accept";
 
     private final JsonMapper jsonMapper;
     private final String schemaName;

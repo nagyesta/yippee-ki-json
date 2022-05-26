@@ -1,7 +1,6 @@
 package com.github.nagyesta.yippeekijson.metadata.schema.definitions.common;
 
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSimpleType;
-import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +18,7 @@ public final class CommonMapType extends BaseCommonType {
 
     private CommonMapType(@NotNull final CommonMapTypeBuilder builder) {
         super(builder);
-        this.additionalProperties = ImmutableMap.of("type", builder.innerType);
+        this.additionalProperties = Map.of("type", builder.innerType);
     }
 
     public static CommonMapTypeBuilder builder() {

@@ -8,9 +8,7 @@ import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonCommonTypeDefinitionRegistry;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonNamedComponentTypeDefinitionRegistry;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaExporter;
-import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaObject;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema.*;
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -144,10 +142,9 @@ public class JsonSchemaExporterImpl implements JsonSchemaExporter {
     @NotNull
     private JsonCompositionSchemaTypeDefinitionImpl actionNameType() {
         return JsonCompositionSchemaTypeDefinitionImpl.builder()
-                .allOf(ImmutableList.<JsonSchemaObject>builder()
-                        .add(ref("#/definitions/commonTypes/definitions/name"))
-                        .add(description("The name of the action (rule list) to allow selecting it when we want to start transformation."))
-                        .build())
+                .allOf(List.of(
+                        ref("#/definitions/commonTypes/definitions/name"),
+                        description("The name of the action (rule list) to allow selecting it when we want to start transformation.")))
                 .build();
     }
 

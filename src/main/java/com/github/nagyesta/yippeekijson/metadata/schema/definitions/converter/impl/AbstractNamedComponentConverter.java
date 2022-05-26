@@ -21,7 +21,6 @@ import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentType;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.DocumentationContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.PropertyContext;
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
@@ -31,6 +30,7 @@ import org.springframework.util.Assert;
 
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -143,10 +143,7 @@ public abstract class AbstractNamedComponentConverter implements NamedComponentC
     private JsonSchemaObject buildRefWithDescriptionParameter(@NotNull final String ref,
                                                               @NotNull final String description) {
         return JsonCompositionSchemaTypeDefinitionImpl.builder()
-                .allOf(ImmutableList.<JsonSchemaObject>builder()
-                        .add(ref(ref))
-                        .add(description(description))
-                        .build())
+                .allOf(List.of(ref(ref), description(description)))
                 .build();
     }
 

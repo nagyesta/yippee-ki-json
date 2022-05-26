@@ -9,7 +9,6 @@ import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.DocumentationContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.ParametrizedTypeAware;
 import com.github.nagyesta.yippeekijson.metadata.schema.parser.ComponentContextMetadataParser;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -53,10 +52,9 @@ public class PredicateComponentTypeDefinitionRegistry extends AbstractComponentT
         inputToTypeNameMap.forEach((inputType, typeName) -> {
             // include the Object predicates as well to not reduce functionality
             // e.g. notNull can be a valid String predicate
-            Set<String> typeRefs = Sets.union(
-                    inputToRefMap.getOrDefault(inputType, Set.of()),
-                    inputToRefMap.getOrDefault(Object.class, Set.of())
-            );
+            Set<String> typeRefs = new TreeSet<>();
+            typeRefs.addAll(inputToRefMap.getOrDefault(inputType, Set.of()));
+            typeRefs.addAll(inputToRefMap.getOrDefault(Object.class, Set.of()));
             cachedMap.put(typeName, combinedComponentDefinitions(typeRefs));
         });
     }

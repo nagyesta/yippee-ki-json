@@ -11,7 +11,6 @@ import com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema.JsonI
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.schema.JsonPropertiesSchemaTypeDefinition;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.parser.ComponentContextMetadataParser;
-import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
@@ -53,13 +52,13 @@ public abstract class AbstractComponentTypeDefinitionRegistry {
      */
     @NotNull
     protected JsonCompositionSchemaTypeDefinitionImpl combinedComponentDefinitions(final Set<String> names) {
+        List<JsonSchemaObject> list = new ArrayList<>();
+        list.add(nameRestrictionEnum(names.stream()
+                .map(this.nameConstants::get)
+                .collect(Collectors.toSet())));
+        list.addAll(Arrays.stream(ruleDefinitionReferenceSwitch(names)).distinct().collect(Collectors.toList()));
         return JsonCompositionSchemaTypeDefinitionImpl.builder()
-                .allOf(ImmutableList.<JsonSchemaObject>builder()
-                        .add(nameRestrictionEnum(names.stream()
-                                .map(this.nameConstants::get)
-                                .collect(Collectors.toSet())))
-                        .add(ruleDefinitionReferenceSwitch(names))
-                        .build())
+                .allOf(list)
                 .build();
     }
 
