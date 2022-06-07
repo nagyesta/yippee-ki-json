@@ -19,6 +19,7 @@ on:
       - '.github/workflows/**'
       - 'renovate.json'
       - '.whitesource'
+      - 'gradle/libs.versions.toml'
 
 permissions: read-all
 
