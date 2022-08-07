@@ -21,6 +21,7 @@ on:
       - '.whitesource'
       - 'gradle/libs.versions.toml'
       - 'gradle/verification-metadata.xml'
+      - 'gradle/wrapper/gradle-wrapper.properties'
 
 permissions: read-all
 
