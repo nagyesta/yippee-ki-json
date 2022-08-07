@@ -24,7 +24,7 @@ jetty = "9.4.48.v20220622"
 httpclient = "4.5.13"
 handlebars = "4.3.0"
 
-abortMissionPlugin = "3.1.0"
+abortMissionPlugin = "3.1.2"
 dockerPlugin = "0.32.0"
 indexScanPlugin = "2.3.0"
 lombokPlugin = "6.5.0.3"
