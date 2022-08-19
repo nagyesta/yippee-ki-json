@@ -356,7 +356,7 @@ ossIndexAudit {
     printBanner = false
     colorEnabled = true
     showAll = false
-    dependencyGraph = true
+    outputFormat = 'DEPENDENCY_GRAPH'
 }
 
 signing {
