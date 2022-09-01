@@ -1,5 +1,6 @@
 [versions]
 springBoot = "2.7.3"
+snakeYaml = "1.31"
 logback = "1.2.11"
 jupiter = "5.8.2"
 abortMission = "3.4.11"
@@ -37,6 +38,7 @@ spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter",
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springBoot" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
+snake-yaml = { module = "org.yaml:snakeyaml", version.ref = "snakeYaml" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-dataformat-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
 json-path = { module = "com.jayway.jsonpath:json-path", version.ref = "jsonPath" }
@@ -66,7 +68,7 @@ commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons
 handlebars = { module = "com.github.jknack:handlebars", version.ref = "handlebars" }
 
 [bundles]
-spring-boot = ["spring-boot-starter", "spring-boot-starter-validation"]
+spring-boot = ["spring-boot-starter", "spring-boot-starter-validation", "snake-yaml"]
 json = ["jackson-databind", "jackson-dataformat-yaml", "json-path", "json-schema-validator"]
 logback = ["logback-classic", "logback-core"]
 validation = ["hibernate-validator", "javax-el-api", "galssfish-javax-el"]
