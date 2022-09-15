@@ -23,6 +23,7 @@ project.ext {
     ossrhPass = project.hasProperty('ossrhPassword') ? (project.property('ossrhPassword') as String) : ''
     ossIndexUser = project.hasProperty('ossIndexUsername') ? (project.property('ossIndexUsername') as String) : ''
     ossIndexPass = project.hasProperty('ossIndexPassword') ? (project.property('ossIndexPassword') as String) : ''
+    ossIndexExclusions = ["CVE-2022-38752"]
     wikiProjectRoot = project.hasProperty('wikiProjectRoot')
             ? (project.property('wikiProjectRoot') as String)
             : "${buildDir}/reports/wiki/"
@@ -357,6 +358,7 @@ ossIndexAudit {
     colorEnabled = true
     showAll = false
     outputFormat = 'DEPENDENCY_GRAPH'
+    excludeVulnerabilityIds = rootProject.ext.ossIndexExclusions
 }
 
 signing {
