@@ -16,6 +16,8 @@ plugins {
 group = 'com.github.nagyesta'
 sourceCompatibility = '11'
 
+apply from: "config/ossindex/ossIndexAudit.gradle"
+
 project.ext {
     gitToken = project.hasProperty('githubToken') ? (project.property('githubToken') as String) : ''
     gitUser = project.hasProperty('githubUser') ? (project.property('githubUser') as String) : ''
@@ -23,7 +25,6 @@ project.ext {
     ossrhPass = project.hasProperty('ossrhPassword') ? (project.property('ossrhPassword') as String) : ''
     ossIndexUser = project.hasProperty('ossIndexUsername') ? (project.property('ossIndexUsername') as String) : ''
     ossIndexPass = project.hasProperty('ossIndexPassword') ? (project.property('ossIndexPassword') as String) : ''
-    ossIndexExclusions = ["CVE-2022-38752"]
     wikiProjectRoot = project.hasProperty('wikiProjectRoot')
             ? (project.property('wikiProjectRoot') as String)
             : "${buildDir}/reports/wiki/"
