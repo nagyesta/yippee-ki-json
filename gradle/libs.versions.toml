@@ -23,7 +23,7 @@ jacoco = "0.8.2"
 checkstyle = "9.2.1"
 jetty = "9.4.49.v20220914"
 httpclient = "4.5.13"
-handlebars = "4.3.0"
+handlebars = "4.3.1"
 
 abortMissionPlugin = "3.1.10"
 dockerPlugin = "0.32.0"
