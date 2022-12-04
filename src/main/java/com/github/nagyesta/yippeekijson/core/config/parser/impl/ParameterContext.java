@@ -5,6 +5,8 @@ import com.github.nagyesta.yippeekijson.core.annotation.EmbedParam;
 import com.github.nagyesta.yippeekijson.core.annotation.MapParam;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
+import jakarta.inject.Named;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import javax.inject.Named;
-import javax.validation.constraints.Pattern;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -127,7 +127,7 @@ public final class ParameterContext {
 
     private static boolean isNullable(@NotNull final Parameter parameter,
                                       final boolean annotationValue) {
-        return parameter.isAnnotationPresent(javax.annotation.Nullable.class)
+        return parameter.isAnnotationPresent(jakarta.annotation.Nullable.class)
                 || parameter.isAnnotationPresent(org.springframework.lang.Nullable.class)
                 || annotationValue;
     }

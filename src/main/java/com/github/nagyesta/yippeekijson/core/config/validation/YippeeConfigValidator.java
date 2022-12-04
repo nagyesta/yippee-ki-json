@@ -1,13 +1,13 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;

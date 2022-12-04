@@ -1,6 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.impl;
 
 import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
+import jakarta.inject.Named;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
-import javax.inject.Named;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.HashMap;

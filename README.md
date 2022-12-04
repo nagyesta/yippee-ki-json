@@ -3,7 +3,7 @@
 ---
 
 [![GitHub license](https://img.shields.io/github/license/nagyesta/yippee-ki-json?color=blue)](https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE)
-[![Java version](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)](https://img.shields.io/badge/Java%20version-11-yellow?logo=java)
+[![Java version](https://img.shields.io/badge/Java%20version-17-yellow?logo=java)](https://img.shields.io/badge/Java%20version-17-yellow?logo=java)
 [![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.nagyesta/yippee-ki-json?logo=apache-maven)](https://search.maven.org/artifact/com.github.nagyesta/yippee-ki-json)
 [![JavaCI](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)

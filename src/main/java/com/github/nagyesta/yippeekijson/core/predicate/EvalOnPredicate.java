@@ -60,7 +60,7 @@ public final class EvalOnPredicate extends MapSupport implements Predicate<Objec
     @NamedPredicate(NAME)
     public EvalOnPredicate(
             @ValueParam(docs = "The desired navigation we want to perform relative to the Map/Object we operate on.")
-            @javax.validation.constraints.Pattern(regexp = "^([$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)(.[$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)*$")
+            @jakarta.validation.constraints.Pattern(regexp = "^([$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)(.[$_a-zA-Z]+[$a-zA-Z0-9\\-_]+)*$")
             @NonNull final String childPath,
             @EmbedParam @NonNull final Map<String, RawConfigParam> predicate,
             @NonNull final FunctionRegistry functionRegistry) {

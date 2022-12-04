@@ -2,6 +2,8 @@ package com.github.nagyesta.yippeekijson.core.control;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,8 +11,6 @@ import org.slf4j.Logger;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;

@@ -14,7 +14,7 @@ plugins {
 }
 
 group = 'com.github.nagyesta'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 apply from: "config/ossindex/ossIndexAudit.gradle"
 
@@ -72,7 +72,7 @@ dependencies {
     implementation libs.commons.io
     implementation libs.commons.lang3
     implementation libs.jetbrains.annotations
-    implementation libs.javax.inject
+    implementation libs.jakarta.inject
     implementation libs.findbugs.jsr305
     implementation libs.markdowngenerator
     annotationProcessor libs.lombok
@@ -176,7 +176,7 @@ task systemTestRunConvert(type: Exec) {
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
-    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+    commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.config=${buildDir}/resources/test/yaml/example.yml",
             "--yippee.input=${buildDir}/resources/test/json/example.json",
             "--yippee.output=${buildDir}/test-results/systemTest/example.json",
@@ -195,7 +195,7 @@ task systemTestRunValidate(type: Exec) {
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
-    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+    commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.config=${buildDir}/resources/test/yaml/all-rules.yml",
             "--yippee.input=${buildDir}/resources/test/validation/validation-input.json",
             "--yippee.output=${buildDir}/test-results/systemTest/validation-output.json",
@@ -231,7 +231,7 @@ task generateYamlSchema(type: Exec) {
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
-    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+    commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.export-yml-schema=true",
             "--yippee.output=${project.property("yamlSchemaOutput")}"
     logging.captureStandardOutput LogLevel.INFO
@@ -245,7 +245,7 @@ task generateWikiMarkdown(type: Exec) {
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
-    commandLine "java", "-jar", bootJar.outputs.files.singleFile,
+    commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
             "--yippee.export-markdown=true",
             "--yippee.output-directory=${project.property("wikiProjectRoot")}"
     logging.captureStandardOutput LogLevel.INFO
@@ -263,11 +263,15 @@ tasks.withType(Checkstyle) {
 }
 checkstyle.toolVersion = libs.versions.checkstyle.get()
 
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:syntax', '-quiet')
+}
+
 task includeSchema(type: Copy) {
     from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
     into file("${buildDir}/resources/main")
 }
-bootJarMainClassName.dependsOn includeSchema
+resolveMainClassName.dependsOn includeSchema
 javadoc.dependsOn includeSchema
 checkstyleMain.dependsOn includeSchema
 compileTestJava.dependsOn includeSchema

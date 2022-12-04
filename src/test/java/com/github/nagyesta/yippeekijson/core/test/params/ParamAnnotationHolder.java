@@ -5,11 +5,11 @@ import com.github.nagyesta.yippeekijson.core.annotation.MapParam;
 import com.github.nagyesta.yippeekijson.core.annotation.ValueParam;
 import com.github.nagyesta.yippeekijson.core.config.parser.impl.ParameterContext;
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.RawConfigParam;
+import jakarta.inject.Named;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.lang.Nullable;
 
-import javax.inject.Named;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public abstract class ParamAnnotationHolder {
     public static final String PARAM_DIFFERENT_NAME = "differentName";
     public static final String PARAM_DIFFERENT_NAME_EXPECTED = "name";
     public static final String PARAM_SAME_NAME = "sameName";
-    public static final String PARAM_JAVAX_NULLABLE = "javaxNullable";
+    public static final String PARAM_JAKARTA_NULLABLE = "jakartaNullable";
     public static final String PARAM_SPRING_NULLABLE = "springNullable";
     public static final String PARAM_SPRING_NULLABLE_EXPECTED = "nullable";
     public static final String PARAM_NAMED_LIST = "namedList";
@@ -38,7 +38,7 @@ public abstract class ParamAnnotationHolder {
 
     private static void valueParam(@ValueParam("name") final String differentName,
                                    @ValueParam("sameName") final String sameName,
-                                   @ValueParam @javax.annotation.Nullable final String javaxNullable,
+                                   @ValueParam @jakarta.annotation.Nullable final String jakartaNullable,
                                    @ValueParam @Qualifier("nullable") @Nullable final String springNullable,
                                    @ValueParam @Named("list") final Collection<String> namedList,
                                    final String nothing) {
@@ -46,7 +46,7 @@ public abstract class ParamAnnotationHolder {
 
     private static void mapParam(@MapParam("name") final Map<String, String> differentName,
                                  @MapParam("sameName") final Map<String, String> sameName,
-                                 @MapParam @javax.annotation.Nullable final Map<String, String> javaxNullable,
+                                 @MapParam @jakarta.annotation.Nullable final Map<String, String> jakartaNullable,
                                  @MapParam @Qualifier("nullable") @Nullable final Map<String, String> springNullable,
                                  @MapParam @Named("list") final Collection<Map<String, String>> namedList,
                                  final Map<String, String> nothing) {
@@ -54,7 +54,7 @@ public abstract class ParamAnnotationHolder {
 
     private static void embedParam(@EmbedParam("name") final Map<String, RawConfigParam> differentName,
                                    @EmbedParam("sameName") final Map<String, RawConfigParam> sameName,
-                                   @EmbedParam @javax.annotation.Nullable final Map<String, RawConfigParam> javaxNullable,
+                                   @EmbedParam @jakarta.annotation.Nullable final Map<String, RawConfigParam> jakartaNullable,
                                    @EmbedParam @Qualifier("nullable") @Nullable final Map<String, RawConfigParam> springNullable,
                                    @EmbedParam @Named("list") final Collection<Map<String, RawConfigParam>> namedList,
                                    final Map<String, RawConfigParam> nothing) {
