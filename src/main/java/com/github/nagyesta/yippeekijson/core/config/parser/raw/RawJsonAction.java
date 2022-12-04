@@ -1,5 +1,7 @@
 package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -7,8 +9,6 @@ import lombok.Setter;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.List;
 

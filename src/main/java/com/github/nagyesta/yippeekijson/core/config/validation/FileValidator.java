@@ -1,9 +1,9 @@
 package com.github.nagyesta.yippeekijson.core.config.validation;
 
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.validation.ConstraintValidatorContext;
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;

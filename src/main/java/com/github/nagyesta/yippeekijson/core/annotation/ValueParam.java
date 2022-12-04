@@ -15,7 +15,7 @@ public @interface ValueParam {
      * If absent, the evaluation will fall back to:
      * <ol>
      *     <li>{@link org.springframework.beans.factory.annotation.Qualifier#value()}</li>
-     *     <li>{@link javax.inject.Named#value()}</li>
+     *     <li>{@link jakarta.inject.Named#value()}</li>
      *     <li>{@link java.lang.reflect.Parameter#getName()}</li>
      * </ol>
      *
@@ -28,7 +28,7 @@ public @interface ValueParam {
      * The evaluation will also respect the presence of the following
      * annotations if false.
      * <ul>
-     *     <li>{@link javax.annotation.Nullable}</li>
+     *     <li>{@link jakarta.annotation.Nullable}</li>
      *     <li>{@link org.springframework.lang.Nullable}</li>
      * </ul>
      *

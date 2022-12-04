@@ -5,10 +5,10 @@ import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.ComponentType;
 import com.github.nagyesta.yippeekijson.metadata.schema.markdown.DocumentationExporter;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.Validator;
 import java.io.File;
 import java.util.Map;
 

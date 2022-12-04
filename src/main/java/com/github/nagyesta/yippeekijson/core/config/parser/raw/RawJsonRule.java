@@ -2,6 +2,8 @@ package com.github.nagyesta.yippeekijson.core.config.parser.raw;
 
 import com.github.nagyesta.yippeekijson.core.config.parser.raw.params.RawConfigMap;
 import com.github.nagyesta.yippeekijson.core.config.validation.JsonPath;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -9,8 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

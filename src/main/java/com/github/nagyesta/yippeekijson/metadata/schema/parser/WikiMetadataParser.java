@@ -3,11 +3,11 @@ package com.github.nagyesta.yippeekijson.metadata.schema.parser;
 import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.DocumentationContext;
+import jakarta.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;

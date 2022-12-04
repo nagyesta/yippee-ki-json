@@ -12,6 +12,7 @@ import com.github.nagyesta.yippeekijson.core.rule.AbstractJsonRule;
 import com.github.nagyesta.yippeekijson.core.rule.JsonRule;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 
-import javax.validation.Validator;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -91,7 +91,7 @@ class YamlActionConfigParserTest {
     }
 
     private static Object[][] nullProvider() {
-        return new Object[][] {
+        return new Object[][]{
                 {null, null},
                 {mock(JsonRuleRegistry.class), null},
                 {null, mock(Validator.class)}

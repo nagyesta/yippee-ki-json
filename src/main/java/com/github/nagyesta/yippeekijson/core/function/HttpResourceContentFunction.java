@@ -12,10 +12,10 @@ import com.github.nagyesta.yippeekijson.core.http.HttpMethod;
 import com.github.nagyesta.yippeekijson.core.http.HttpRequestContext;
 import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Optional;

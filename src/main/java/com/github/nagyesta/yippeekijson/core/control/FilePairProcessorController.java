@@ -7,11 +7,11 @@ import com.github.nagyesta.yippeekijson.core.config.parser.ActionConfigParser;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import com.github.nagyesta.yippeekijson.core.exception.JsonTransformException;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.Assert;
 
-import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;

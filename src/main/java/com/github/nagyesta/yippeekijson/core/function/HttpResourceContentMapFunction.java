@@ -14,10 +14,10 @@ import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.StringObjectMap;
 import com.github.nagyesta.yippeekijson.metadata.schema.entity.typehelper.StringStringMap;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;

@@ -4,10 +4,9 @@ import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigParseException;
 import com.github.nagyesta.yippeekijson.core.exception.ConfigValidationException;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaExporter;
+import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-
-import javax.validation.Validator;
 
 /**
  * Yaml schema generation specific implementation of {@link ApplicationController}.

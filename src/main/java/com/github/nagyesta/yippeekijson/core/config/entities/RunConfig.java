@@ -3,6 +3,7 @@ package com.github.nagyesta.yippeekijson.core.config.entities;
 import com.github.nagyesta.yippeekijson.core.annotation.Injectable;
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidFile;
 import com.github.nagyesta.yippeekijson.core.config.validation.ValidYippeeConfig;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.filefilter.*;
@@ -10,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.nio.charset.Charset;

@@ -7,11 +7,11 @@ import com.github.nagyesta.yippeekijson.metadata.schema.WikiConstants;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.Example;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.SchemaDefinition;
 import com.github.nagyesta.yippeekijson.metadata.schema.annotation.WikiLink;
+import jakarta.annotation.Nullable;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;

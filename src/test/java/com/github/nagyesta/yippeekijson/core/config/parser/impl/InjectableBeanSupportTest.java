@@ -7,6 +7,7 @@ import com.github.nagyesta.yippeekijson.core.config.parser.JsonMapper;
 import com.github.nagyesta.yippeekijson.core.http.HttpClient;
 import com.github.nagyesta.yippeekijson.core.http.impl.DefaultHttpClient;
 import com.google.common.collect.ImmutableMap;
+import jakarta.inject.Named;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 
-import javax.inject.Named;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Parameter;
 import java.util.stream.Stream;

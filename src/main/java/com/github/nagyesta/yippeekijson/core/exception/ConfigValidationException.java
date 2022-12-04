@@ -1,10 +1,10 @@
 package com.github.nagyesta.yippeekijson.core.exception;
 
 import com.github.nagyesta.yippeekijson.core.config.entities.RunConfig;
+import jakarta.validation.ConstraintViolation;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.validation.ConstraintViolation;
 import java.util.Collections;
 import java.util.Set;
 

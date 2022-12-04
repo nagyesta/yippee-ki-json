@@ -7,12 +7,11 @@ import com.github.nagyesta.yippeekijson.core.config.parser.impl.YamlActionConfig
 import com.github.nagyesta.yippeekijson.core.control.*;
 import com.github.nagyesta.yippeekijson.metadata.schema.definitions.JsonSchemaExporter;
 import com.github.nagyesta.yippeekijson.metadata.schema.markdown.DocumentationExporter;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-
-import javax.validation.Validator;
 
 @Configuration
 public class ControllerConfig {
