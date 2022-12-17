@@ -6,7 +6,7 @@
 [![Java version](https://img.shields.io/badge/Java%20version-17-yellow?logo=java)](https://img.shields.io/badge/Java%20version-17-yellow?logo=java)
 [![latest-release](https://img.shields.io/github/v/tag/nagyesta/yippee-ki-json?color=blue&logo=git&label=releases&sort=semver)](https://github.com/nagyesta/yippee-ki-json/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.nagyesta/yippee-ki-json?logo=apache-maven)](https://search.maven.org/artifact/com.github.nagyesta/yippee-ki-json)
-[![JavaCI](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)](https://img.shields.io/github/workflow/status/nagyesta/yippee-ki-json/JavaCI?logo=github)
+[![JavaCI](https://img.shields.io/github/actions/workflow/status/nagyesta/yippee-ki-json/gradle.yml?logo=github&branch=main)](https://github.com/nagyesta/yippee-ki-json/actions/workflows/gradle.yml)
 [![badge-abort-mission-armed-green](https://raw.githubusercontent.com/nagyesta/abort-mission/wiki_assets/.github/assets/badge-abort-mission-armed-green.svg)](https://github.com/nagyesta/abort-mission)
 
 [![codecov](https://img.shields.io/codecov/c/github/nagyesta/yippee-ki-json?logo=codecov&token=HHSXCEQIDA)](https://codecov.io/gh/nagyesta/yippee-ki-json)
