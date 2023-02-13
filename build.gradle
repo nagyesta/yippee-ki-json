@@ -1,3 +1,4 @@
+//file:noinspection DependencyNotationArgument
 plugins {
     alias(libs.plugins.spring.boot)
     id 'checkstyle'
@@ -86,10 +87,10 @@ dependencies {
 jacocoTestReport {
     reports {
         xml.required.set(true)
-        xml.destination file("$buildDir/reports/jacoco/report.xml")
+        xml.outputLocation.set (file("$buildDir/reports/jacoco/report.xml"))
         csv.required.set(false)
         html.required.set(true)
-        html.destination file("$buildDir/reports/jacoco/html")
+        html.outputLocation.set(file("$buildDir/reports/jacoco/html"))
     }
 }
 
