@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.spring.boot)
-    //id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'checkstyle'
     id 'jacoco'
     id 'java'
@@ -14,7 +13,6 @@ plugins {
 }
 
 group = 'com.github.nagyesta'
-sourceCompatibility = '17'
 
 apply from: "config/ossindex/ossIndexAudit.gradle"
 
@@ -166,7 +164,7 @@ bootJar {
     archiveVersion.value(project.version as String)
 }
 
-task systemTestRunConvert(type: Exec) {
+tasks.register('systemTestRunConvert', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
     inputs.file(file("${buildDir}/resources/test/json/example.json"))
     inputs.file(file("${buildDir}/resources/test/yaml/example.yml"))
@@ -184,7 +182,7 @@ task systemTestRunConvert(type: Exec) {
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
 }
-task systemTestRunValidate(type: Exec) {
+tasks.register('systemTestRunValidate', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
     inputs.file(file("${buildDir}/resources/test/validation/validation-input.json"))
     inputs.file(file("${buildDir}/resources/test/validation/test-schema.json"))
@@ -203,7 +201,7 @@ task systemTestRunValidate(type: Exec) {
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
 }
-task systemTest {
+tasks.register('systemTest') {
     dependsOn systemTestRunConvert
     dependsOn systemTestRunValidate
     inputs.file(file("${buildDir}/test-results/systemTest/example.json"))
@@ -223,7 +221,7 @@ task systemTest {
         file("${buildDir}/test-results/systemTest/result").write("Passed")
     }
 }
-task generateYamlSchema(type: Exec) {
+tasks.register('generateYamlSchema', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
     outputs.file(file(project.property("yamlSchemaOutput")))
     dependsOn bootJar
@@ -237,7 +235,7 @@ task generateYamlSchema(type: Exec) {
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
 }
-task generateWikiMarkdown(type: Exec) {
+tasks.register('generateWikiMarkdown', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
     outputs.dir(file(project.property("wikiProjectRoot")))
     dependsOn bootJar
@@ -252,7 +250,7 @@ task generateWikiMarkdown(type: Exec) {
     logging.captureStandardError LogLevel.ERROR
 }
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     configProperties = [base_dir: rootDir.toString(), cache_file: file("${buildDir}/checkstyle/cacheFile")]
     reports {
         xml.required.set(false)
@@ -263,11 +261,11 @@ tasks.withType(Checkstyle) {
 }
 checkstyle.toolVersion = libs.versions.checkstyle.get()
 
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
     options.addStringOption('Xdoclint:syntax', '-quiet')
 }
 
-task includeSchema(type: Copy) {
+tasks.register('includeSchema', Copy.class) {
     from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
     into file("${buildDir}/resources/main")
 }
@@ -332,10 +330,12 @@ publishing {
                     url = 'https://github.com/nagyesta/yippee-ki-json/'
                 }
                 withXml {
+                    //noinspection GroovyImplicitNullArgumentCall
                     asNode().dependencies.findAll() {
                         final def parent = it.parent()
                         parent.remove(it)
                     }
+                    //noinspection GroovyImplicitNullArgumentCall
                     asNode().dependencyManagement.findAll() {
                         final def parent = it.parent()
                         parent.remove(it)
@@ -348,7 +348,7 @@ publishing {
 
 //Disable metadata publishing and rely on Maven only
 //noinspection GroovyAssignabilityCheck
-tasks.withType(GenerateModuleMetadata) {
+tasks.withType(GenerateModuleMetadata).configureEach {
     enabled = false
 }
 
