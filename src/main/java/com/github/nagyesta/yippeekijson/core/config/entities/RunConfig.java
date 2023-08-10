@@ -146,8 +146,9 @@ public class RunConfig {
      * @return filter
      */
     public FileFilter getWildcardFileFilter() {
-        return new AndFileFilter(new WildcardFileFilter(includes),
-                new NotFileFilter(new OrFileFilter(new WildcardFileFilter(excludes), DirectoryFileFilter.DIRECTORY)));
+        return new AndFileFilter(WildcardFileFilter.builder().setWildcards(includes).get(),
+                new NotFileFilter(new OrFileFilter(WildcardFileFilter
+                        .builder().setWildcards(excludes).get(), DirectoryFileFilter.DIRECTORY)));
     }
 
     private File optionalFile(final String file) {

@@ -5,12 +5,11 @@ logback = "1.4.11"
 jupiter = "5.8.2"
 abortMission = "4.2.30"
 lombok = "1.18.28"
-wireMock = "2.27.2"
+wireMock = "3.0.0-beta-10"
 hibernateValidator = "8.0.1.Final"
 jakartaEl = "5.0.1"
 jakartaElImpl = "5.0.0-M1"
 jackson = "2.15.2"
-commonsCodec = "1.16.0"
 commonsIo = "2.13.0"
 commonsLang3 = "3.13.0"
 guava = "32.1.2-jre"
@@ -20,11 +19,8 @@ jetbrainsAnnotations = "24.0.1"
 jsonPath = "2.8.0"
 jsonSchemaValidator = "1.0.86"
 markdownGenerator = "1.3.1.1"
-jacoco = "0.8.8"
-checkstyle = "9.2.1"
-jetty = "9.4.51.v20230217"
-httpclient = "4.5.14"
-handlebars = "4.3.1"
+jacoco = "0.8.10"
+checkstyle = "10.12.2"
 
 abortMissionPlugin = "4.1.11"
 dockerPlugin = "0.32.0"
@@ -59,24 +55,13 @@ galssfish-jakarta-el = { module = "org.glassfish:jakarta.el", version.ref = "jak
 lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 abort-mission-jupiter = { module = "com.github.nagyesta.abort-mission.boosters:abort.booster-junit-jupiter", version.ref = "abortMission" }
 wiremock = { module = "com.github.tomakehurst:wiremock", version.ref = "wireMock" }
-jetty-server = { module = "org.eclipse.jetty:jetty-server", version.ref = "jetty" }
-jetty-servlet = { module = "org.eclipse.jetty:jetty-servlet", version.ref = "jetty" }
-jetty-servlets = { module = "org.eclipse.jetty:jetty-servlets", version.ref = "jetty" }
-jetty-proxy = { module = "org.eclipse.jetty:jetty-proxy", version.ref = "jetty" }
-jetty-webapp = { module = "org.eclipse.jetty:jetty-webapp", version.ref = "jetty" }
-httpclient = { module = "org.apache.httpcomponents:httpclient", version.ref = "httpclient" }
-commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
-handlebars = { module = "com.github.jknack:handlebars", version.ref = "handlebars" }
+
 
 [bundles]
 spring-boot = ["spring-boot-starter", "spring-boot-starter-validation", "snake-yaml"]
 json = ["jackson-databind", "jackson-dataformat-yaml", "json-path", "json-schema-validator"]
 logback = ["logback-classic", "logback-core"]
 validation = ["hibernate-validator", "jakarta-el-api", "galssfish-jakarta-el"]
-wiremock = [
-    "wiremock", "jetty-server", "jetty-servlet", "jetty-servlets", "jetty-proxy",
-    "jetty-webapp", "httpclient", "commons-codec", "handlebars"
-]
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBootPlugin" }
