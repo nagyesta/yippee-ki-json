@@ -13,6 +13,7 @@ import com.github.nagyesta.yippeekijson.metadata.schema.annotation.*;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.mapper.MappingException;
+import com.networknt.schema.ExecutionContext;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +104,8 @@ public class JsonValidationRule extends AbstractJsonRule {
             final JsonNode rootNode = documentContext.read(ROOT_NODE, JsonNode.class);
             final JsonSchema jsonSchema = this.schemaSupplier.get();
             log.info("Validating " + ROOT_NODE);
-            final Set<ValidationMessage> violations = jsonSchema.validate(rootNode, rootNode, ROOT_NODE);
+            final ExecutionContext context = new ExecutionContext();
+            final Set<ValidationMessage> violations = jsonSchema.validate(context, rootNode, rootNode, ROOT_NODE);
             this.violationStrategy.accept(documentContext, violations);
             this.transformationControlStrategy.accept(violations);
         } catch (final MappingException e) {

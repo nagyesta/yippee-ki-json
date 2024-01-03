@@ -7,6 +7,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.spi.json.JacksonJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.networknt.schema.ExecutionContext;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.ValidationMessage;
 import org.junit.jupiter.api.Assertions;
@@ -65,7 +66,6 @@ class ViolationStrategyTest {
         //noinspection ConstantConditions
         if (validationMessages != null) {
             for (final ValidationMessage m : validationMessages) {
-                //noinspection ResultOfMethodCallIgnored
                 verify(m).getMessage();
                 verifyNoMoreInteractions(m);
             }
@@ -117,7 +117,9 @@ class ViolationStrategyTest {
         ViolationStrategy underTest = ViolationStrategy.COMMENT_JSON;
         final JsonNode rootNode = jsonUtil().readAsTree(jsonString);
         final JsonSchema jsonSchema = jsonUtil().asJsonSchema(schema);
-        final Set<ValidationMessage> validationMessages = jsonSchema.validate(rootNode, rootNode, ViolationStrategy.ROOT_NODE);
+        final ExecutionContext context = new ExecutionContext();
+        final Set<ValidationMessage> validationMessages = jsonSchema
+                .validate(context, rootNode, rootNode, ViolationStrategy.ROOT_NODE);
         final DocumentContext documentContext = JsonPath.parse(jsonString, Configuration.builder()
                 .jsonProvider(new JacksonJsonProvider(jsonUtil().objectMapper()))
                 .mappingProvider(new JacksonMappingProvider(jsonUtil().objectMapper()))
