@@ -24,7 +24,7 @@ checkstyle = "10.12.2"
 
 abortMissionPlugin = "5.0.34"
 dockerPlugin = "0.32.0"
-indexScanPlugin = "2.8.1"
+indexScanPlugin = "2.8.2"
 lombokPlugin = "8.6"
 springBootPlugin = "3.2.5"
 gitVersionerPlugin = "1.6.7"
