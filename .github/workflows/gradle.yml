@@ -59,7 +59,7 @@ jobs:
           gradle-home-cache-cleanup: true
       - name: Build with Gradle and publish
         run: >
-          ./gradlew build systemTest tagVersion publish
+          ./gradlew build systemTest tagVersion publish publishToSonatype closeAndReleaseSonatypeStagingRepository
           -PgithubUser=${{ secrets.PUBLISH_USER_NAME }}
           -PgithubToken=${{ secrets.PUBLISH_KEY }}
           -PossrhUsername=${{ secrets.OSSRH_USER }}
