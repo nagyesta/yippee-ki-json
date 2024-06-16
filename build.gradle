@@ -11,6 +11,9 @@ plugins {
     alias(libs.plugins.versioner)
     alias(libs.plugins.index.scan)
     alias(libs.plugins.owasp.dependencycheck)
+    alias(libs.plugins.cyclonedx.bom)
+    alias(libs.plugins.licensee.plugin)
+    alias(libs.plugins.nexus.publish.plugin)
 }
 
 group = 'com.github.nagyesta'
@@ -26,10 +29,21 @@ project.ext {
     ossIndexPass = project.hasProperty('ossIndexPassword') ? (project.property('ossIndexPassword') as String) : ''
     wikiProjectRoot = project.hasProperty('wikiProjectRoot')
             ? (project.property('wikiProjectRoot') as String)
-            : "${buildDir}/reports/wiki/"
+            : project.layout.buildDirectory.dir("reports/wiki/").get().asFile.absolutePath
     yamlSchemaOutput = project.hasProperty('yamlSchemaOutput')
             ? (project.property('yamlSchemaOutput') as String)
             : "${projectDir}/schema/yippee-ki-json_config_schema.json"
+    artifactDisplayName = "Yippee-Ki-JSON"
+    artifactDescription = "A minimal JSON manipulation app built on Spring Boot and JSON Path."
+    repoUrl = 'https://github.com/nagyesta/yippee-ki-json'
+    licenseName = 'MIT License'
+    licenseUrl = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE'
+    maintainerId = 'nagyesta'
+    maintainerName = 'Istvan Zoltan Nagy'
+    maintainerUrl = 'https://github.com/nagyesta/'
+    scmConnection = 'scm:git:https://github.com/nagyesta/yippee-ki-json.git'
+    scmProjectUrl = 'https://github.com/nagyesta/yippee-ki-json'
+
 }
 
 versioner {
@@ -84,13 +98,61 @@ dependencies {
     testImplementation libs.abort.mission.jupiter
 }
 
+cyclonedxBom {
+    includeConfigs = ["runtimeClasspath"]
+    skipConfigs = ["compileClasspath", "testCompileClasspath"]
+    skipProjects = []
+    projectType = project.name == "lowkey-vault-app" ? "application" : "library"
+    schemaVersion = "1.5"
+    destination = file("build/reports")
+    outputName = "bom"
+    outputFormat = "json"
+    //noinspection UnnecessaryQualifiedReference
+    final def attachmentText = new org.cyclonedx.model.AttachmentText()
+    attachmentText.setText(file("LICENSE").readBytes().encodeBase64().toString())
+    attachmentText.setEncoding("base64")
+    attachmentText.setContentType("text/plain")
+    //noinspection UnnecessaryQualifiedReference
+    final def license = new org.cyclonedx.model.License()
+    license.setName(project.ext.licenseName)
+    license.setLicenseText(attachmentText)
+    license.setUrl(project.ext.licenseUrl)
+    setLicenseChoice {
+        it.addLicense(license)
+    }
+}
+
+licensee {
+    allow("Apache-2.0")
+    allow("MIT")
+    allow("EPL-1.0")
+    allow("GPL-2.0-with-classpath-exception")
+    allowUrl("https://asm.ow2.io/license.html")
+}
+
+tasks.register('copyLegalDocs', Copy.class) {
+    from file("${projectDir}/LICENSE")
+    from layout.buildDirectory.file("reports/licensee/artifacts.json").get().asFile
+    from layout.buildDirectory.file("reports/bom.json").get().asFile
+    into layout.buildDirectory.dir("resources/main/META-INF").get().asFile
+    rename('artifacts.json', 'dependency-licenses.json')
+    rename('bom.json', 'SBOM.json')
+}
+tasks.copyLegalDocs.dependsOn(tasks.licensee)
+tasks.copyLegalDocs.dependsOn(tasks.cyclonedxBom)
+tasks.javadoc.dependsOn(tasks.copyLegalDocs)
+tasks.compileTestJava.dependsOn(tasks.copyLegalDocs)
+tasks.checkstyleMain.dependsOn(tasks.copyLegalDocs)
+tasks.resolveMainClassName.dependsOn(tasks.copyLegalDocs)
+tasks.processResources.finalizedBy(tasks.copyLegalDocs)
+
 jacocoTestReport {
     reports {
         xml.required.set(true)
-        xml.outputLocation.set (file("$buildDir/reports/jacoco/report.xml"))
+        xml.outputLocation.set(project.layout.buildDirectory.file("reports/jacoco/report.xml").get().asFile)
         csv.required.set(false)
         html.required.set(true)
-        html.outputLocation.set(file("$buildDir/reports/jacoco/html"))
+        html.outputLocation.set(project.layout.buildDirectory.dir("reports/jacoco/html").get().asFile)
     }
 }
 
@@ -110,8 +172,8 @@ jacoco {
 }
 
 jacocoTestCoverageVerification {
-    inputs.file(file("${buildDir}/reports/jacoco/report.xml"))
-    outputs.file(file("${buildDir}/reports/jacoco/jacocoTestCoverageVerification"))
+    inputs.file(project.layout.buildDirectory.file("reports/jacoco/report.xml").get().asFile)
+    outputs.file(project.layout.buildDirectory.file("reports/jacoco/jacocoTestCoverageVerification").get().asFile)
 
     violationRules {
         rule {
@@ -149,7 +211,7 @@ jacocoTestCoverageVerification {
         }
     }
     doLast {
-        file("${buildDir}/reports/jacoco/jacocoTestCoverageVerification").write("Passed")
+        project.layout.buildDirectory.file("reports/jacoco/jacocoTestCoverageVerification").get().asFile.write("Passed")
     }
 }
 bootJar.dependsOn check
@@ -170,37 +232,37 @@ bootJar {
 
 tasks.register('systemTestRunConvert', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
-    inputs.file(file("${buildDir}/resources/test/json/example.json"))
-    inputs.file(file("${buildDir}/resources/test/yaml/example.yml"))
-    outputs.file(file("${buildDir}/test-results/systemTest/example.json"))
+    inputs.file(project.layout.buildDirectory.file("resources/test/json/example.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("resources/test/yaml/example.yml").get().asFile)
+    outputs.file(project.layout.buildDirectory.file("test-results/systemTest/example.json").get().asFile)
     dependsOn bootJar
 
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
-            "--yippee.config=${buildDir}/resources/test/yaml/example.yml",
-            "--yippee.input=${buildDir}/resources/test/json/example.json",
-            "--yippee.output=${buildDir}/test-results/systemTest/example.json",
+            "--yippee.config=${project.layout.buildDirectory.file('resources/test/yaml/example.yml').get().asFile}",
+            "--yippee.input=${project.layout.buildDirectory.file('resources/test/json/example.json').get().asFile}",
+            "--yippee.output=${project.layout.buildDirectory.file('test-results/systemTest/example.json').get().asFile}",
             "--yippee.action=split-name"
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
 }
 tasks.register('systemTestRunValidate', Exec.class) {
     inputs.file(file(bootJar.outputs.files.singleFile))
-    inputs.file(file("${buildDir}/resources/test/validation/validation-input.json"))
-    inputs.file(file("${buildDir}/resources/test/validation/test-schema.json"))
-    inputs.file(file("${buildDir}/resources/test/yaml/all-rules.yml"))
-    outputs.file(file("${buildDir}/test-results/systemTest/validation-output.json"))
+    inputs.file(project.layout.buildDirectory.file("resources/test/validation/validation-input.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("resources/test/validation/test-schema.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("resources/test/yaml/all-rules.yml").get().asFile)
+    outputs.file(project.layout.buildDirectory.file("test-results/systemTest/validation-output.json").get().asFile)
     dependsOn bootJar
 
     group = "Execution"
     //noinspection GroovyAccessibility
     description = "Run the output executable jar with ExecTask"
     commandLine "${System.properties.'java.home'}/bin/java", "-jar", bootJar.outputs.files.singleFile,
-            "--yippee.config=${buildDir}/resources/test/yaml/all-rules.yml",
-            "--yippee.input=${buildDir}/resources/test/validation/validation-input.json",
-            "--yippee.output=${buildDir}/test-results/systemTest/validation-output.json",
+            "--yippee.config=${project.layout.buildDirectory.file('resources/test/yaml/all-rules.yml').get().asFile}",
+            "--yippee.input=${project.layout.buildDirectory.file('resources/test/validation/validation-input.json').get().asFile}",
+            "--yippee.output=${project.layout.buildDirectory.file('test-results/systemTest/validation-output.json').get().asFile}",
             "--yippee.action=validate"
     logging.captureStandardOutput LogLevel.INFO
     logging.captureStandardError LogLevel.ERROR
@@ -208,21 +270,21 @@ tasks.register('systemTestRunValidate', Exec.class) {
 tasks.register('systemTest') {
     dependsOn systemTestRunConvert
     dependsOn systemTestRunValidate
-    inputs.file(file("${buildDir}/test-results/systemTest/example.json"))
-    inputs.file(file("${buildDir}/resources/test/json/example-split.json"))
-    inputs.file(file("${buildDir}/test-results/systemTest/validation-output.json"))
-    inputs.file(file("${buildDir}/resources/test/validation/validation-output.json"))
-    outputs.file(file("${buildDir}/test-results/systemTest/result"))
+    inputs.file(project.layout.buildDirectory.file("test-results/systemTest/example.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("resources/test/json/example-split.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("test-results/systemTest/validation-output.json").get().asFile)
+    inputs.file(project.layout.buildDirectory.file("resources/test/validation/validation-output.json").get().asFile)
+    outputs.file(project.layout.buildDirectory.file("test-results/systemTest/result").get().asFile)
     doLast {
-        if (file("${buildDir}/test-results/systemTest/example.json").text
-                != file("${buildDir}/resources/test/json/example-split.json").text) {
+        if (project.layout.buildDirectory.file("test-results/systemTest/example.json").get().asFile.text
+                != project.layout.buildDirectory.file("resources/test/json/example-split.json").get().asFile.text) {
             throw new StopExecutionException("System test (convert) assertion failed.")
         }
-        if (file("${buildDir}/test-results/systemTest/validation-output.json").text
-                != file("${buildDir}/resources/test/validation/validation-output.json").text) {
+        if (project.layout.buildDirectory.file("test-results/systemTest/validation-output.json").get().asFile.text
+                != project.layout.buildDirectory.file("resources/test/validation/validation-output.json").get().asFile.text) {
             throw new StopExecutionException("System test (validate) assertion failed.")
         }
-        file("${buildDir}/test-results/systemTest/result").write("Passed")
+        project.layout.buildDirectory.file("test-results/systemTest/result").get().asFile.write("Passed")
     }
 }
 tasks.register('generateYamlSchema', Exec.class) {
@@ -255,7 +317,10 @@ tasks.register('generateWikiMarkdown', Exec.class) {
 }
 
 tasks.withType(Checkstyle).configureEach {
-    configProperties = [base_dir: rootDir.toString(), cache_file: file("${buildDir}/checkstyle/cacheFile")]
+    configProperties = [
+            base_dir  : rootDir.toString(),
+            cache_file: project.layout.buildDirectory.file("checkstyle/cacheFile").get().asFile
+    ]
     reports {
         xml.required.set(false)
         html.required.set(true)
@@ -271,7 +336,7 @@ tasks.withType(Javadoc).configureEach {
 
 tasks.register('includeSchema', Copy.class) {
     from file("${projectDir}/schema/yippee-ki-json_config_schema.json")
-    into file("${buildDir}/resources/main")
+    into project.layout.buildDirectory.dir("resources/main").get().asFile
 }
 resolveMainClassName.dependsOn includeSchema
 javadoc.dependsOn includeSchema
@@ -286,6 +351,15 @@ processResources {
     finalizedBy includeSchema
 }
 
+nexusPublishing {
+    repositories {
+        sonatype {
+            username = project.ext.ossrhUser
+            password = project.ext.ossrhPass
+        }
+    }
+}
+
 publishing {
     repositories {
         maven {
@@ -296,42 +370,33 @@ publishing {
                 password = project.ext.gitToken
             }
         }
-        maven {
-            name = "ossrh"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2")
-            credentials {
-                username = project.ext.ossrhUser
-                password = project.ext.ossrhPass
-            }
-        }
     }
     publications {
         mavenJava(MavenPublication) {
             from components.java
             artifact bootJar
             pom {
-                name = 'Yippee-Ki-JSON'
-                description = 'A minimal JSON manipulation app built on Spring Boot and JSON Path.'
-                url = 'https://github.com/nagyesta/yippee-ki-json'
+                name = project.ext.artifactDisplayName
+                description = project.ext.artifactDescription
+                url = project.ext.repoUrl
                 packaging = 'jar'
                 licenses {
                     license {
-                        name = 'MIT License'
-                        url = 'https://raw.githubusercontent.com/nagyesta/yippee-ki-json/main/LICENSE'
+                        name = project.ext.licenseName
+                        url = project.ext.licenseUrl
                     }
                 }
                 developers {
                     developer {
-                        id = 'nagyesta'
-                        name = 'Istvan Zoltan Nagy'
-                        url = 'https://github.com/nagyesta/'
+                        id = project.ext.maintainerId
+                        name = project.ext.maintainerName
+                        url = project.ext.maintainerUrl
                     }
                 }
                 scm {
-
-                    connection = 'scm:git:https://github.com/nagyesta/yippee-ki-json.git'
-                    developerConnection = 'scm:git:https://github.com/nagyesta/yippee-ki-json.git'
-                    url = 'https://github.com/nagyesta/yippee-ki-json/'
+                    connection = project.ext.scmConnection
+                    developerConnection = project.ext.scmConnection
+                    url = project.ext.scmProjectUrl
                 }
                 withXml {
                     //noinspection GroovyImplicitNullArgumentCall
