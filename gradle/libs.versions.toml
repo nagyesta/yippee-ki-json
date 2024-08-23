@@ -1,7 +1,7 @@
 [versions]
 springBoot = "3.3.3"
 snakeYaml = "2.2"
-logback = "1.5.6"
+logback = "1.5.7"
 jupiter = "5.8.2"
 abortMission = "5.0.198"
 lombok = "1.18.34"
