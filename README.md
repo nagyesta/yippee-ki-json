@@ -17,6 +17,9 @@
 
 --- 
 
+> [!CAUTION]
+> Yippee-Ki-JSON End of Support notice: The project will reach end of life and go to public archive after the end of 2024. Please see the annoincement [here](https://github.com/nagyesta/yippee-ki-json/discussions/783).
+
 Yippee-Ki-JSON is the perfect library for die-hard CLI users who need to script JSON document manipulations to eliminate
 slow and error prone operations.
 
